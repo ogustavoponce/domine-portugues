@@ -1,20 +1,21 @@
 /* --- 
-  STRATEGIC DARK MODE THEME (v1)
+  STRATEGIC DARK MODE THEME (v2 - Split Layout)
   por Gemini
 --- */
 
 :root {
   /* Paleta de Cores Estratégica */
-  --bg-base: #0a0f18; /* Azul-marinho quase preto (fundo) */
-  --bg-panel: #121824; /* Azul-marinho (painéis, cards, sidebar) */
+  --bg-base: #0a0f18; /* Fundo principal */
+  --bg-panel: #121824; /* Painéis, cards */
+  --bg-panel-darker: #080c13; /* Painel lateral do login */
   --border: rgba(255, 255, 255, 0.1); /* Borda sutil */
   --text-primary: #f0f4f8; /* Branco suave */
   --text-secondary: #a0aec0; /* Cinza claro */
   
   /* Cor de Destaque (Accent) */
-  --accent: #38bdf8; /* Azul Elétrico (Tailwind Sky 400) */
+  --accent: #38bdf8; /* Azul Elétrico */
   --accent-hover: #0ea5e9;
-  --accent-text: #0a0f18; /* Texto escuro para botões com fundo accent */
+  --accent-text: #0a0f18; /* Texto escuro para botões */
 
   /* Cores de Feedback */
   --success: #10b981;
@@ -24,13 +25,17 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-full: 99px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --- Base e Reset --- */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+html, body {
+  height: 100%; /* Fundamental para o layout de tela cheia */
 }
 
 body {
@@ -42,13 +47,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* --- Correção da Logo (HEADER DO APP) --- */
+.dp-header .dp-logo {
+  /* Inverte a cor da logo escura para branca */
+  filter: invert(1) brightness(2);
+}
+
 /* --- Header "Glassmorphism" --- */
 .dp-header {
-  /* Efeito de vidro */
-  background: rgba(18, 24, 36, 0.8); /* --bg-panel com transparência */
+  background: rgba(18, 24, 36, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  
   border-bottom: 1px solid var(--border);
   display: flex;
   height: 70px;
@@ -60,40 +69,78 @@ body {
   z-index: 100;
 }
 
-.dp-logo {
-  height: 48px;
-  max-width: 280px;
+/* --- NOVO LAYOUT DE LOGIN (SPLIT-SCREEN) --- */
+body#page-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  min-height: 100%;
 }
 
-/* --- Página de Login --- */
-.login-page {
-  max-width: 440px;
-  margin: 50px auto;
-  padding: 0 20px;
+.login-container {
+  width: 100%;
+  max-width: 960px; /* Largura total do "card" de login */
+  display: flex;
+  background: var(--bg-panel);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden; /* Para forçar os cantos arredondados */
 }
+
+/* Lado Esquerdo (Branding) */
+.login-branding {
+  flex: 1;
+  padding: 48px;
+  background: var(--bg-panel-darker); /* Painel mais escuro */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+}
+
+.login-branding .dp-logo {
+  /* Inverte a cor da logo escura para branca */
+  filter: invert(1) brightness(2);
+  height: 60px;
+  width: auto;
+  align-self: flex-start;
+  margin-bottom: 24px;
+}
+
+.login-branding h1 {
+  color: var(--text-primary);
+  font-size: 2rem;
+  margin: 0 0 16px 0;
+}
+
+.login-branding p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Lado Direito (Formulários) */
+.login-panel {
+  flex: 1;
+  padding: 48px;
+  overflow-y: auto;
+}
+/* Fim do Layout de Login */
 
 .login-form {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 32px;
+  /* Removemos os estilos de "card" daqui */
+  padding: 0; /* O padding está no .login-panel */
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: var(--shadow);
 }
 
 .hidden { display: none; }
 
-.login-title {
-  color: var(--text-primary);
-  margin-bottom: 16px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
-}
+.login-title { display: none; } /* Não precisamos mais dele */
 
-/* Campos de Formulário "Glow" */
 .login-form label {
   font-weight: 600;
   font-size: 0.9rem;
@@ -107,7 +154,7 @@ body {
   border: 1px solid var(--border);
   font-size: 1rem;
   color: var(--text-primary);
-  background: var(--bg-base); /* Mais escuro que o painel */
+  background: var(--bg-base);
   transition: var(--transition);
 }
 
@@ -115,14 +162,13 @@ body {
   outline: none;
   background: var(--bg-panel);
   border-color: var(--accent);
-  /* "Glow" Estratégico */
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
 }
 
 /* Abas de Login */
 .tab-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; /* Alinha à esquerda */
   margin-bottom: 24px;
   gap: 15px;
   border-bottom: 2px solid var(--border);
@@ -135,7 +181,7 @@ body {
   font-size: 1rem;
   cursor: pointer;
   color: var(--text-secondary);
-  padding: 0 12px 12px 12px;
+  padding: 0 4px 12px 4px; /* Menos padding lateral */
   border-bottom: 3px solid transparent;
   user-select: none;
   transition: var(--transition);
@@ -236,8 +282,15 @@ body {
 }
 
 /* --- Layout Principal do App --- */
+body#page-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 #app {
   display: flex;
+  flex: 1; /* Faz o app crescer e empurrar o rodapé */
   min-height: calc(100vh - 70px); 
   background: var(--bg-base);
   user-select: none;
@@ -245,13 +298,10 @@ body {
 
 /* --- Sidebar "Glassmorphism" --- */
 .sidebar {
-  width: 260px; /* Um pouco mais estreita */
-  
-  /* Efeito de vidro */
-  background: rgba(18, 24, 36, 0.8); /* --bg-panel com transparência */
+  width: 260px;
+  background: rgba(18, 24, 36, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -362,7 +412,6 @@ body {
 }
 
 .dp-card:hover {
-  /* Destaque estratégico no hover */
   border-color: var(--accent);
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
 }
@@ -370,11 +419,31 @@ body {
 .dp-card-title {
   font-weight: 600;
   font-size: 1.25rem;
-  color: var(--accent); /* Título em destaque */
+  color: var(--accent);
   margin-bottom: 12px;
 }
 
+/* --- NOVO RODAPÉ --- */
+.dp-footer {
+  width: 100%;
+  text-align: center;
+  padding: 24px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  
+  /* Na página de login, ele fica dentro do .login-panel */
+  .login-panel & {
+    background: transparent;
+    border-top: none;
+    padding: 0;
+    margin-top: 32px;
+  }
+}
+
 /* --- Componentes --- */
+/* (O restante do código de tabelas, badges, etc. é o mesmo) */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -427,8 +496,6 @@ body {
   background: rgba(56, 189, 248, 0.2);
 }
 
-/* (btn-primary já definido) */
-
 .btn-danger {
   background: rgba(244, 63, 94, 0.1);
   color: var(--danger);
@@ -468,7 +535,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* Mais escuro */
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -491,6 +558,24 @@ body {
 
 /* --- Responsivo --- */
 @media (max-width: 900px) {
+  /* O layout de login quebra para vertical */
+  .login-container {
+    flex-direction: column;
+    max-width: 440px; /* Largura de um card normal */
+  }
+  .login-branding {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 32px;
+    text-align: center;
+  }
+  .login-branding .dp-logo {
+    align-self: center;
+  }
+  .login-panel {
+    padding: 32px;
+  }
+
   .sidebar {
     width: 220px;
     padding: 16px 8px;
