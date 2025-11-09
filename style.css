@@ -128,6 +128,46 @@ body {
   border-bottom: 3px solid var(--main-blue);
 }
 
+/* Estilos do Botão Google e Divisor */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 10px;
+}
+
+.btn-google:hover {
+  background-color: var(--bg-base);
+  border-color: #d0d3d6;
+}
+
+.btn-google svg {
+  width: 20px;
+  height: 20px;
+  margin-bottom: -2px;
+}
+
+.form-divider {
+  text-align: center;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  margin: 0 0 15px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .error-msg {
   color: var(--danger);
   font-weight: 600;

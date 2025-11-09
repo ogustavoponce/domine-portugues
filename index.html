@@ -1,32 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Domine Português - Plataforma de Ensino Prof. Domenico</title>
-  <meta name="description" content="Plataforma para ensino de Língua Portuguesa - Prof. Domenico. Turmas, Apostilas, Avaliações e Administração." />
-  <link rel="icon" href="logo.jpg" type="image/jpeg" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Domine Português - Plataforma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
+<body id="page-app">
 
-<body>
-  <header class="dp-header" role="banner">
-    <img src="logo.jpg" alt="Domine Português - Ensino de Língua Portuguesa Prof. Domenico" class="dp-logo" />
+  <header class="dp-header">
+    <img src="logo.jpg" alt="Domine Português" class="dp-logo"/>
   </header>
 
-  <div id="app" role="main" aria-live="polite" aria-label="Conteúdo principal da aplicação"></div>
+  <div id="app">
+    </div>
 
-  <noscript>
-    <p style="text-align:center; color:#900; font-weight:bold;">
-      Para utilizar a plataforma, ative o JavaScript no seu navegador.
-    </p>
-  </noscript>
+  <script src="database.js"></script>
+  <script type="module" src="js/main.js"></script>
 
-  <script src="database.js" defer></script>
-  <script src="script.js" defer></script>
 </body>
-
 </html>
