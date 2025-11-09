@@ -1,22 +1,30 @@
+/* --- 
+  GOOGLE CLASSROOM "PLUS" THEME
+  por Gemini
+--- */
+
 :root {
   --main-blue: #114060;
   --accent-blue: #205d9a;
-  --light-blue: #3d77c5;
-  --bg-base: #f9fafb;
-  --bg-panel: #fff;
-  --text-primary: #1a2832;
-  --text-secondary: #285288;
-  --success: #10b981; /* Cor mais suave */
+  --light-blue-bg: #eaf4fb; /* Um azul bem claro para 'hover' */
+  --bg-base: #f7f9fc; /* Fundo principal (quase branco) */
+  --bg-panel: #ffffff; /* Fundo dos cards e sidebar */
+  --text-primary: #1f1f1f;
+  --text-secondary: #44474a;
+  --success: #1e8e3e;
   --danger: #d93025;
-  --border: #e3e6ea;
-  --radius: 10px; /* Um pouco mais sutil */
-  /* Sombra mais suave e moderna */
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+  --border: #dadce0;
+  --radius: 12px; /* Cantos mais arredondados */
+  --shadow: 0 1px 2px 0 rgba(0,0,0,0.1), 0 2px 6px 2px rgba(0,0,0,0.05);
 }
 
-/* Reset básico e fonte principal */
+/* --- Reset e Base --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   margin: 0;
   background: var(--bg-base);
   color: var(--text-primary);
@@ -27,17 +35,16 @@ body {
 /* --- Header --- */
 .dp-header {
   background: var(--bg-panel);
-  /* Sombra sutil para destacar do conteúdo */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   display: flex;
   height: 70px;
   align-items: center;
   justify-content: center;
   user-select: none;
-  /* Fixa o header no topo */
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
 }
 
 .dp-logo {
@@ -47,19 +54,19 @@ body {
 
 /* --- Página de Login --- */
 .login-page {
-  max-width: 420px;
-  margin: 40px auto;
-  padding: 0 15px; /* Adiciona espaçamento em telas menores */
+  max-width: 440px;
+  margin: 50px auto;
+  padding: 0 20px;
 }
 
 .login-form {
   background: var(--bg-panel);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
-  padding: 30px 30px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Aumenta o gap */
+  gap: 16px; /* Mais espaçamento */
 }
 
 .hidden {
@@ -67,55 +74,56 @@ body {
 }
 
 .login-title {
-  color: var(--main-blue);
-  margin-bottom: 18px;
-  font-size: 1.3rem; /* Um pouco maior */
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
 }
 
+/* Campos de Formulário (Estilo Google "Outlined") */
 .login-form label {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  margin-bottom: -8px; /* Puxa para mais perto do input */
 }
 
 .login-form input {
-  padding: 12px 14px; /* Mais altura interna */
-  border-radius: var(--radius);
-  border: 1.5px solid var(--border);
+  padding: 14px 16px;
+  border-radius: 8px; /* Cantos mais suaves */
+  border: 1px solid var(--border);
   font-size: 1rem;
-  color: var(--main-blue);
-  background: #fdfdff; /* Quase branco */
-  margin-bottom: 5px;
-  /* Transição para o foco */
-  transition: all 0.2s ease-out; 
+  color: var(--text-primary);
+  background: var(--bg-base);
+  transition: all 0.2s ease-out;
 }
 
 .login-form input:focus {
   outline: none;
-  border-color: var(--main-blue);
-  background: #fff;
-  /* Sombra de foco moderna */
-  box-shadow: 0 0 0 3px rgba(17, 64, 96, 0.1);
+  border-color: var(--accent-blue);
+  background: var(--bg-panel);
+  /* Anel de foco no estilo Google */
+  box-shadow: 0 0 0 2px var(--accent-blue); 
 }
 
-/* Abas */
+/* Abas de Login/Cadastro */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   gap: 15px;
+  border-bottom: 2px solid var(--border);
 }
 
 .tab-buttons button {
   background: transparent;
   border: none;
-  font-weight: 700;
-  font-size: 1.04rem;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  color: var(--text-secondary); /* Cor mais suave para inativo */
-  padding-bottom: 7px;
+  color: var(--text-secondary);
+  padding: 0 12px 12px 12px;
   border-bottom: 3px solid transparent;
   user-select: none;
   transition: all 0.2s ease-out;
@@ -128,16 +136,17 @@ body {
 .tab-buttons .tab-active {
   color: var(--main-blue);
   border-bottom-color: var(--main-blue);
+  font-weight: 700;
 }
 
-/* Botões */
+/* --- Botões --- */
 .btn-primary {
   background-color: var(--main-blue);
   color: white;
-  padding: 12px 0;
+  padding: 12px 24px;
   font-weight: 700;
-  font-size: 1.07rem;
-  border-radius: var(--radius);
+  font-size: 1rem;
+  border-radius: 99px; /* Botão "Pill" (pílula) */
   border: none;
   cursor: pointer;
   margin-top: 10px;
@@ -147,18 +156,16 @@ body {
 
 .btn-primary:hover {
   background: var(--accent-blue);
-  /* Leve "levantada" no hover */
-  transform: translateY(-2px); 
-  box-shadow: 0 4px 10px rgba(17, 64, 96, 0.2);
+  box-shadow: 0 2px 8px rgba(32, 93, 154, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active {
-  /* Efeito de clique */
-  transform: scale(0.98); 
-  background: var(--main-blue);
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
-/* Botão Google */
+/* Botão Google (Estilo Google) */
 .btn-google {
   display: flex;
   align-items: center;
@@ -167,10 +174,10 @@ body {
   width: 100%;
   padding: 10px 16px;
   background-color: var(--bg-panel);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  font-family: 'Inter', Arial, sans-serif;
+  color: #444; /* Cor de texto padrão do Google */
+  border: 1px solid var(--border);
+  border-radius: 99px; /* Pílula */
+  font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -180,9 +187,8 @@ body {
 
 .btn-google:hover {
   background-color: var(--bg-base);
-  border-color: #d0d3d6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-color: #c0c0c0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .btn-google:active {
@@ -194,53 +200,49 @@ body {
   height: 20px;
 }
 
-/* Divisor "ou" */
 .form-divider {
   text-align: center;
   color: var(--text-secondary);
-  opacity: 0.7;
-  margin: 0 0 15px 0;
+  opacity: 0.8;
+  margin: 0 0 10px 0;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
 /* Mensagens de Erro/Sucesso */
-.error-msg {
-  color: var(--danger);
+.error-msg, .success-msg {
   font-weight: 600;
   font-size: 0.95rem;
   min-height: 16px;
   text-align: center;
+  padding: 10px;
+  border-radius: 8px;
 }
-
+.error-msg {
+  color: var(--danger);
+  background-color: rgba(217, 48, 37, 0.05);
+}
 .success-msg {
   color: var(--success);
-  font-weight: 700;
-  font-size: 0.95rem;
-  min-height: 16px;
-  text-align: center;
+  background-color: rgba(30, 142, 62, 0.05);
 }
 
 /* --- Layout Principal do App --- */
 #app {
   display: flex;
-  /* Altura total menos o header */
   min-height: calc(100vh - 70px); 
   background: var(--bg-base);
   user-select: none;
 }
 
-/* Sidebar */
+/* --- Sidebar (Estilo Google) --- */
 .sidebar {
-  width: 260px;
+  width: 280px; /* Mais largo */
   background: var(--bg-panel);
   border-right: 1px solid var(--border);
-  /* Sombra mais suave que a anterior */
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03); 
   display: flex;
   flex-direction: column;
-  padding: 28px 20px 15px 17px;
-  /* Altura total menos o header, e fixa */
+  padding: 24px 12px;
   height: calc(100vh - 70px);
   position: sticky;
   top: 70px; 
@@ -249,25 +251,27 @@ body {
 .sidebar-header {
   font-weight: 700;
   color: var(--main-blue);
-  font-size: 1.32rem;
-  margin-bottom: 26px;
-  text-align: left;
+  font-size: 1.3rem;
+  margin-bottom: 24px;
+  padding: 0 12px;
 }
 
 .sidebar-profile {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
 }
 
 .sidebar-avatar {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   font-weight: 700;
-  font-size: 1.03rem;
+  font-size: 1.1rem;
   color: var(--accent-blue);
-  background: #eaf4fb;
+  background: var(--light-blue-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -275,38 +279,42 @@ body {
 }
 
 .sidebar-info {
-  font-weight: 700;
-  font-size: 1.08rem;
-  color: var(--main-blue);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
 }
 
 .sidebar-info-small {
-  font-size: 0.96rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
   margin-top: 2px;
 }
 
-/* Navegação da Sidebar */
+/* Navegação da Sidebar (Estilo Material 3) */
 .sidebar-nav a {
   text-decoration: none;
-  color: var(--main-blue);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-radius: var(--radius);
+  border-radius: 99px; /* Pílula */
   font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 10px;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
   gap: 12px;
-  transition: all 0.2s ease-out; /* Adiciona transição */
+  transition: all 0.2s ease-out;
   cursor: pointer;
 }
 
-.sidebar-nav a.active,
 .sidebar-nav a:hover {
-  background: #eaf4fb;
+  background: var(--light-blue-bg);
   color: var(--accent-blue);
-  transform: translateX(4px); /* Leve movimento */
+}
+
+.sidebar-nav a.active {
+  background: var(--accent-blue);
+  color: white;
+  font-weight: 700;
 }
 
 .sidebar-nav svg {
@@ -315,51 +323,82 @@ body {
   stroke: currentColor;
 }
 
-/* Conteúdo Principal */
+/* --- Conteúdo Principal --- */
 .main-content {
   flex: 1;
   background: var(--bg-base);
-  padding: 35px 40px;
+  padding: 32px 40px;
   overflow-y: auto;
 }
 
 .main-header {
-  font-size: 1.46rem;
+  font-size: 1.75rem; /* Maior */
   font-weight: 700;
-  color: var(--main-blue);
-  margin-bottom: 22px;
+  color: var(--text-primary);
+  margin-bottom: 24px;
 }
 
-.section-title {
-  font-size: 1.14rem;
-  color: var(--accent-blue);
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-/* Cards */
+/* Cards (Estilo Classroom) */
 .dp-card {
   background: var(--bg-panel);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 22px 18px;
-  margin-bottom: 22px;
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: none; /* Sem sombra, estilo flat */
+  transition: all 0.2s ease-out;
+}
+
+.dp-card:hover {
+  /* "Levanta" o card no hover */
+  border-color: var(--bg-panel);
+  box-shadow: var(--shadow); 
 }
 
 .dp-card-title {
-  font-weight: 700;
-  font-size: 1.18rem;
-  color: var(--accent-blue);
-  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--main-blue);
+  margin-bottom: 12px;
 }
 
-/* Botões Genéricos (dentro do app) */
+/* --- Componentes (Tabelas, Badges, Modais) --- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.table th {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.table tr:hover {
+  background: var(--light-blue-bg);
+}
+
+/* Botões dentro do App */
 .btn,
 .btn-primary,
 .btn-danger {
-  padding: 9px 15px;
-  border-radius: var(--radius);
-  font-size: 1rem;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -369,69 +408,28 @@ body {
 }
 
 .btn {
-  background: #eaf4fb;
-  color: var(--main-blue);
+  background: var(--light-blue-bg);
+  color: var(--accent-blue);
+}
+.btn:hover {
+  background: rgba(32, 93, 154, 0.2);
 }
 
-.btn-primary {
-  background: var(--main-blue);
-  color: white;
-}
+/* (btn-primary já definido) */
 
 .btn-danger {
   background: var(--danger);
   color: #fff;
 }
-
-.btn:hover,
-.btn-primary:hover,
 .btn-danger:hover {
-  filter: brightness(110%); /* Clareia um pouco */
-  transform: translateY(-2px);
-}
-
-.btn:active,
-.btn-primary:active,
-.btn-danger:active {
-  transform: scale(0.98);
-  filter: brightness(100%);
-}
-
-
-/* --- Outros componentes (Tabelas, Badges, Modal) --- */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--bg-panel);
-  border-radius: var(--radius);
-  box-shadow: 0 2px 24px rgba(0,0,0,0.03);
-  font-size: 0.99rem;
-  margin-top: 16px;
-  overflow: hidden; /* Garante cantos arredondados */
-}
-
-.table th,
-.table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #eef2f2;
-  color: var(--main-blue);
-  text-align: left;
-}
-
-.table th {
-  background: #f9fafb; /* Mais suave */
-  font-weight: 700;
-}
-
-.table tr:hover {
-  background: #f8fbff;
+  filter: brightness(110%);
 }
 
 .dp-badge {
   display: inline-block;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 0.94em;
+  font-size: 0.9em;
   font-weight: 600;
   color: #fff;
   margin-right: 5px;
@@ -441,22 +439,24 @@ body {
 .dp-badge.turma { background: #5fb878; }
 
 .dp-code-badge {
-  background: #f3f7fa;
-  color: #164073;
-  font-size: 0.96em;
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  font-size: 0.9em;
   letter-spacing: 0.06em;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 7px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
+/* Modal */
 #nexus-modal-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(4, 17, 34, 0.16);
+  background: rgba(0, 0, 0, 0.3); /* Mais escuro */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -466,10 +466,10 @@ body {
 .nexus-modal {
   background: var(--bg-panel);
   padding: 30px 24px;
-  min-width: 320px;
+  min-width: 400px;
   max-width: 95vw;
-  border-radius: 13px;
-  box-shadow: 0 8px 34px rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 .nexus-modal form { display: flex; flex-direction: column; gap: 14px; }
 .nexus-modal .btn-group { display: flex; gap: 10px; justify-content: flex-end; }
@@ -477,14 +477,25 @@ body {
 /* --- Responsivo --- */
 @media (max-width: 900px) {
   .sidebar {
-    width: 180px;
-    padding: 12px 8px;
+    width: 220px;
+    padding: 16px 8px;
   }
-  .sidebar-header, .sidebar-info {
-    font-size: 1rem;
+  .sidebar-header {
+    font-size: 1.1rem;
+  }
+  .sidebar-profile {
+    padding: 4px;
+    gap: 8px;
+  }
+  .sidebar-info {
+    font-size: 0.9rem;
+  }
+  .sidebar-nav a {
+    font-size: 0.9rem;
+    padding: 10px 12px;
   }
   .main-content {
-    padding: 17px 15px;
+    padding: 24px 15px;
   }
 }
 
@@ -492,15 +503,16 @@ body {
   #app {
     flex-direction: column;
   }
-  /* Esconde a sidebar e header fixo em mobile */
   .sidebar, .sidebar-header, .sidebar-profile {
     display: none !important; 
   }
-  /* Remove a altura fixa do header */
   .dp-header {
     position: static; 
   }
   .main-content {
-    padding: 15px 10px;
+    padding: 20px 15px;
+  }
+  .main-header {
+    font-size: 1.5rem;
   }
 }
