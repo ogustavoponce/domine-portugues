@@ -1,26 +1,21 @@
 /* --- 
-  NOTION HYBRID THEME (v3)
+  CLEAN & SPACIOUS THEME (v4)
   por Gemini
 --- */
 
 :root {
-  /* Paleta Híbrida (Dark/Light) */
-  --bg-dark-base: #191919;     /* Fundo da Sidebar/Header */
-  --bg-dark-panel: #202020;    /* Painel de login (escuro) */
-  --bg-light-base: #f7f7f7;   /* Fundo principal do conteúdo (claro) */
-  --bg-light-panel: #ffffff;  /* Cards (branco) */
+  /* Paleta de Cores (Light Theme) */
+  --bg-base: #f9fafb;     /* Fundo principal (cinza bem claro) */
+  --bg-panel: #ffffff;    /* Fundo dos cards, header, nav */
+  --border: #e5e7eb;      /* Borda sutil */
   
-  --border-dark: rgba(255, 255, 255, 0.1);
-  --border-light: #e0e0e0;
-
-  --text-dark-primary: #f0f4f8;   /* Texto em fundos escuros */
-  --text-dark-secondary: #a0aec0;
-  --text-light-primary: #1f1f1f;   /* Texto em fundos claros */
-  --text-light-secondary: #5c5c5c;
+  --text-primary: #1f2937; /* Texto (preto suave) */
+  --text-secondary: #6b7280; /* Texto (cinza) */
   
   /* Cor de Destaque (Accent) */
-  --accent: #0ea5e9; /* Azul (Tailwind Sky 500) */
-  --accent-hover: #0284c7;
+  --accent: #2563eb; /* Azul Vibrante */
+  --accent-hover: #1d4ed8;
+  --accent-light: #eff6ff; /* Fundo de hover/ativo */
   --accent-text: #ffffff; /* Texto branco para botões azuis */
 
   /* Cores de Feedback */
@@ -31,8 +26,7 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-full: 99px;
-  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-dark: 0 4px 25px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.08);
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -48,162 +42,111 @@ html, body {
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
-  /* Fundo escuro por padrão, será sobrescrito no #page-app */
-  background-color: var(--bg-dark-base); 
-  color: var(--text-dark-primary);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Header (Dark) --- */
-.dp-header {
-  background: var(--bg-dark-base);
-  border-bottom: 1px solid var(--border-dark);
-  display: flex;
-  height: 70px;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-/* ▼▼ CORREÇÃO DO BUG DA LOGO ▼▼ */
-.dp-header .dp-logo {
-  filter: invert(1) brightness(2); /* Deixa a logo branca */
-  height: 48px; /* Define a altura */
-  width: auto; /* Mantém proporção */
-  max-width: 280px; /* Limite */
-}
-
-/* --- NOVO LAYOUT DE LOGIN (Híbrido) --- */
+/* --- NOVO LAYOUT DE LOGIN (Centralizado e Arejado) --- */
 body#page-login {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
   min-height: 100%;
-  background: var(--bg-dark-base);
+  padding: 24px;
 }
 
-.login-container {
+/* Card de Login */
+.login-page {
   width: 100%;
-  max-width: 960px;
-  display: flex;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: var(--bg-panel);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-dark);
-  border: 1px solid var(--border-dark);
-  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 
-/* Lado Esquerdo (Branding - Dark) */
-.login-branding {
-  flex: 1;
-  padding: 48px;
-  background: var(--bg-dark-panel);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-right: 1px solid var(--border-dark);
-}
-
-.login-branding .dp-logo {
-  filter: invert(1) brightness(2);
-  height: 60px;
+.login-logo {
+  display: block;
+  height: 50px;
   width: auto;
-  align-self: flex-start;
-  margin-bottom: 24px;
-}
-
-.login-branding h1 {
-  color: var(--text-dark-primary);
-  font-size: 2rem;
-  margin: 0 0 16px 0;
-}
-
-.login-branding p {
-  color: var(--text-dark-secondary);
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
-
-/* Lado Direito (Formulários - Light) */
-.login-panel {
-  flex: 1;
-  padding: 40px; /* Espaçamento corrigido (menor) */
-  background: var(--bg-light-panel);
-  color: var(--text-light-primary);
-  overflow-y: auto;
-}
-
-.login-form {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px; /* Espaçamento corrigido (menor) */
+  margin: 0 auto 24px auto;
+  /* Logo original azul ficará perfeita no fundo branco */
+  filter: none; 
 }
 
 .hidden { display: none; }
 .login-title { display: none; }
 
+.login-form {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espaçamento corrigido */
+}
+
 .login-form label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-light-secondary);
-  margin-bottom: -4px; /* Mais junto */
+  color: var(--text-secondary);
+  margin-bottom: -8px;
 }
 
 .login-form input {
   padding: 14px 16px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   font-size: 1rem;
-  color: var(--text-light-primary);
-  background: var(--bg-light-base); /* Fundo cinza claro */
+  color: var(--text-primary);
+  background: var(--bg-base);
   transition: var(--transition);
 }
 
 .login-form input:focus {
   outline: none;
-  background: var(--bg-light-panel);
+  background: var(--bg-panel);
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-/* Abas de Login */
+/* Abas "Pill" (Pílula) */
 .tab-buttons {
-  display: flex;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg-base);
+  border-radius: var(--radius-full);
+  padding: 4px;
   margin-bottom: 24px;
-  gap: 15px;
-  border-bottom: 2px solid var(--border-light);
 }
 
 .tab-buttons button {
   background: transparent;
-  border: none;
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 1rem;
+  color: var(--text-secondary);
   cursor: pointer;
-  color: var(--text-light-secondary);
-  padding: 0 4px 12px 4px;
-  border-bottom: 3px solid transparent;
   user-select: none;
   transition: var(--transition);
 }
 
-.tab-buttons button:hover {
-  color: var(--text-light-primary);
+.tab-buttons button:hover:not(.tab-active) {
+  color: var(--text-primary);
 }
 
 .tab-buttons .tab-active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 700;
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* --- Botões --- */
+/* --- Botões de Ação --- */
 .btn-primary {
   background: var(--accent);
   color: var(--accent-text);
@@ -221,7 +164,7 @@ body#page-login {
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:active {
@@ -229,7 +172,7 @@ body#page-login {
   box-shadow: none;
 }
 
-/* Botão Google (Light Mode) */
+/* ▼▼ CORREÇÃO DO BUG DA LOGO GOOGLE ▼▼ */
 .btn-google {
   display: flex;
   align-items: center;
@@ -237,28 +180,34 @@ body#page-login {
   gap: 12px;
   width: 100%;
   padding: 10px 16px;
-  background-color: var(--bg-light-panel);
-  color: var(--text-light-primary);
-  border: 1px solid var(--border-light);
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
   font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   transition: var(--transition);
 }
-
 .btn-google:hover {
-  background-color: var(--bg-light-base);
+  background-color: var(--bg-base);
   border-color: #b0b0b0;
+}
+.btn-google:active { transform: scale(0.98); }
+
+/* SVG OFICIAL MULTICOLORIDO */
+.btn-google svg {
+  width: 18px; /* Tamanho do ícone oficial */
+  height: 18px;
 }
 
 .form-divider {
   text-align: center;
-  color: var(--text-light-secondary);
+  color: var(--text-secondary);
   opacity: 0.8;
-  margin: 0 0 10px 0;
+  margin: -8px 0 -8px 0; /* Mais junto */
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -281,129 +230,116 @@ body#page-login {
   background-color: rgba(16, 185, 129, 0.1);
 }
 
-/* --- Layout Principal do App (Notion Style) --- */
+/* --- Layout Principal do App (NOVO - TOP NAV) --- */
 body#page-app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--bg-light-base); /* Fundo claro! */
-  color: var(--text-light-primary);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
 }
 
-#app {
-  display: flex;
-  flex: 1; /* Cresce para empurrar o rodapé */
-  min-height: calc(100vh - 70px); 
-  user-select: none;
-}
-
-/* --- Sidebar (Dark) --- */
-.sidebar {
-  width: 260px;
-  background: var(--bg-dark-base);
-  border-right: 1px solid var(--border-dark);
-  display: flex;
-  flex-direction: column;
-  padding: 24px 12px;
-  height: calc(100vh - 70px);
+/* Header (Light) */
+.dp-header {
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  height: 70px;
   position: sticky;
-  top: 70px; 
-}
-
-.sidebar-header {
-  font-weight: 700;
-  color: var(--text-dark-primary);
-  font-size: 1.3rem;
-  margin-bottom: 24px;
-  padding: 0 12px;
-}
-
-.sidebar-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-}
-
-.sidebar-avatar {
-  width: 42px;
-  height: 42px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--accent);
-  background: rgba(56, 189, 248, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
+  top: 0;
+  z-index: 100;
   justify-content: center;
 }
 
-.sidebar-info {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text-dark-primary);
+/* ▼▼ CORREÇÃO DO BUG DA LOGO GIGANTE ▼▼ */
+.dp-header .dp-logo {
+  filter: none; /* Logo original azul */
+  height: 48px;
+  width: auto;
+  max-width: 280px;
 }
 
-.sidebar-info-small {
-  font-size: 0.9rem;
-  color: var(--text-dark-secondary);
-  margin-top: 2px;
+#app {
+  display: block; /* Remove o flex */
+  flex: 1; 
 }
 
-/* Navegação da Sidebar (Dark) */
-.sidebar-nav a {
-  text-decoration: none;
-  color: var(--text-dark-secondary);
+/* ▼▼ TRANSFORMA A SIDEBAR EM TOP-NAV ▼▼ */
+.sidebar {
+  width: 100%;
+  height: auto; /* Altura automática */
+  background: var(--bg-panel);
+  border-right: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  position: sticky; /* Fixa abaixo do header */
+  top: 70px; 
+  z-index: 90;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Esconde itens desnecessários da sidebar */
+.sidebar-header, 
+.sidebar-profile {
+  display: none;
+}
+
+/* Transforma a navegação em horizontal */
+.sidebar-nav {
   display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-radius: var(--radius-full);
+  flex-direction: row;
+  justify-content: center; /* Centraliza os links */
+  padding: 0;
+  /* Define a largura máxima da navegação */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sidebar-nav a {
+  border-radius: 0; /* Remove a pílula */
+  border-bottom: 3px solid transparent; /* Borda de "aba" */
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.95rem;
-  margin: 0 8px 8px 8px;
-  gap: 12px;
-  transition: var(--transition);
-  cursor: pointer;
+  padding: 16px 20px;
+  margin: 0 4px;
 }
 
 .sidebar-nav a:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-dark-primary);
+  background: var(--accent-light);
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent-light);
+  transform: none; /* Remove o pulo */
 }
 
 .sidebar-nav a.active {
-  background: var(--accent);
-  color: var(--accent-text);
+  color: var(--accent);
   font-weight: 700;
+  background: transparent;
+  border-bottom-color: var(--accent);
 }
 
-.sidebar-nav svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor;
-}
-
-/* --- Conteúdo Principal (Light) --- */
+/* --- Conteúdo Principal (Arejado e Espaçoso) --- */
 .main-content {
-  flex: 1;
-  padding: 32px 40px;
+  /* ▼▼ CHAVE PARA O "ESPAÇÃO" ▼▼ */
+  width: 100%;
+  max-width: 1200px; /* Largura máxima do conteúdo */
+  margin: 0 auto; /* Centraliza na página */
+  padding: 40px; /* Espaçamento interno */
   overflow-y: auto;
-  color: var(--text-light-primary);
+  color: var(--text-primary);
 }
 
 .main-header {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-light-primary);
+  color: var(--text-primary);
   margin-bottom: 24px;
 }
 
 /* Cards (Light) */
 .dp-card {
-  background: var(--bg-light-panel);
-  border: 1px solid var(--border-light);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 24px;
   margin-bottom: 24px;
@@ -413,7 +349,7 @@ body#page-app {
 
 .dp-card:hover {
   border-color: #c0c0c0;
-  box-shadow: var(--shadow-light);
+  box-shadow: var(--shadow);
 }
 
 .dp-card-title {
@@ -428,13 +364,13 @@ body#page-app {
   width: 100%;
   text-align: center;
   padding: 24px;
-  background: var(--bg-light-base);
-  border-top: 1px solid var(--border-light);
-  color: var(--text-light-secondary);
+  background: var(--bg-base);
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   
-  /* Na página de login, ele fica claro */
-  .login-panel & {
+  /* Na página de login */
+  .login-page & {
     background: transparent;
     border-top: none;
     padding: 0;
@@ -446,9 +382,9 @@ body#page-app {
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--bg-light-panel);
+  background: var(--bg-panel);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   font-size: 0.95rem;
   margin-top: 16px;
   overflow: hidden;
@@ -457,14 +393,14 @@ body#page-app {
 .table th,
 .table td {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-light-secondary);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
   text-align: left;
 }
 
 .table th {
-  background: var(--bg-light-base);
-  color: var(--text-light-primary);
+  background: var(--bg-base);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -488,11 +424,11 @@ body#page-app {
 }
 
 .btn {
-  background: rgba(14, 165, 233, 0.1);
+  background: var(--accent-light);
   color: var(--accent-hover);
 }
 .btn:hover {
-  background: rgba(14, 165, 233, 0.2);
+  background: rgba(37, 99, 235, 0.2);
 }
 
 .btn-danger {
@@ -517,9 +453,9 @@ body#page-app {
 .dp-badge.turma { background: #5fb878; }
 
 .dp-code-badge {
-  background: var(--bg-light-base);
-  color: var(--text-light-secondary);
-  border: 1px solid var(--border-light);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
   font-size: 0.9em;
   letter-spacing: 0.06em;
   padding: 3px 8px;
@@ -544,22 +480,22 @@ body#page-app {
 }
 
 .nexus-modal {
-  background: var(--bg-dark-panel); /* Modal escuro */
-  color: var(--text-dark-primary);
+  background: #202020; /* Modal escuro */
+  color: #f0f4f8;
   padding: 30px 24px;
   min-width: 400px;
   max-width: 95vw;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 .nexus-modal form { display: flex; flex-direction: column; gap: 14px; }
 .nexus-modal .btn-group { display: flex; gap: 10px; justify-content: flex-end; }
-.nexus-modal label { color: var(--text-dark-secondary); }
+.nexus-modal label { color: #a0aec0; }
 .nexus-modal input {
-  background: var(--bg-dark-base);
-  border: 1px solid var(--border-dark);
-  color: var(--text-dark-primary);
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f0f4f8;
   padding: 10px;
   border-radius: var(--radius-sm);
 }
@@ -568,50 +504,49 @@ body#page-app {
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
 }
 
-
 /* --- Responsivo --- */
 @media (max-width: 900px) {
-  .login-container {
-    flex-direction: column;
-    max-width: 440px;
-  }
-  .login-branding {
-    border-right: none;
-    border-bottom: 1px solid var(--border-dark);
-    padding: 32px;
-    text-align: center;
-  }
-  .login-branding .dp-logo { align-self: center; }
-  .login-panel { padding: 32px; }
-
-  .sidebar {
-    width: 220px;
-    padding: 16px 8px;
-  }
-  .sidebar-header { font-size: 1.1rem; }
-  .sidebar-profile { padding: 4px; gap: 8px; }
-  .sidebar-info { font-size: 0.9rem; }
-  .sidebar-nav a { font-size: 0.9rem; padding: 10px 12px; }
-  .main-content { padding: 24px 15px; }
-}
-
-@media (max-width: 600px) {
+  /* Quebra o layout de login para vertical */
   body#page-login {
     padding: 0;
   }
-  .login-container {
+  .login-page {
     max-width: 100%;
     border-radius: 0;
+    border: none;
+    box-shadow: none;
     min-height: 100vh;
+    justify-content: center;
   }
-  .login-branding { display: none; } /* Esconde a marca em telas pequenas */
-  .login-panel { padding: 24px; }
   
-  #app { flex-direction: column; }
-  .sidebar, .sidebar-header, .sidebar-profile {
-    display: none !important; 
+  .sidebar-nav {
+    justify-content: flex-start; /* Alinha à esquerda em mobile */
+    overflow-x: auto; /* Permite scrollar a nav */
+    padding: 0 16px;
   }
-  .dp-header { position: static; }
-  .main-content { padding: 20px 15px; }
-  .main-header { font-size: 1.5rem; }
+  .main-content {
+    padding: 24px 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-page {
+    padding: 24px;
+  }
+
+  /* Na tela do app, esconde a nav e o header */
+  body#page-app .dp-header {
+    display: none;
+  }
+  body#page-app .sidebar {
+    display: none;
+  }
+  body#page-app .main-content {
+    padding: 20px 15px;
+    max-width: 100%;
+    margin-top: 0;
+  }
+  .main-header {
+    font-size: 1.5rem;
+  }
 }
