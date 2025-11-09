@@ -6,29 +6,38 @@
   --bg-panel: #fff;
   --text-primary: #1a2832;
   --text-secondary: #285288;
-  --success: #1ce371;
+  --success: #10b981; /* Cor mais suave */
   --danger: #d93025;
   --border: #e3e6ea;
-  --radius: 12px;
-  --shadow: 0 2px 24px rgba(32,64,96,0.08);
+  --radius: 10px; /* Um pouco mais sutil */
+  /* Sombra mais suave e moderna */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
 }
 
+/* Reset básico e fonte principal */
 body {
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   background: var(--bg-base);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* --- Header --- */
 .dp-header {
-  background: #fff;
-  box-shadow: 0 2px 8px #0001;
+  background: var(--bg-panel);
+  /* Sombra sutil para destacar do conteúdo */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
   display: flex;
   height: 70px;
   align-items: center;
   justify-content: center;
   user-select: none;
+  /* Fixa o header no topo */
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .dp-logo {
@@ -36,9 +45,11 @@ body {
   max-width: 280px;
 }
 
+/* --- Página de Login --- */
 .login-page {
   max-width: 420px;
   margin: 40px auto;
+  padding: 0 15px; /* Adiciona espaçamento em telas menores */
 }
 
 .login-form {
@@ -48,7 +59,7 @@ body {
   padding: 30px 30px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px; /* Aumenta o gap */
 }
 
 .hidden {
@@ -58,53 +69,38 @@ body {
 .login-title {
   color: var(--main-blue);
   margin-bottom: 18px;
-  font-size: 1.22rem;
+  font-size: 1.3rem; /* Um pouco maior */
   font-weight: 700;
   text-align: center;
-  letter-spacing: 0.06em;
 }
 
 .login-form label {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
 }
 
 .login-form input {
-  padding: 10px 14px;
+  padding: 12px 14px; /* Mais altura interna */
   border-radius: var(--radius);
   border: 1.5px solid var(--border);
   font-size: 1rem;
   color: var(--main-blue);
-  background: #f7faff;
+  background: #fdfdff; /* Quase branco */
   margin-bottom: 5px;
-  transition: border-color 0.3s;
+  /* Transição para o foco */
+  transition: all 0.2s ease-out; 
 }
 
 .login-form input:focus {
   outline: none;
   border-color: var(--main-blue);
-  background: #eaf4fb;
+  background: #fff;
+  /* Sombra de foco moderna */
+  box-shadow: 0 0 0 3px rgba(17, 64, 96, 0.1);
 }
 
-.btn-primary {
-  background-color: var(--main-blue);
-  color: white;
-  padding: 12px 0;
-  font-weight: 700;
-  font-size: 1.07rem;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-  user-select: none;
-  transition: background 0.18s;
-}
-
-.btn-primary:hover {
-  background: var(--accent-blue);
-}
-
+/* Abas */
 .tab-buttons {
   display: flex;
   justify-content: center;
@@ -118,17 +114,51 @@ body {
   font-weight: 700;
   font-size: 1.04rem;
   cursor: pointer;
-  color: var(--main-blue);
+  color: var(--text-secondary); /* Cor mais suave para inativo */
   padding-bottom: 7px;
-  border-bottom: 2.8px solid transparent;
+  border-bottom: 3px solid transparent;
   user-select: none;
+  transition: all 0.2s ease-out;
+}
+
+.tab-buttons button:hover {
+  color: var(--main-blue);
 }
 
 .tab-buttons .tab-active {
-  border-bottom: 3px solid var(--main-blue);
+  color: var(--main-blue);
+  border-bottom-color: var(--main-blue);
 }
 
-/* Estilos do Botão Google e Divisor */
+/* Botões */
+.btn-primary {
+  background-color: var(--main-blue);
+  color: white;
+  padding: 12px 0;
+  font-weight: 700;
+  font-size: 1.07rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  user-select: none;
+  transition: all 0.2s ease-out;
+}
+
+.btn-primary:hover {
+  background: var(--accent-blue);
+  /* Leve "levantada" no hover */
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 10px rgba(17, 64, 96, 0.2);
+}
+
+.btn-primary:active {
+  /* Efeito de clique */
+  transform: scale(0.98); 
+  background: var(--main-blue);
+}
+
+/* Botão Google */
 .btn-google {
   display: flex;
   align-items: center;
@@ -144,21 +174,27 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
   margin-bottom: 10px;
+  transition: all 0.2s ease-out;
 }
 
 .btn-google:hover {
   background-color: var(--bg-base);
   border-color: #d0d3d6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.btn-google:active {
+  transform: scale(0.98);
 }
 
 .btn-google svg {
   width: 20px;
   height: 20px;
-  margin-bottom: -2px;
 }
 
+/* Divisor "ou" */
 .form-divider {
   text-align: center;
   color: var(--text-secondary);
@@ -168,6 +204,7 @@ body {
   font-weight: 600;
 }
 
+/* Mensagens de Erro/Sucesso */
 .error-msg {
   color: var(--danger);
   font-weight: 600;
@@ -184,9 +221,11 @@ body {
   text-align: center;
 }
 
+/* --- Layout Principal do App --- */
 #app {
   display: flex;
-  min-height: calc(100vh - 70px);
+  /* Altura total menos o header */
+  min-height: calc(100vh - 70px); 
   background: var(--bg-base);
   user-select: none;
 }
@@ -194,13 +233,17 @@ body {
 /* Sidebar */
 .sidebar {
   width: 260px;
-  background: #fff;
+  background: var(--bg-panel);
   border-right: 1px solid var(--border);
-  box-shadow: 2px 0 18px #0001;
+  /* Sombra mais suave que a anterior */
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03); 
   display: flex;
   flex-direction: column;
   padding: 28px 20px 15px 17px;
-  min-height: 500px;
+  /* Altura total menos o header, e fixa */
+  height: calc(100vh - 70px);
+  position: sticky;
+  top: 70px; 
 }
 
 .sidebar-header {
@@ -243,6 +286,7 @@ body {
   margin-top: 2px;
 }
 
+/* Navegação da Sidebar */
 .sidebar-nav a {
   text-decoration: none;
   color: var(--main-blue);
@@ -254,7 +298,7 @@ body {
   font-size: 1rem;
   margin-bottom: 10px;
   gap: 12px;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease-out; /* Adiciona transição */
   cursor: pointer;
 }
 
@@ -262,6 +306,7 @@ body {
 .sidebar-nav a:hover {
   background: #eaf4fb;
   color: var(--accent-blue);
+  transform: translateX(4px); /* Leve movimento */
 }
 
 .sidebar-nav svg {
@@ -270,7 +315,7 @@ body {
   stroke: currentColor;
 }
 
-/* Main Content */
+/* Conteúdo Principal */
 .main-content {
   flex: 1;
   background: var(--bg-base);
@@ -292,35 +337,23 @@ body {
   font-weight: 700;
 }
 
-/* Table */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
+/* Cards */
+.dp-card {
+  background: var(--bg-panel);
   border-radius: var(--radius);
-  box-shadow: 0 2px 24px #0001;
-  font-size: 0.99rem;
-  margin-top: 16px;
-  overflow: hidden;
+  box-shadow: var(--shadow);
+  padding: 22px 18px;
+  margin-bottom: 22px;
 }
 
-.table th,
-.table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #eef2f2;
-  color: var(--main-blue);
-}
-
-.table th {
-  background: #ebf2fa;
+.dp-card-title {
   font-weight: 700;
+  font-size: 1.18rem;
+  color: var(--accent-blue);
+  margin-bottom: 10px;
 }
 
-.table tr:hover {
-  background: #f8fbff;
-}
-
-/* Buttons */
+/* Botões Genéricos (dentro do app) */
 .btn,
 .btn-primary,
 .btn-danger {
@@ -332,6 +365,7 @@ body {
   border: none;
   margin: 3px;
   user-select: none;
+  transition: all 0.2s ease-out;
 }
 
 .btn {
@@ -352,26 +386,47 @@ body {
 .btn:hover,
 .btn-primary:hover,
 .btn-danger:hover {
-  filter: brightness(94%);
+  filter: brightness(110%); /* Clareia um pouco */
+  transform: translateY(-2px);
 }
 
-/* Cards */
-.dp-card {
-  background: #fff;
+.btn:active,
+.btn-primary:active,
+.btn-danger:active {
+  transform: scale(0.98);
+  filter: brightness(100%);
+}
+
+
+/* --- Outros componentes (Tabelas, Badges, Modal) --- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-panel);
   border-radius: var(--radius);
-  box-shadow: 0 2px 20px #11508010;
-  padding: 22px 18px;
-  margin-bottom: 22px;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.03);
+  font-size: 0.99rem;
+  margin-top: 16px;
+  overflow: hidden; /* Garante cantos arredondados */
 }
 
-.dp-card-title {
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef2f2;
+  color: var(--main-blue);
+  text-align: left;
+}
+
+.table th {
+  background: #f9fafb; /* Mais suave */
   font-weight: 700;
-  font-size: 1.18rem;
-  color: var(--accent-blue);
-  margin-bottom: 10px;
 }
 
-/* Badge */
+.table tr:hover {
+  background: #f8fbff;
+}
+
 .dp-badge {
   display: inline-block;
   padding: 2px 6px;
@@ -381,18 +436,9 @@ body {
   color: #fff;
   margin-right: 5px;
 }
-
-.dp-badge.aluno {
-  background: #3487d4;
-}
-
-.dp-badge.prof {
-  background: #e29d00;
-}
-
-.dp-badge.turma {
-  background: #5fb878;
-}
+.dp-badge.aluno { background: #3487d4; }
+.dp-badge.prof { background: #e29d00; }
+.dp-badge.turma { background: #5fb878; }
 
 .dp-code-badge {
   background: #f3f7fa;
@@ -404,7 +450,6 @@ body {
   font-weight: 700;
 }
 
-/* Modal */
 #nexus-modal-bg {
   position: fixed;
   top: 0;
@@ -419,44 +464,43 @@ body {
 }
 
 .nexus-modal {
-  background: #fff;
+  background: var(--bg-panel);
   padding: 30px 24px;
   min-width: 320px;
   max-width: 95vw;
   border-radius: 13px;
-  box-shadow: 0 8px 34px #0002;
+  box-shadow: 0 8px 34px rgba(0,0,0,0.1);
 }
+.nexus-modal form { display: flex; flex-direction: column; gap: 14px; }
+.nexus-modal .btn-group { display: flex; gap: 10px; justify-content: flex-end; }
 
-.nexus-modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.nexus-modal .btn-group {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-/* Responsive */
+/* --- Responsivo --- */
 @media (max-width: 900px) {
   .sidebar {
     width: 180px;
-    padding: 12px 2px;
+    padding: 12px 8px;
+  }
+  .sidebar-header, .sidebar-info {
+    font-size: 1rem;
   }
   .main-content {
-    padding: 17px 6px;
+    padding: 17px 15px;
   }
 }
+
 @media (max-width: 600px) {
   #app {
     flex-direction: column;
   }
+  /* Esconde a sidebar e header fixo em mobile */
   .sidebar, .sidebar-header, .sidebar-profile {
-    display: none !important;
+    display: none !important; 
+  }
+  /* Remove a altura fixa do header */
+  .dp-header {
+    position: static; 
   }
   .main-content {
-    padding: 9px 2vw;
+    padding: 15px 10px;
   }
 }

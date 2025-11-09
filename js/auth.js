@@ -1,99 +1,105 @@
 // js/auth.js
-import { doGoogleLogin } from './firebase.js';
+import { 
+  auth, db, GoogleAuthProvider, signInWithPopup, 
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+  signOut, onAuthStateChanged, doc, getDoc, setDoc 
+} from './firebase.js';
 import * as store from './store.js';
 
+let currentUser = null;
+
 /**
- * Pega a sessão do usuário no sessionStorage
+ * Verifica o estado da autenticação (o novo "getSession")
+ * Isso é o "porteiro" principal do app.
  */
-export function getSession() {
-  const s = sessionStorage.getItem('NEXUS_SESSION');
-  return s ? JSON.parse(s) : null;
+export function onAuthCheck(callback) {
+  return onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // Usuário está logado no Firebase
+      // Agora, buscamos o perfil dele no Firestore
+      let profile = await store.getUserProfile(user.uid);
+      
+      if (!profile) {
+        // Raro, mas pode acontecer se o login foi pelo Google
+        // e o cadastro não foi completado. Vamos criar um perfil básico.
+        profile = await store.createUserProfile(user.uid, user.displayName, user.email);
+      }
+      currentUser = profile;
+      callback(currentUser);
+    } else {
+      // Usuário não está logado
+      currentUser = null;
+      callback(null);
+    }
+  });
 }
 
 /**
- * Salva a sessão do usuário
+ * Login com Email e Senha
  */
-function setSession(user) {
-  sessionStorage.setItem('NEXUS_SESSION', JSON.stringify(user));
+export async function login(email, password) {
+  await signInWithEmailAndPassword(auth, email, password);
+  // O onAuthCheck vai cuidar do resto
 }
 
 /**
- * Tenta logar um usuário com email e senha
- */
-export function login(email, password) {
-  const user = store.findUserByEmail(email);
-  if (user && user.password === password) {
-    setSession(user);
-    return user;
-  }
-  return null; // Falha no login
-}
-
-/**
- * Faz o logout
+ * Logout
  */
 export function logout() {
-  sessionStorage.removeItem('NEXUS_SESSION');
-  location.href = 'login.html';
+  signOut(auth);
 }
 
 /**
- * Tenta cadastrar um novo usuário
+ * Cadastro com Email e Senha
  */
-export function register(name, email, password, code) {
-  if (store.findUserByEmail(email)) {
-    throw new Error('Email já cadastrado.');
-  }
-  
-  const turma = store.findTurmaByCode(code);
+export async function register(name, email, password, code) {
+  // 1. Verifica se a turma existe
+  const turma = await store.findTurmaByCode(code);
   if (!turma) {
     throw new Error('Código da turma inválido.');
   }
 
-  // Registra o usuário no nosso 'store'
-  store.registerNewUser({ name, email, password }, turma);
+  // 2. Cria o usuário no Firebase Auth
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
+
+  // 3. Cria o perfil do usuário no Firestore
+  await store.createUserProfile(user.uid, name, email, 'aluno');
+
+  // 4. Adiciona o usuário na turma
+  await store.addUserToTurma(turma.id, user.uid);
+  
+  // Login é feito automaticamente após o cadastro
 }
 
 /**
- * Lida com o Login do Google
+ * Login com Google
  */
 export async function loginWithGoogle() {
-  try {
-    const result = await doGoogleLogin();
-    const fbUser = result.user;
-    
-    // 1. Usuário já existe no nosso sistema?
-    let localUser = store.findUserByEmail(fbUser.email);
-    
-    if (localUser) {
-      // Já existe, apenas loga
-      setSession(localUser);
-      location.href = 'index.html';
-      return;
-    }
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  const user = result.user;
 
-    // 2. É um usuário novo. Precisamos pedir o código da turma.
-    const code = prompt(`Bem-vindo, ${fbUser.displayName}!\nÉ seu primeiro acesso.\n\nPor favor, insira o CÓDIGO DA TURMA:`);
-    if (!code) throw new Error('Cadastro cancelado.');
-
-    const turma = store.findTurmaByCode(code.trim());
-    if (!turma) {
-      throw new Error('Código da turma inválido. Tente novamente.');
-    }
-
-    // 3. Código válido! Criamos o usuário no nosso sistema.
-    const newUser = store.registerNewUser({
-      name: fbUser.displayName,
-      email: fbUser.email,
-      password: null // Veio do Google, não tem senha local
-    }, turma);
-    
-    setSession(newUser);
-    location.href = 'index.html';
-
-  } catch (error) {
-    console.error("Erro no Login Google:", error);
-    // Retorna a mensagem de erro para ser exibida
-    return error.message;
+  // Verifica se o perfil já existe
+  const profile = await store.getUserProfile(user.uid);
+  
+  if (profile) {
+    // Perfil já existe, usuário está logado
+    return null; // Sucesso
   }
+
+  // É um usuário novo. Precisamos pedir o código da turma.
+  const code = prompt(`Bem-vindo, ${user.displayName}!\nÉ seu primeiro acesso.\n\nPor favor, insira o CÓDIGO DA TURMA:`);
+  if (!code) throw new Error('Cadastro cancelado.');
+
+  const turma = await store.findTurmaByCode(code.trim());
+  if (!turma) {
+    throw new Error('Código da turma inválido. Tente novamente.');
+  }
+
+  // Cria o perfil e adiciona na turma
+  await store.createUserProfile(user.uid, user.displayName, user.email, 'aluno');
+  await store.addUserToTurma(turma.id, user.uid);
+  
+  return null; // Sucesso
 }

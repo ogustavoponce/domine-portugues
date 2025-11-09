@@ -1,71 +1,53 @@
 // js/router.js
 
-// Variáveis para guardar nossas dependências
 let render, store, user;
 
-/**
- * Inicializa o roteador
- */
 export function init(renderModule, storeModule, userSession) {
   render = renderModule;
   store = storeModule;
   user = userSession;
 
-  // Adiciona os listeners para os links da sidebar
   document.querySelectorAll('.sidebar-nav a').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const hash = new URL(e.currentTarget.href).hash;
-      location.hash = hash; // Muda o hash na URL
+      location.hash = hash;
     });
   });
 
-  // Ouve mudanças no hash (navegação)
   window.addEventListener('hashchange', route);
-  
-  // Carrega a rota atual (ou a padrão)
-  route();
+  route(); // Carrega a rota inicial
 }
 
 /**
  * A função principal de roteamento
- * É chamada toda vez que o hash muda
+ * Agora é ASYNC para esperar o banco de dados
  */
-function route() {
-  const hash = location.hash || '#turmas'; // Padrão é #turmas
-  
-  // Atualiza qual link está ativo na sidebar
+async function route() {
+  const hash = location.hash || '#turmas';
   render.updateActiveLink(hash);
 
-  // Decide qual função de renderização chamar
+  // Agora usamos 'await' para buscar os dados
   switch (hash) {
     case '#turmas':
-      let turmasVisiveis;
-      if (user.role === 'professor') {
-        turmasVisiveis = store.getTurmas().filter(t => t.professorId === user.id);
-      } else {
-        turmasVisiveis = store.getTurmas().filter(t => t.alunos.includes(user.id));
-      }
+      const turmasVisiveis = await store.getTurmasForUser(user);
       render.renderTurmas(turmasVisiveis);
       break;
 
     case '#apostilas':
-      let turmasApostilas;
-      if (user.role === 'professor') {
-        turmasApostilas = store.getTurmas().filter(t => t.professorId === user.id);
-      } else {
-        turmasApostilas = store.getTurmas().filter(t => t.alunos.includes(user.id));
-      }
+      const turmasApostilas = await store.getTurmasForUser(user);
       render.renderApostilas(turmasApostilas);
       break;
 
     case '#avaliacoes':
+      // O render.js vai precisar ser atualizado para
+      // buscar os dados de avaliação
       render.renderAvaliacoes(user, store);
       break;
     
     case '#admin':
       if (user.role === 'professor') {
-        const turmasProfessor = store.getTurmas().filter(t => t.professorId === user.id);
+        const turmasProfessor = await store.getTurmasForUser(user);
         render.renderAdmin(turmasProfessor);
       } else {
         render.renderAccessDenied();

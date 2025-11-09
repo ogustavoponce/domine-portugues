@@ -1,20 +1,13 @@
 // js/main.js
 import * as auth from './auth.js';
 import * as store from './store.js';
-// (Vamos importar o router e render depois, no index)
 
 // Roda o código quando o HTML carregar
 document.addEventListener('DOMContentLoaded', () => {
-  
-  // Primeiro de tudo, carrega os dados
-  store.loadData();
-
   // Verifica em qual página estamos
   if (document.body.id === 'page-login') {
-    // Estamos no LOGIN.HTML
     initLoginPage();
   } else if (document.body.id === 'page-app') {
-    // Estamos no INDEX.HTML
     initAppPage();
   }
 });
@@ -23,7 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
  * Roda toda a lógica da PÁGINA DE LOGIN
  */
 function initLoginPage() {
-  console.log('Estou na página de login');
+  // Redireciona se o usuário já estiver logado
+  auth.onAuthCheck(user => {
+    if (user) {
+      location.href = 'index.html';
+    }
+  });
+
   const tabLogin = document.getElementById('tab-login');
   const tabRegister = document.getElementById('tab-register');
   const loginForm = document.getElementById('loginForm');
@@ -34,7 +33,7 @@ function initLoginPage() {
   const errRegister = document.getElementById('registerError');
   const succRegister = document.getElementById('registerSuccess');
 
-  // Lógica das abas
+  // Lógica das abas (não muda)
   tabLogin.onclick = () => {
     tabLogin.classList.add('tab-active');
     tabRegister.classList.remove('tab-active');
@@ -48,23 +47,23 @@ function initLoginPage() {
     loginForm.classList.add('hidden');
   };
 
-  // Listener do formulário de LOGIN
-  loginForm.onsubmit = (e) => {
+  // Listener do formulário de LOGIN (agora é async)
+  loginForm.onsubmit = async (e) => {
     e.preventDefault();
     errLogin.textContent = '';
     const email = loginForm.emailLogin.value.trim();
     const pwd = loginForm.passwordLogin.value.trim();
     
-    const user = auth.login(email, pwd);
-    if (user) {
-      location.href = 'index.html';
-    } else {
+    try {
+      await auth.login(email, pwd);
+      // O onAuthCheck vai redirecionar
+    } catch (error) {
       errLogin.textContent = 'Usuário ou senha incorretos.';
     }
   };
 
-  // Listener do formulário de REGISTRO
-  registerForm.onsubmit = (e) => {
+  // Listener do formulário de REGISTRO (agora é async)
+  registerForm.onsubmit = async (e) => {
     e.preventDefault();
     errRegister.textContent = '';
     succRegister.textContent = '';
@@ -75,30 +74,24 @@ function initLoginPage() {
     const code = registerForm.codeTurma.value.trim();
 
     try {
-      auth.register(name, email, pwd, code);
-      succRegister.textContent = 'Cadastro realizado! Faça login.';
-      registerForm.reset();
-      tabLogin.click(); // Volta pra aba de login
+      await auth.register(name, email, pwd, code);
+      // O onAuthCheck vai redirecionar
     } catch (error) {
       errRegister.textContent = error.message;
     }
   };
   
-  // Listener do botão GOOGLE
+  // Listener do botão GOOGLE (agora é async)
   googleLoginBtn.onclick = async () => {
     errLogin.textContent = '';
     try {
-      const errorMessage = await auth.loginWithGoogle();
-      if (errorMessage) {
-        // Se a função retornar uma mensagem de erro, exiba-a
-        errLogin.textContent = errorMessage;
-      }
+      await auth.loginWithGoogle();
+      // O onAuthCheck vai redirecionar
     } catch (error) {
-      errLogin.textContent = 'Erro ao tentar logar com Google.';
+      errLogin.textContent = error.message;
     }
   };
 
-  // Inicia na aba de login
   tabLogin.click();
 }
 
@@ -107,31 +100,35 @@ function initLoginPage() {
  * Roda toda a lógica da PÁGINA PRINCIPAL (APP)
  */
 function initAppPage() {
-  console.log('Estou na página principal (app)');
-  
-  // Verifica se o usuário está logado. Se não, chuta ele pro login.
-  const user = auth.getSession();
-  if (!user) {
-    location.href = 'login.html';
-    return;
-  }
+  // O "porteiro"
+  auth.onAuthCheck(user => {
+    if (!user) {
+      // Não está logado, chuta pro login
+      location.href = 'login.html';
+      return;
+    }
 
-  // Se chegou aqui, o usuário está logado.
-  // Agora vamos importar o resto do código que o app precisa.
-  import('./render.js').then((render) => {
-    import('./router.js').then((router) => {
-      
-      // 1. Desenha a "casca" do app (sidebar, etc)
-      render.renderAppShell(user);
-      
-      // 2. Inicializa o roteador (que vai cuidar das "páginas")
-      router.init(render, store, user);
-      
-      // 3. Configura o botão de logout
-      document.getElementById('btnLogout').onclick = () => {
-        auth.logout();
-      };
-      
+    // Está logado! Renderiza o app
+    // Usamos imports dinâmicos para não carregar
+    // esse código na tela de login
+    import('./render.js').then((render) => {
+      import('./router.js').then((router) => {
+        
+        // 1. Desenha a "casca" do app
+        render.renderAppShell(user);
+        
+        // 2. Inicializa o roteador
+        router.init(render, store, user);
+        
+        // 3. Configura o botão de logout
+        // (Buscamos pelo ID que o render.js criou)
+        document.body.addEventListener('click', (e) => {
+          if (e.target.id === 'btnLogout') {
+            auth.logout();
+          }
+        });
+        
+      });
     });
   });
 }

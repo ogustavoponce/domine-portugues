@@ -1,62 +1,79 @@
 // js/store.js
-
-// 'data' vai guardar nossos dados em memória
-let data = {};
+import { db, doc, getDoc, setDoc, collection, getDocs, where, query, updateDoc, arrayUnion } from './firebase.js';
 
 /**
- * Carrega os dados. Pega do localStorage ou, se não existir,
- * usa os dados iniciais do 'database.js' (window.NEXUS_DB_SEED)
+ * Busca o perfil de um usuário no Firestore
  */
-export function loadData() {
-  const localData = localStorage.getItem('NEXUS_DATA');
-  if (localData) {
-    data = JSON.parse(localData);
+export async function getUserProfile(uid) {
+  const userRef = doc(db, 'users', uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return userSnap.data();
   } else {
-    data = window.NEXUS_DB_SEED; // Pega os dados iniciais
-    saveData(); // Salva no localStorage pela primeira vez
+    // Usuário logou (ex: Google) mas não tem perfil salvo
+    return null;
   }
-  console.log('Dados carregados:', data);
 }
 
 /**
- * Salva os dados atuais no localStorage
+ * Cria o perfil de um usuário no Firestore
  */
-export function saveData() {
-  localStorage.setItem('NEXUS_DATA', JSON.stringify(data));
+export async function createUserProfile(uid, name, email, role = 'aluno') {
+  const userRef = doc(db, 'users', uid);
+  await setDoc(userRef, {
+    uid: uid,
+    name: name,
+    email: email,
+    role: role
+  });
+  return { uid, name, email, role };
 }
 
 /**
- * Funções para pegar dados (fácil de usar)
+ * Encontra uma turma pelo código
  */
-export const getUsers = () => data.users;
-export const getTurmas = () => data.turmas;
-export const getAlunos = () => data.alunos;
+export async function findTurmaByCode(code) {
+  const turmasRef = collection(db, 'turmas');
+  const q = query(turmasRef, where('code', '==', code));
+  
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) {
+    return null; // Nenhuma turma encontrada
+  }
+  // Retorna o primeiro documento encontrado e seu ID
+  const doc = querySnapshot.docs[0];
+  return { id: doc.id, ...doc.data() };
+}
 
 /**
- * Funções para modificar os dados (exemplo)
+ * Adiciona um aluno a uma turma
  */
-export function findUserByEmail(email) {
-  return data.users.find(u => u.email === email);
+export async function addUserToTurma(turmaId, uid) {
+  const turmaRef = doc(db, 'turmas', turmaId);
+  await updateDoc(turmaRef, {
+    alunos: arrayUnion(uid) // Adiciona o UID ao array 'alunos'
+  });
 }
 
-export function findTurmaByCode(code) {
-  return data.turmas.find(t => t.code === code);
-}
+/**
+ * Busca todas as turmas de um usuário
+ */
+export async function getTurmasForUser(user) {
+  const turmasRef = collection(db, 'turmas');
+  let q;
+  
+  if (user.role === 'professor') {
+    // Busca turmas onde o professorId é o UID do usuário
+    q = query(turmasRef, where('professorId', '==', user.uid));
+  } else {
+    // Busca turmas onde o array 'alunos' contém o UID do usuário
+    q = query(turmasRef, where('alunos', 'array-contains', user.uid));
+  }
 
-export function registerNewUser(userData, turma) {
-  const id = 'u' + Date.now();
-  const newUser = {
-    id: id,
-    email: userData.email,
-    password: userData.password, // Pode ser 'null' se for do Google
-    name: userData.name,
-    role: 'aluno'
-  };
-
-  data.users.push(newUser);
-  data.alunos.push({ id, name: newUser.name, email: newUser.email });
-  turma.alunos.push(id);
-
-  saveData();
-  return newUser;
+  const querySnapshot = await getDocs(q);
+  const turmas = [];
+  querySnapshot.forEach(doc => {
+    turmas.push({ id: doc.id, ...doc.data() });
+  });
+  return turmas;
 }
