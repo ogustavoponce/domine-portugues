@@ -1,41 +1,55 @@
 /* --- 
-  GOOGLE CLASSROOM "PLUS" THEME
+  STRATEGIC DARK MODE THEME (v1)
   por Gemini
 --- */
 
 :root {
-  --main-blue: #114060;
-  --accent-blue: #205d9a;
-  --light-blue-bg: #eaf4fb; /* Um azul bem claro para 'hover' */
-  --bg-base: #f7f9fc; /* Fundo principal (quase branco) */
-  --bg-panel: #ffffff; /* Fundo dos cards e sidebar */
-  --text-primary: #1f1f1f;
-  --text-secondary: #44474a;
-  --success: #1e8e3e;
-  --danger: #d93025;
-  --border: #dadce0;
-  --radius: 12px; /* Cantos mais arredondados */
-  --shadow: 0 1px 2px 0 rgba(0,0,0,0.1), 0 2px 6px 2px rgba(0,0,0,0.05);
+  /* Paleta de Cores Estratégica */
+  --bg-base: #0a0f18; /* Azul-marinho quase preto (fundo) */
+  --bg-panel: #121824; /* Azul-marinho (painéis, cards, sidebar) */
+  --border: rgba(255, 255, 255, 0.1); /* Borda sutil */
+  --text-primary: #f0f4f8; /* Branco suave */
+  --text-secondary: #a0aec0; /* Cinza claro */
+  
+  /* Cor de Destaque (Accent) */
+  --accent: #38bdf8; /* Azul Elétrico (Tailwind Sky 400) */
+  --accent-hover: #0ea5e9;
+  --accent-text: #0a0f18; /* Texto escuro para botões com fundo accent */
+
+  /* Cores de Feedback */
+  --success: #10b981;
+  --danger: #f43f5e;
+
+  /* Métricas de UI */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-full: 99px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- Reset e Base --- */
+/* --- Base e Reset --- */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
-  background: var(--bg-base);
+  background-color: var(--bg-base);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Header --- */
+/* --- Header "Glassmorphism" --- */
 .dp-header {
-  background: var(--bg-panel);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  /* Efeito de vidro */
+  background: rgba(18, 24, 36, 0.8); /* --bg-panel com transparência */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  border-bottom: 1px solid var(--border);
   display: flex;
   height: 70px;
   align-items: center;
@@ -44,7 +58,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid var(--border);
 }
 
 .dp-logo {
@@ -61,17 +74,16 @@ body {
 
 .login-form {
   background: var(--bg-panel);
-  box-shadow: var(--shadow);
-  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Mais espaçamento */
+  gap: 16px;
+  box-shadow: var(--shadow);
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 .login-title {
   color: var(--text-primary);
@@ -81,33 +93,33 @@ body {
   text-align: center;
 }
 
-/* Campos de Formulário (Estilo Google "Outlined") */
+/* Campos de Formulário "Glow" */
 .login-form label {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--text-secondary);
-  margin-bottom: -8px; /* Puxa para mais perto do input */
+  margin-bottom: -8px;
 }
 
 .login-form input {
   padding: 14px 16px;
-  border-radius: 8px; /* Cantos mais suaves */
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-size: 1rem;
   color: var(--text-primary);
-  background: var(--bg-base);
-  transition: all 0.2s ease-out;
+  background: var(--bg-base); /* Mais escuro que o painel */
+  transition: var(--transition);
 }
 
 .login-form input:focus {
   outline: none;
-  border-color: var(--accent-blue);
   background: var(--bg-panel);
-  /* Anel de foco no estilo Google */
-  box-shadow: 0 0 0 2px var(--accent-blue); 
+  border-color: var(--accent);
+  /* "Glow" Estratégico */
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
 }
 
-/* Abas de Login/Cadastro */
+/* Abas de Login */
 .tab-buttons {
   display: flex;
   justify-content: center;
@@ -126,38 +138,38 @@ body {
   padding: 0 12px 12px 12px;
   border-bottom: 3px solid transparent;
   user-select: none;
-  transition: all 0.2s ease-out;
+  transition: var(--transition);
 }
 
 .tab-buttons button:hover {
-  color: var(--main-blue);
+  color: var(--text-primary);
 }
 
 .tab-buttons .tab-active {
-  color: var(--main-blue);
-  border-bottom-color: var(--main-blue);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
   font-weight: 700;
 }
 
-/* --- Botões --- */
+/* --- Botões de Ação --- */
 .btn-primary {
-  background-color: var(--main-blue);
-  color: white;
+  background: var(--accent);
+  color: var(--accent-text);
   padding: 12px 24px;
   font-weight: 700;
   font-size: 1rem;
-  border-radius: 99px; /* Botão "Pill" (pílula) */
+  border-radius: var(--radius-full);
   border: none;
   cursor: pointer;
   margin-top: 10px;
   user-select: none;
-  transition: all 0.2s ease-out;
+  transition: var(--transition);
 }
 
 .btn-primary:hover {
-  background: var(--accent-blue);
-  box-shadow: 0 2px 8px rgba(32, 93, 154, 0.3);
+  background: var(--accent-hover);
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
 }
 
 .btn-primary:active {
@@ -165,7 +177,7 @@ body {
   box-shadow: none;
 }
 
-/* Botão Google (Estilo Google) */
+/* Botão Google (Dark Mode) */
 .btn-google {
   display: flex;
   align-items: center;
@@ -174,31 +186,27 @@ body {
   width: 100%;
   padding: 10px 16px;
   background-color: var(--bg-panel);
-  color: #444; /* Cor de texto padrão do Google */
+  color: var(--text-primary);
   border: 1px solid var(--border);
-  border-radius: 99px; /* Pílula */
+  border-radius: var(--radius-full);
   font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 10px;
-  transition: all 0.2s ease-out;
+  transition: var(--transition);
 }
 
 .btn-google:hover {
   background-color: var(--bg-base);
-  border-color: #c0c0c0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border-color: var(--text-secondary);
 }
 
 .btn-google:active {
   transform: scale(0.98);
 }
 
-.btn-google svg {
-  width: 20px;
-  height: 20px;
-}
+.btn-google svg { width: 20px; height: 20px; }
 
 .form-divider {
   text-align: center;
@@ -209,22 +217,22 @@ body {
   font-weight: 600;
 }
 
-/* Mensagens de Erro/Sucesso */
+/* Mensagens de Feedback */
 .error-msg, .success-msg {
   font-weight: 600;
   font-size: 0.95rem;
   min-height: 16px;
   text-align: center;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 .error-msg {
   color: var(--danger);
-  background-color: rgba(217, 48, 37, 0.05);
+  background-color: rgba(244, 63, 94, 0.1);
 }
 .success-msg {
   color: var(--success);
-  background-color: rgba(30, 142, 62, 0.05);
+  background-color: rgba(16, 185, 129, 0.1);
 }
 
 /* --- Layout Principal do App --- */
@@ -235,10 +243,15 @@ body {
   user-select: none;
 }
 
-/* --- Sidebar (Estilo Google) --- */
+/* --- Sidebar "Glassmorphism" --- */
 .sidebar {
-  width: 280px; /* Mais largo */
-  background: var(--bg-panel);
+  width: 260px; /* Um pouco mais estreita */
+  
+  /* Efeito de vidro */
+  background: rgba(18, 24, 36, 0.8); /* --bg-panel com transparência */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -250,7 +263,7 @@ body {
 
 .sidebar-header {
   font-weight: 700;
-  color: var(--main-blue);
+  color: var(--text-primary);
   font-size: 1.3rem;
   margin-bottom: 24px;
   padding: 0 12px;
@@ -262,7 +275,7 @@ body {
   gap: 12px;
   margin-bottom: 24px;
   padding: 8px 12px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 
 .sidebar-avatar {
@@ -270,8 +283,8 @@ body {
   height: 42px;
   font-weight: 700;
   font-size: 1.1rem;
-  color: var(--accent-blue);
-  background: var(--light-blue-bg);
+  color: var(--accent);
+  background: rgba(56, 189, 248, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -290,30 +303,30 @@ body {
   margin-top: 2px;
 }
 
-/* Navegação da Sidebar (Estilo Material 3) */
+/* Navegação da Sidebar (Elegante) */
 .sidebar-nav a {
   text-decoration: none;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-radius: 99px; /* Pílula */
+  border-radius: var(--radius-full);
   font-weight: 600;
   font-size: 0.95rem;
-  margin-bottom: 8px;
+  margin: 0 8px 8px 8px;
   gap: 12px;
-  transition: all 0.2s ease-out;
+  transition: var(--transition);
   cursor: pointer;
 }
 
 .sidebar-nav a:hover {
-  background: var(--light-blue-bg);
-  color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }
 
 .sidebar-nav a.active {
-  background: var(--accent-blue);
-  color: white;
+  background: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
 }
 
@@ -326,48 +339,47 @@ body {
 /* --- Conteúdo Principal --- */
 .main-content {
   flex: 1;
-  background: var(--bg-base);
   padding: 32px 40px;
   overflow-y: auto;
 }
 
 .main-header {
-  font-size: 1.75rem; /* Maior */
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 24px;
 }
 
-/* Cards (Estilo Classroom) */
+/* Cards (Efeito de Borda Estratégico) */
 .dp-card {
   background: var(--bg-panel);
-  border-radius: var(--radius);
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: none; /* Sem sombra, estilo flat */
-  transition: all 0.2s ease-out;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: var(--transition);
 }
 
 .dp-card:hover {
-  /* "Levanta" o card no hover */
-  border-color: var(--bg-panel);
-  box-shadow: var(--shadow); 
+  /* Destaque estratégico no hover */
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
 }
 
 .dp-card-title {
   font-weight: 600;
   font-size: 1.25rem;
-  color: var(--main-blue);
+  color: var(--accent); /* Título em destaque */
   margin-bottom: 12px;
 }
 
-/* --- Componentes (Tabelas, Badges, Modais) --- */
+/* --- Componentes --- */
 .table {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-panel);
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   font-size: 0.95rem;
   margin-top: 16px;
@@ -389,7 +401,7 @@ body {
 }
 
 .table tr:hover {
-  background: var(--light-blue-bg);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* Botões dentro do App */
@@ -397,32 +409,32 @@ body {
 .btn-primary,
 .btn-danger {
   padding: 8px 16px;
-  border-radius: 99px;
+  border-radius: var(--radius-full);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
   margin: 3px;
   user-select: none;
-  transition: all 0.2s ease-out;
+  transition: var(--transition);
 }
 
 .btn {
-  background: var(--light-blue-bg);
-  color: var(--accent-blue);
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent);
 }
 .btn:hover {
-  background: rgba(32, 93, 154, 0.2);
+  background: rgba(56, 189, 248, 0.2);
 }
 
 /* (btn-primary já definido) */
 
 .btn-danger {
-  background: var(--danger);
-  color: #fff;
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--danger);
 }
 .btn-danger:hover {
-  filter: brightness(110%);
+  background: rgba(244, 63, 94, 0.2);
 }
 
 .dp-badge {
@@ -456,7 +468,9 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.3); /* Mais escuro */
+  background: rgba(0, 0, 0, 0.5); /* Mais escuro */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -468,8 +482,9 @@ body {
   padding: 30px 24px;
   min-width: 400px;
   max-width: 95vw;
-  border-radius: var(--radius);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 .nexus-modal form { display: flex; flex-direction: column; gap: 14px; }
 .nexus-modal .btn-group { display: flex; gap: 10px; justify-content: flex-end; }
@@ -480,39 +495,19 @@ body {
     width: 220px;
     padding: 16px 8px;
   }
-  .sidebar-header {
-    font-size: 1.1rem;
-  }
-  .sidebar-profile {
-    padding: 4px;
-    gap: 8px;
-  }
-  .sidebar-info {
-    font-size: 0.9rem;
-  }
-  .sidebar-nav a {
-    font-size: 0.9rem;
-    padding: 10px 12px;
-  }
-  .main-content {
-    padding: 24px 15px;
-  }
+  .sidebar-header { font-size: 1.1rem; }
+  .sidebar-profile { padding: 4px; gap: 8px; }
+  .sidebar-info { font-size: 0.9rem; }
+  .sidebar-nav a { font-size: 0.9rem; padding: 10px 12px; }
+  .main-content { padding: 24px 15px; }
 }
 
 @media (max-width: 600px) {
-  #app {
-    flex-direction: column;
-  }
+  #app { flex-direction: column; }
   .sidebar, .sidebar-header, .sidebar-profile {
     display: none !important; 
   }
-  .dp-header {
-    position: static; 
-  }
-  .main-content {
-    padding: 20px 15px;
-  }
-  .main-header {
-    font-size: 1.5rem;
-  }
+  .dp-header { position: static; }
+  .main-content { padding: 20px 15px; }
+  .main-header { font-size: 1.5rem; }
 }
