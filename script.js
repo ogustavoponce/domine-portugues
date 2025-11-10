@@ -523,7 +523,7 @@ _         <option ${entrega.avaliacao.interpretacao?.conceito === 'C' ? 'sel
         const novo ={
           id: turma?.id||'t'+Date.now(),
           name: form[0].value.trim(),
-      _   curso: form[1].value.trim(),
+         curso: form[1].value.trim(),
           code: form[2].value.trim(),
           professorId: 'u1',
           alunos: turma?.alunos||[],

@@ -1,546 +1,534 @@
-/*
-* DESIGN SYSTEM - CORE ARCHITECTURE
-* Theme: Modern iOS/macOS Light
-* Author: Senior UI/UX Architect
-*/
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* --- 
+  iOS "26" - GLASS PANEL THEME (v8 - Impeccable & Corrigido)
+--- */
 
 :root {
-    /* --- Palette: iOS Classic --- */
-    --primary: #007aff;         /* Active blue */
-    --primary-hover: #0063cc;
-    --success: #34c759;
-    --danger: #ff3b30;
-    --warning: #ffcc00;
+  /* Paleta de Cores (Light Theme) */
+  --bg-base: #f7f9fc;      /* Fundo da página (Cinza claro) */
+  --bg-panel: #ffffff;    /* Fundo dos cards, sidebar */
+  --border: #e5e7eb;      /* Borda sutil */
+  
+  --text-primary: #1d1d1f;   /* Texto (preto iOS) */
+  --text-secondary: #6b7280; /* Texto (cinza) */
+  
+  /* Cor de Destaque (Accent) */
+  --accent: #007aff; /* Azul Clássico iOS */
+  --accent-hover: #0071e6;
+  --accent-light-bg: #f0f7ff; /* Fundo de hover/ativo */
 
-    /* --- Neutrals & Backgrounds --- */
-    --bg-app: #f7f9fc;          /* Main breathable background */
-    --bg-panel: #ffffff;        /* Pure white panels/cards */
-    --bg-subtle: #f5f5f7;       /* Subtle gray areas/hovers */
+  /* Cores de Feedback */
+  --success: #34c759; /* Verde iOS */
+  --danger: #ff3b30; /* Vermelho iOS */
 
-    /* --- Typography Colors --- */
-    --text-primary: #1d1d1f;    /* Soft nearly-black for best reading on screen */
-    --text-secondary: #6b7280;  /* De-emphasized text */
-    --text-tertiary: #9ca3af;   /* Placeholders, disabled */
-    --text-on-primary: #ffffff;
-
-    /* --- Borders & Dividers --- */
-    --border-light: #e5e7eb;
-    --border-hover: #d1d5db;
-
-    /* --- Metrics --- */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --radius-pill: 999px;
-
-    /* --- Effects --- */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-blur: blur(25px);
-
-    /* --- Font --- */
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Métricas de UI */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px; /* Para o painel de login */
+  --radius-full: 99px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.15);
+  --transition: all 0.2s ease-out;
 }
 
-/* --- Global Resets & Base --- */
+/* --- Base e Reset --- */
 *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
-    font-family: var(--font-sans);
-    background-color: var(--bg-app);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5;
-    font-size: 15px; /* Slightly larger for modern readability */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* SAFETY NET: Prevent huge images/icons from breaking layout */
-img, svg {
-    max-width: 100%;
-    height: auto;
-    display: block; /* Removes weird bottom gaps on inline images */
+/* --- NOVO LOGIN "GLASS PANEL" (Estilo iOS) --- */
+body#page-login {
+  display: flex;
+  flex-direction: column; /* Alinha o footer abaixo */
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+  overflow: hidden; /* Para o painel não vazar */
+  position: relative;
 }
 
-a { text-decoration: none; color: inherit; }
-button, input { font-family: inherit; }
+.login-wallpaper {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  /* Fundo gradiente sutil estilo wallpaper iOS */
+  background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%);
+  /* Efeito de blur no próprio wallpaper */
+  filter: blur(10px);
+  z-index: 1;
+}
 
-/* =========================================
-   SHARED COMPONENTS (Used in both pages)
-   ========================================= */
+.login-glass-panel {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto; /* Centraliza */
+  position: relative;
+  z-index: 2;
+  
+  /* Efeito "Frosted Glass" (MAIS GLASS) */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  padding: 32px 32px 40px 32px;
+}
 
-/* Form Controls - Modern & Clean */
+.login-logo {
+  display: block;
+  height: 50px;
+  width: auto;
+  margin: 0 auto 24px auto;
+  filter: none; /* Logo azul original */
+}
+
+.hidden { display: none; }
+
+/* Grupo de formulário para espaçamento correto */
+.login-form {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Mais "respiro" entre os campos */
+}
+
 .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Espaço entre label e input */
 }
 
-.form-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-primary);
+.login-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
-.form-input {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    background: var(--bg-panel);
-    color: var(--text-primary);
-    transition: all 0.2s ease;
-    outline: none;
+.login-form input {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  color: var(--text-primary);
+  /* Fundo sutilmente transparente */
+  background: rgba(247, 249, 252, 0.8);
+  transition: var(--transition);
 }
 
-.form-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+.login-form input:focus {
+  outline: none;
+  background: var(--bg-light);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
 
-.form-input::placeholder {
-    color: var(--text-tertiary);
+/* Abas (Estilo "Pílula" iOS) */
+.tab-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(229, 231, 235, 0.7);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: 24px;
 }
 
-/* Buttons - iOS Style */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: var(--radius-md); /* Slightly rounded standard buttons */
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    gap: 8px;
+.tab-buttons button {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
 }
 
+.tab-buttons button:hover:not(.tab-active) {
+  color: var(--text-primary);
+}
+
+.tab-buttons .tab-active {
+  background: var(--bg-light);
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* --- Botões de Ação --- */
 .btn-primary {
-    background-color: var(--primary);
-    color: var(--text-on-primary);
+  background: var(--accent);
+  color: #ffffff;
+  padding: 12px 24px;
+  font-weight: 600; /* Peso de fonte iOS */
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  user-select: none;
+  transition: var(--transition);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
 }
 
 .btn-primary:active {
-    transform: translateY(0);
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
-.btn-full {
-    width: 100%;
+/* Botão Google (Corrigido) */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-google:hover {
+  background-color: var(--bg-base);
+  border-color: #b0b0b0;
+}
+.btn-google:active { transform: scale(0.98); }
+.btn-google svg { width: 18px; height: 18px; }
+
+.form-divider {
+  text-align: center;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin: 24px 0; /* Espaçamento corrigido */
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-/* =========================================
-   PAGE 1: LOGIN (#page-login)
-   Premium Glassmorphism Aesthetic
-   ========================================= */
-
-body#page-login {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow-x: hidden;
-}
-
-/* Login Wallpaper - The ambient background */
-#page-login .login-wallpaper {
-    position: fixed;
-    top: -10%;
-    left: -10%;
-    width: 120%;
-    height: 120%;
-    z-index: -1;
-    background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 50%, #eef2f3 100%);
-    filter: blur(60px); /* Increased blur for smoother ambience */
-    opacity: 0.8;
-}
-
-/* Premium Glass Panel */
-#page-login .login-glass-panel {
-    width: 100%;
-    max-width: 440px;
-    padding: 48px 40px;
-    border-radius: var(--radius-xl);
-    
-    /* The "Glass" Magic */
-    background-color: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur); /* Safari support */
-    border: 1px solid var(--glass-border);
-    
-    box-shadow: 
-        0 30px 60px -12px rgba(50, 50, 93, 0.15),
-        0 18px 36px -18px rgba(0, 0, 0, 0.1),
-        inset 0 1px 1px rgba(255,255,255, 0.6); /* Inner light lip */
-    
-    display: flex;
-    flex-direction: column;
-}
-
-#page-login .login-logo {
-    height: 48px;
-    width: auto;
-    margin: 0 auto 32px auto;
-    display: block;
-    object-fit: contain; /* Prevents logo distortion */
-}
-
-#page-login .login-title {
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
-}
-
-#page-login .login-subtitle {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-bottom: 32px;
-    font-size: 0.95rem;
-}
-
-/* iOS Pill Tabs */
-#page-login .tab-buttons {
-    display: flex;
-    background: rgba(118, 118, 128, 0.12); /* iOS standard gray fill */
-    padding: 4px;
-    border-radius: var(--radius-pill);
-    margin-bottom: 32px;
-    position: relative;
-}
-
-#page-login .tab-btn {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    border-radius: var(--radius-pill);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); /* Smooth snappy iOS feel */
-    background: transparent;
-    border: none;
-}
-
-#page-login .tab-btn.active {
-    background: #ffffff;
-    color: var(--text-primary);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
-}
-
-/* Google Button Specifics */
-#page-login .btn-google {
-    background-color: #ffffff;
-    color: var(--text-primary);
-    border: 1px solid var(--border-light);
-    margin-top: 16px;
-    font-weight: 500;
-}
-
-#page-login .btn-google:hover {
-    background-color: var(--bg-subtle);
-    border-color: var(--border-hover);
-}
-
-/* Ensure multicolor Google logo isn't overridden */
-#page-login .btn-google svg, 
-#page-login .btn-google img {
-    height: 20px;
-    width: 20px;
-    margin-right: 12px;
-    flex-shrink: 0; /* Prevents icon squishing */
-}
-
-/* Divider */
-#page-login .divider {
-    display: flex;
-    align-items: center;
-    margin: 24px 0;
-    color: var(--text-tertiary);
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-#page-login .divider::before,
-#page-login .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border-light);
-}
-
-#page-login .divider::before { margin-right: 16px; }
-#page-login .divider::after { margin-left: 16px; }
-
-
-/* =========================================
-   PAGE 2: APP (#page-app)
-   Airy, Productive, Clean Layout
-   ========================================= */
-
+/* --- Layout Principal do App (Light) --- */
 body#page-app {
-    background-color: var(--bg-app);
+  background: var(--bg-base); /* Fundo cinza */
+  color: var(--text-primary);
 }
 
-#page-app #app-root {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
+#app {
+  display: flex;
+  flex-direction: row; /* Sidebar e Conteúdo lado a lado */
+  min-height: 100vh; 
+  user-select: none;
 }
 
-/* --- Sidebar (Fixed & Clean) --- */
-#page-app .sidebar {
-    width: 280px; /* Slightly wider for modern look */
-    flex-shrink: 0;
-    background-color: var(--bg-panel);
-    border-right: 1px solid var(--border-light);
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 24px 16px;
-    z-index: 10;
-    overflow-y: auto; /* Adds scroll if sidebar content is too tall */
+/* --- NOVA SIDEBAR (Light & Fixa) --- */
+.sidebar {
+  width: 260px;
+  background: var(--bg-panel); /* Branca */
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Empurra o footer para baixo */
+  padding: 24px 16px;
+  height: 100vh;
+  position: sticky;
+  top: 0; 
+  flex-shrink: 0;
 }
 
-#page-app .sidebar-header {
-    margin-bottom: 40px;
-    padding: 0 12px;
+.sidebar-logo {
+  display: block;
+  height: 48px;
+  width: auto;
+  margin: 0 auto 32px auto;
+  filter: none; /* Logo azul original */
 }
 
-#page-app .sidebar-logo {
-    height: 40px; /* EXPLICIT HEIGHT FIXED */
-    width: auto;
-    display: block;
-    object-fit: contain;
+.sidebar-nav a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  gap: 12px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.sidebar-nav a svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+.sidebar-nav a:hover {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+.sidebar-nav a.active {
+  background: var(--accent); /* "Pílula" sólida estilo iOS */
+  color: #ffffff; /* Texto branco */
+  font-weight: 700;
 }
 
-#page-app .sidebar-nav {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Tight vertical spacing for nav items */
+/* Perfil do Usuário no Rodapé da Sidebar */
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.sidebar-profile:hover {
+  background: var(--bg-base);
+}
+.sidebar-avatar {
+  width: 40px;
+  height: 40px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ffffff;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+  overflow: hidden;
+}
+.sidebar-info .user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.sidebar-info .user-role {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
-#page-app .nav-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: all 0.15s ease;
-    text-decoration: none;
+.btn-logout {
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-logout:hover {
+  background: #f0f0f0;
+  color: var(--text-primary);
+  border-color: #d0d0d0;
 }
 
-#page-app .nav-item:hover {
-    background-color: var(--bg-subtle);
-    color: var(--text-primary);
+/* --- Conteúdo Principal (Light & Arejado) --- */
+.main-content {
+  flex: 1; /* Ocupa todo o espaço restante */
+  padding: 48px 64px; /* AREJADO */
+  overflow-y: auto;
+  max-width: 1200px; /* Limite de largura (Estilo Notion) */
+  margin: 0 auto; /* Centraliza o conteúdo */
 }
 
-#page-app .nav-item.active {
-    background-color: var(--primary);
-    color: var(--text-on-primary);
+.main-header {
+  font-size: 2rem; /* Maior */
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 32px;
 }
 
-/* FIXED: Explicit size for sidebar icons to prevent huge blowouts */
-#page-app .nav-item svg,
-#page-app .nav-item i,
-#page-app .nav-item img {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    font-size: 20px; /* For icon fonts */
-    opacity: 0.8;
-    flex-shrink: 0; /* CRITICAL: prevents icon from being squashed */
-    display: inline-block;
-    vertical-align: middle;
+/* Cards (Light) */
+.dp-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: none;
+  transition: var(--transition);
+}
+.dp-card:hover {
+  border-color: #d0d0d0;
+  box-shadow: var(--shadow);
+}
+.dp-card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
 }
 
-#page-app .nav-item.active svg,
-#page-app .nav-item.active i,
-#page-app .nav-item.active img {
-    opacity: 1;
+/* --- Rodapé (Login & App) --- */
+.dp-footer {
+  width: 100%;
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  
+  /* Rodapé na pág de login */
+  position: relative;
+  z-index: 2;
+  color: var(--text-secondary); 
 }
 
-#page-app .sidebar-footer {
-    margin-top: auto;
-    padding-top: 24px;
-    border-top: 1px solid var(--border-light);
+/* --- Componentes (Tabelas, Badges, etc) --- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  text-align: left;
+}
+.table th {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.table tr:hover {
+  background: #fcfcfc;
 }
 
-#page-app .user-profile-mini {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
+.btn,
+.btn-primary,
+.btn-danger {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  margin: 3px;
+  user-select: none;
+  transition: var(--transition);
 }
-#page-app .user-profile-mini:hover {
-    background-color: var(--bg-subtle);
+.btn {
+  background: var(--accent-light-bg);
+  color: var(--accent-hover);
 }
+.btn:hover { background: rgba(0, 122, 255, 0.2); }
+.btn-danger {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--danger);
+}
+.btn-danger:hover { background: rgba(255, 59, 48, 0.2); }
 
-/* --- Main Content Area (Airy) --- */
-#page-app .main-content {
-    flex: 1;
-    width: 100%;
-    /* Breathable margins creating the 'airy' feel */
-    padding: 48px 64px; 
-    max-width: 1400px; /* Cap width on huge screens so it doesn't stretch too far */
-    margin: 0 auto;
-    /* overflow-y removed from here, let the body scroll naturally or use a specific wrapper if needed */
-}
-
-/* Header inside main content (optional but common) */
-#page-app .top-bar {
-    margin-bottom: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#page-app .page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: var(--text-primary);
+.dp-code-badge {
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  font-size: 0.9em;
+  font-family: monospace;
+  padding: 3px 8px;
+  border-radius: 7px;
+  font-weight: 600;
 }
 
-/* --- Cards (Productivity Style) --- */
-#page-app .dp-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-}
-
-#page-app .dp-card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    transition: all 0.3s ease;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-#page-app .dp-card:hover {
-    border-color: transparent;
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-4px);
-}
-
-#page-app .dp-card-header {
-    margin-bottom: 16px;
-}
-
-#page-app .dp-card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-
-/* =========================================
-   RESPONSIVE (Mobile & Tablet)
-   ========================================= */
-
+/* --- Responsivo --- */
 @media (max-width: 1024px) {
-    #page-app .main-content {
-        padding: 32px;
-    }
+  .main-content {
+    padding: 32px;
+    max-width: 100%; /* Ocupa tudo em telas menores */
+  }
 }
 
 @media (max-width: 768px) {
-    /* --- Mobile Login --- */
-    #page-login {
-        align-items: flex-start; /* Push to top on mobile */
-        background: var(--bg-panel); /* Fallback to solid white if wallpaper fails or is hidden */
-    }
+  /* Layout de App vira "Mobile" */
+  #app {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+  }
+  .sidebar-logo {
+    height: 36px;
+    margin: 0;
+  }
+  .sidebar-footer, .sidebar-nav {
+    display: none; /* Esconde para um menu hamburger futuro */
+  }
+  .main-content {
+    padding: 24px 16px;
+  }
+  .main-header {
+    font-size: 1.5rem;
+  }
 
-    #page-login .login-wallpaper {
-        display: none; /* Hide complex background on mobile for performance/cleanness */
-    }
-
-    #page-login .login-glass-panel {
-        max-width: 100%;
-        min-height: 100vh; /* Full screen vertical */
-        border-radius: 0;
-        border: none;
-        background: var(--bg-panel); /* Solid background, remove glass effect on small screens for readability */
-        backdrop-filter: none;
-        box-shadow: none;
-        padding: 32px 24px;
-        justify-content: center; /* Center content vertically on mobile */
-    }
-
-    /* --- Mobile App --- */
-    #page-app #app-root {
-        flex-direction: column;
-    }
-
-    #page-app .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        border-right: none;
-        border-bottom: 1px solid var(--border-light);
-    }
-
-    /* Simplify sidebar for mobile topbar view */
-    #page-app .sidebar-nav, 
-    #page-app .sidebar-footer {
-        display: none; /* In a real app, these would move to a hamburger menu */
-    }
-
-    #page-app .sidebar-header {
-        margin-bottom: 0;
-        padding: 0;
-    }
-
-    #page-app .sidebar-logo {
-        height: 32px; /* Smaller logo on mobile */
-    }
-
-    /* Add a mobile menu toggle (assuming it might exist in HTML) */
-    #page-app .mobile-menu-toggle {
-        display: block; 
-    }
-
-    #page-app .main-content {
-        padding: 24px 16px;
-    }
-
-    #page-app .page-title {
-        font-size: 1.5rem;
-    }
+  /* Layout de Login vira "Mobile" */
+  body#page-login {
+    padding: 0;
+  }
+  .login-glass-panel {
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    min-height: 100vh;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.95); /* Menos transparência */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .login-wallpaper {
+    display: none; /* Remove o fundo complexo em mobile */
+  }
 }
