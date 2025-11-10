@@ -1,18 +1,22 @@
 // js/render.js
 
 /**
- * Esta função agora é SÓ para renderizar os links de navegação e perfil
- * A "casca" (shell) já está no index.html
+ * Renderiza os links de navegação com ícones e preenche o perfil
  */
 export function renderAppShell(user) {
   const nav = document.querySelector('.sidebar-nav');
-  if (!nav) return; // Sai se não achar o container da nav
+  if (!nav) return;
 
-  // 1. Renderiza os links de navegação
+  // 1. Renderiza os links de navegação com ÍCONES
   const links = getNavLinks(user.role);
   nav.innerHTML = ''; // Limpa links antigos
   links.forEach(link => {
-    nav.innerHTML += `<a href="${link.href}">${link.label}</a>`;
+    nav.innerHTML += `
+      <a href="${link.href}">
+        ${link.icon}
+        <span>${link.label}</span>
+      </a>
+    `;
   });
 
   // 2. Preenche o perfil do usuário
@@ -26,27 +30,34 @@ export function renderAppShell(user) {
 }
 
 /**
- * Helper que retorna os links de navegação corretos
+ * Helper que retorna os links de navegação com ÍCONES
  */
 function getNavLinks(role) {
+  // Ícones SVG (estilo Heroicons)
+  const iconTurmas = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-2.356M17 20H7m10 0v-2c0-1.657-1.343-3-3-3H7m10 0v-2c0-1.657-1.343-3-3-3h-1m-6 3a3 3 0 100-6 3 3 0 000 6zM7 7a3 3 0 100-6 3 3 0 000 6z"></path></svg>`;
+  const iconApostilas = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`;
+  const iconConfig = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`;
+  const iconAvaliacoes = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+  const iconAdmin = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+
   const commonLinks = [
-    { label: 'Apostilas', href: '#apostilas' },
-    { label: 'Configurações', href: '#config' }
+    { label: 'Apostilas', href: '#apostilas', icon: iconApostilas },
+    { label: 'Configurações', href: '#config', icon: iconConfig }
   ];
 
   if (role === 'professor') {
     return [
-      { label: 'Turmas', href: '#turmas' },
+      { label: 'Turmas', href: '#turmas', icon: iconTurmas },
       ...commonLinks,
-      { label: 'Avaliações', href: '#avaliacoes' },
-      { label: 'Administração', href: '#admin' },
+      { label: 'Avaliações', href: '#avaliacoes', icon: iconAvaliacoes },
+      { label: 'Administração', href: '#admin', icon: iconAdmin },
     ];
   } else {
     // Aluno
     return [
-      { label: 'Minhas Turmas', href: '#turmas' },
+      { label: 'Minhas Turmas', href: '#turmas', icon: iconTurmas },
       ...commonLinks,
-      { label: 'Minhas Avaliações', href: '#avaliacoes' },
+      { label: 'Minhas Avaliações', href: '#avaliacoes', icon: iconAvaliacoes },
     ];
   }
 }
@@ -61,7 +72,7 @@ export function updateActiveLink(hash) {
 }
 
 /**
- * Pega o elemento <main> onde o conteúdo das páginas deve ser inserido
+ * Pega o elemento <main>
  */
 function getMainContent() {
   return document.querySelector('.main-content');
@@ -69,7 +80,6 @@ function getMainContent() {
 
 // ===============================================
 // FUNÇÕES DE RENDERIZAÇÃO DE PÁGINA
-// (Estas funções não mudam, o CSS cuida do visual)
 // ===============================================
 
 export function renderTurmas(turmas) {
