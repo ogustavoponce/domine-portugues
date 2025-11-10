@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Domine Português - Plataforma</title>
+  <title>Domine Português - Criar Conta</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   
   <style>
@@ -265,7 +265,18 @@
       text-decoration: underline;
     }
 
-    /* --- Layout Principal do App (Light) --- */
+    /* --- Rodapé --- */
+    .dp-footer {
+      width: 100%;
+      text-align: center;
+      padding: 24px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* --- CSS do APP (para não quebrar o index.html) --- */
     body#page-app {
       background: var(--bg-base); /* Fundo cinza */
       color: var(--text-primary);
@@ -278,7 +289,6 @@
       user-select: none;
     }
 
-    /* --- NOVA SIDEBAR (Light & Fixa) --- */
     .sidebar {
       width: 260px;
       background: var(--bg-panel); /* Branca */
@@ -331,7 +341,6 @@
       font-weight: 700;
     }
 
-    /* Perfil do Usuário no Rodapé da Sidebar */
     .sidebar-footer {
       display: flex;
       flex-direction: column;
@@ -396,7 +405,6 @@
       border-color: #d0d0d0;
     }
 
-    /* --- Conteúdo Principal (Light & Arejado) --- */
     .main-content {
       flex: 1; /* Ocupa todo o espaço restante */
       padding: 48px 64px; /* AREJADO */
@@ -412,7 +420,6 @@
       margin-bottom: 32px;
     }
 
-    /* Cards (Light) */
     .dp-card {
       background: var(--bg-light);
       border: 1px solid var(--border);
@@ -433,21 +440,6 @@
       margin-bottom: 12px;
     }
 
-    /* --- Rodapé (Login & App) --- */
-    .dp-footer {
-      width: 100%;
-      text-align: center;
-      padding: 24px;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      
-      /* Rodapé na pág de login */
-      position: relative;
-      z-index: 2;
-      color: var(--text-secondary); 
-    }
-
-    /* --- Componentes (Tabelas, Badges, etc) --- */
     .table {
       width: 100%;
       border-collapse: collapse;
@@ -567,34 +559,44 @@
     }
   </style>
 </head>
-<body id="page-app">
+<body id="page-register"> <div class="login-wallpaper"></div>
 
-  <div id="app">
+  <main class="login-glass-panel">
     
-    <aside class="sidebar">
-      <div>
-        <img src="logo.jpg" alt="Domine Português" class="sidebar-logo"/>
-        
-        <nav class="sidebar-nav">
-          </nav>
+    <img src="logo.jpg" alt="Domine Português" class="login-logo"/>
+    
+    <h2 class="login-title">Crie sua conta</h2>
+
+      <form id="registerForm" class="login-form" autocomplete="off">
+      <div class="form-group">
+        <label for="nameRegister">Nome completo</label>
+      	<input type="text" id="nameRegister" name="nameRegister" required autocomplete="name"/>
       </div>
-
-      <div class="sidebar-footer">
-        <div class="sidebar-profile">
-          <div class="sidebar-avatar">G</div>
-          <div class="sidebar-info">
-            <span class="user-name">Carregando...</span>
-            <span class="user-role">...</span>
-          </div>
-        </div>
-        <button id="btnLogout" class="btn-logout">Sair</button>
+      <div class="form-group">
+        <label for="emailRegister">E-mail</label>
+      	<input type="email" id="emailRegister" name="emailRegister" required autocomplete="email" placeholder="seu@email.com"/>
       </div>
-    </aside>
+      <div class="form-group">
+        <label for="passwordRegister">Senha</label>
+      	<input type="password" id="passwordRegister" name="passwordRegister" required placeholder="Mínimo 6 caracteres"/>
+      </div>
+      <div class="form-group">
+        <label for="codeTurma">Código da Turma</label>
+      	<input type="text" id="codeTurma" name="codeTurma" required/>
+      </div>
+    	<button type="submit" class="btn-primary">Criar conta</button>
+    	<p class="error-msg" id="registerError"></p>
+    	<p class="success-msg" id="registerSuccess"></p>
+    </form>
+    
+    <p class="form-link">
+      Já tem uma conta? <a href="login.html">Faça login</a>
+    </p>
+  </main>
 
-    <main class="main-content">
-      </main>
-
-  </div>
+  <footer class="dp-footer">
+    © 2025 Domine Português.
+  </footer>
   
   <script type="module" src="js/main.js"></script>
 </body>

@@ -57,8 +57,8 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* --- NOVO LOGIN "GLASS PANEL" (Estilo iOS) --- */
-    body#page-login {
+    /* --- LOGIN "GLASS PANEL" (Estilo iOS) --- */
+    body#page-login, body#page-register {
       display: flex;
       flex-direction: column; /* Alinha o footer abaixo */
       align-items: center;
@@ -241,7 +241,34 @@
       font-weight: 500;
     }
 
-    /* --- Layout Principal do App (Light) --- */
+    /* Link para outra página */
+    .form-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .form-link a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .form-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Rodapé --- */
+    .dp-footer {
+      width: 100%;
+      text-align: center;
+      padding: 24px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* --- CSS do APP (para não quebrar o index.html) --- */
     body#page-app {
       background: var(--bg-base); /* Fundo cinza */
       color: var(--text-primary);
@@ -254,7 +281,6 @@
       user-select: none;
     }
 
-    /* --- NOVA SIDEBAR (Light & Fixa) --- */
     .sidebar {
       width: 260px;
       background: var(--bg-panel); /* Branca */
@@ -307,7 +333,6 @@
       font-weight: 700;
     }
 
-    /* Perfil do Usuário no Rodapé da Sidebar */
     .sidebar-footer {
       display: flex;
       flex-direction: column;
@@ -372,7 +397,6 @@
       border-color: #d0d0d0;
     }
 
-    /* --- Conteúdo Principal (Light & Arejado) --- */
     .main-content {
       flex: 1; /* Ocupa todo o espaço restante */
       padding: 48px 64px; /* AREJADO */
@@ -388,7 +412,6 @@
       margin-bottom: 32px;
     }
 
-    /* Cards (Light) */
     .dp-card {
       background: var(--bg-light);
       border: 1px solid var(--border);
@@ -409,21 +432,6 @@
       margin-bottom: 12px;
     }
 
-    /* --- Rodapé (Login & App) --- */
-    .dp-footer {
-      width: 100%;
-      text-align: center;
-      padding: 24px;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      
-      /* Rodapé na pág de login */
-      position: relative;
-      z-index: 2;
-      color: var(--text-secondary); 
-    }
-
-    /* --- Componentes (Tabelas, Badges, etc) --- */
     .table {
       width: 100%;
       border-collapse: collapse;
@@ -551,10 +559,7 @@
     
     <img src="logo.jpg" alt="Domine Português" class="login-logo"/>
     
-    <div class="tab-buttons">
-      <button id="tab-login" class="tab-active">Entrar</button>
-      <button id="tab-register">Criar conta</button>
-    </div>
+    <h2 class="login-title">Acesse sua conta</h2>
 
       <form id="loginForm" class="login-form" autocomplete="off">
       <div class="form-group">
@@ -568,28 +573,6 @@
     	<button type="submit" class="btn-primary">Entrar</button>
     	<p class="error-msg" id="loginError"></p>
     </form>
-
-      <form id="registerForm" class="login-form hidden" autocomplete="off">
-      <div class="form-group">
-        <label for="nameRegister">Nome completo</label>
-      	<input type="text" id="nameRegister" name="nameRegister" required autocomplete="name"/>
-      </div>
-      <div class="form-group">
-        <label for="emailRegister">E-mail</label>
-      	<input type="email" id="emailRegister" name="emailRegister" required autocomplete="email" placeholder="seu@email.com"/>
-      </div>
-      <div class="form-group">
-        <label for="passwordRegister">Senha</label>
-      	<input type="password" id="passwordRegister" name="passwordRegister" required placeholder="Mínimo 6 caracteres"/>
-      </div>
-      <div class="form-group">
-        <label for="codeTurma">Código da Turma</label>
-      	<input type="text" id="codeTurma" name="codeTurma" required/>
-      </div>
-    	<button type="submit" class="btn-primary">Criar conta</button>
-    	<p class="error-msg" id="registerError"></p>
-    	<p class="success-msg" id="registerSuccess"></p>
-    </form>
     
     <p class="form-divider">ou</p>
 
@@ -602,6 +585,10 @@
       </svg>
       <span>Continuar com Google</span>
     </button>
+    
+    <p class="form-link">
+      Não tem uma conta? <a href="register.html">Cadastre-se</a>
+    </p>
   </main>
 
   <footer class="dp-footer">

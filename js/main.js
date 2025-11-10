@@ -4,10 +4,16 @@ import * as store from './store.js';
 
 // Roda o código quando o HTML carregar
 document.addEventListener('DOMContentLoaded', () => {
+  
   // Verifica em qual página estamos
   if (document.body.id === 'page-login') {
+    // Estamos no LOGIN.HTML
     initLoginPage();
+  } else if (document.body.id === 'page-register') {
+    // Estamos no REGISTER.HTML
+    initRegisterPage();
   } else if (document.body.id === 'page-app') {
+    // Estamos no INDEX.HTML
     initAppPage();
   }
 });
@@ -16,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
  * Roda toda a lógica da PÁGINA DE LOGIN
  */
 function initLoginPage() {
+  console.log('Estou na página de login');
+  
   // Redireciona se o usuário já estiver logado
   auth.onAuthCheck(user => {
     if (user) {
@@ -23,31 +31,11 @@ function initLoginPage() {
     }
   });
 
-  const tabLogin = document.getElementById('tab-login');
-  const tabRegister = document.getElementById('tab-register');
   const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
   const googleLoginBtn = document.getElementById('googleLoginBtn');
-  
   const errLogin = document.getElementById('loginError');
-  const errRegister = document.getElementById('registerError');
-  const succRegister = document.getElementById('registerSuccess');
 
-  // Lógica das abas (não muda)
-  tabLogin.onclick = () => {
-    tabLogin.classList.add('tab-active');
-    tabRegister.classList.remove('tab-active');
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-  };
-  tabRegister.onclick = () => {
-    tabRegister.classList.add('tab-active');
-    tabLogin.classList.remove('tab-active');
-    registerForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-  };
-
-  // Listener do formulário de LOGIN (agora é async)
+  // Listener do formulário de LOGIN
   loginForm.onsubmit = async (e) => {
     e.preventDefault();
     errLogin.textContent = '';
@@ -61,8 +49,37 @@ function initLoginPage() {
       errLogin.textContent = 'Usuário ou senha incorretos.';
     }
   };
+  
+  // Listener do botão GOOGLE
+  googleLoginBtn.onclick = async () => {
+    errLogin.textContent = '';
+    try {
+      await auth.loginWithGoogle();
+      // O onAuthCheck vai redirecionar
+    } catch (error) {
+      errLogin.textContent = error.message;
+    }
+  };
+}
 
-  // Listener do formulário de REGISTRO (agora é async)
+/**
+ * Roda toda a lógica da PÁGINA DE CADASTRO
+ */
+function initRegisterPage() {
+  console.log('Estou na página de cadastro');
+
+  // Redireciona se o usuário já estiver logado
+  auth.onAuthCheck(user => {
+    if (user) {
+      location.href = 'index.html';
+    }
+  });
+  
+  const registerForm = document.getElementById('registerForm');
+  const errRegister = document.getElementById('registerError');
+  const succRegister = document.getElementById('registerSuccess');
+
+  // Listener do formulário de REGISTRO
   registerForm.onsubmit = async (e) => {
     e.preventDefault();
     errRegister.textContent = '';
@@ -80,19 +97,6 @@ function initLoginPage() {
       errRegister.textContent = error.message;
     }
   };
-  
-  // Listener do botão GOOGLE (agora é async)
-  googleLoginBtn.onclick = async () => {
-    errLogin.textContent = '';
-    try {
-      await auth.loginWithGoogle();
-      // O onAuthCheck vai redirecionar
-    } catch (error) {
-      errLogin.textContent = error.message;
-    }
-  };
-
-  tabLogin.click();
 }
 
 
@@ -100,6 +104,8 @@ function initLoginPage() {
  * Roda toda a lógica da PÁGINA PRINCIPAL (APP)
  */
 function initAppPage() {
+  console.log('Estou na página principal (app)');
+  
   // O "porteiro"
   auth.onAuthCheck(user => {
     if (!user) {
@@ -121,7 +127,6 @@ function initAppPage() {
         router.init(render, store, user);
         
         // 3. Configura o botão de logout
-        // (Buscamos pelo ID que o render.js criou)
         document.body.addEventListener('click', (e) => {
           if (e.target.id === 'btnLogout') {
             auth.logout();
