@@ -8,7 +8,7 @@
   
   <style>
     /* --- 
-      iOS "26" - GLASS PANEL THEME (v8 - Impeccable & Corrigido)
+      DESIGN IMPECÁVEL (v9 - CSS Embutido)
     --- */
 
     :root {
@@ -276,269 +276,58 @@
       z-index: 2;
     }
     
-    /* --- CSS do APP (para não quebrar o index.html) --- */
-    body#page-app {
-      background: var(--bg-base); /* Fundo cinza */
-      color: var(--text-primary);
-    }
-
-    #app {
-      display: flex;
-      flex-direction: row; /* Sidebar e Conteúdo lado a lado */
-      min-height: 100vh; 
-      user-select: none;
-    }
-
-    .sidebar {
-      width: 260px;
-      background: var(--bg-panel); /* Branca */
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between; /* Empurra o footer para baixo */
-      padding: 24px 16px;
-      height: 100vh;
-      position: sticky;
-      top: 0; 
-      flex-shrink: 0;
-    }
-
-    .sidebar-logo {
-      display: block;
-      height: 48px;
-      width: auto;
-      margin: 0 auto 32px auto;
-      filter: none; /* Logo azul original */
-    }
-
-    .sidebar-nav a {
-      text-decoration: none;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 8px;
-      gap: 12px;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-    .sidebar-nav a svg {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      stroke-width: 2;
-    }
-    .sidebar-nav a:hover {
-      background: var(--bg-base);
-      color: var(--text-primary);
-    }
-    .sidebar-nav a.active {
-      background: var(--accent); /* "Pílula" sólida estilo iOS */
-      color: #ffffff; /* Texto branco */
-      font-weight: 700;
-    }
-
-    .sidebar-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .sidebar-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      transition: var(--transition);
-    }
-    .sidebar-profile:hover {
-      background: var(--bg-base);
-    }
-    .sidebar-avatar {
-      width: 40px;
-      height: 40px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #ffffff;
-      background: var(--accent);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .sidebar-info {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.4;
-      overflow: hidden;
-    }
-    .sidebar-info .user-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    .sidebar-info .user-role {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    .btn-logout {
-      background: var(--bg-base);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .btn-logout:hover {
-      background: #f0f0f0;
-      color: var(--text-primary);
-      border-color: #d0d0d0;
-    }
-
-    .main-content {
-      flex: 1; /* Ocupa todo o espaço restante */
-      padding: 48px 64px; /* AREJADO */
-      overflow-y: auto;
-      max-width: 1200px; /* Limite de largura (Estilo Notion) */
-      margin: 0 auto; /* Centraliza o conteúdo */
-    }
-
-    .main-header {
-      font-size: 2rem; /* Maior */
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 32px;
-    }
-
-    .dp-card {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: none;
-      transition: var(--transition);
-    }
-    .dp-card:hover {
-      border-color: #d0d0d0;
-      box-shadow: var(--shadow);
-    }
-    .dp-card-title {
-      font-weight: 600;
-      font-size: 1.25rem;
-      color: var(--text-primary);
-      margin-bottom: 12px;
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--bg-light);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      font-size: 0.95rem;
-      margin-top: 16px;
-      overflow: hidden;
-    }
+    /* --- CSS do APP (Apenas para este CSS não quebrar) --- */
+    body#page-app { }
+    #app { }
+    .sidebar { }
+    .sidebar-logo { }
+    .sidebar-nav a { }
+    .sidebar-nav a svg { }
+    .sidebar-nav a:hover { }
+    .sidebar-nav a.active { }
+    .sidebar-footer { }
+    .sidebar-profile { }
+    .sidebar-profile:hover { }
+    .sidebar-avatar { }
+    .sidebar-info { }
+    .sidebar-info .user-name { }
+    .sidebar-info .user-role { }
+    .btn-logout { }
+    .btn-logout:hover { }
+    .main-content { }
+    .main-header { }
+    .dp-card { }
+    .dp-card:hover { }
+    .dp-card-title { }
+    .table { }
     .table th,
-    .table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-secondary);
-      text-align: left;
-    }
-    .table th {
-      background: var(--bg-base);
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-    .table tr:hover {
-      background: #fcfcfc;
-    }
-
+    .table td { }
+    .table th { }
+    .table tr:hover { }
     .btn,
     .btn-primary,
-    .btn-danger {
-      padding: 8px 16px;
-      border-radius: var(--radius-full);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      margin: 3px;
-      user-select: none;
-      transition: var(--transition);
-    }
-    .btn {
-      background: var(--accent-light-bg);
-      color: var(--accent-hover);
-    }
-    .btn:hover { background: rgba(0, 122, 255, 0.2); }
-    .btn-danger {
-      background: rgba(255, 59, 48, 0.1);
-      color: var(--danger);
-    }
-    .btn-danger:hover { background: rgba(255, 59, 48, 0.2); }
-
-    .dp-code-badge {
-      background: var(--bg-base);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      font-size: 0.9em;
-      font-family: monospace;
-      padding: 3px 8px;
-      border-radius: 7px;
-      font-weight: 600;
-    }
+    .btn-danger { }
+    .btn { }
+    .btn:hover { }
+    .btn-danger { }
+    .btn-danger:hover { }
+    .dp-code-badge { }
 
     /* --- Responsivo --- */
     @media (max-width: 1024px) {
-      .main-content {
-        padding: 32px;
-        max-width: 100%; /* Ocupa tudo em telas menores */
-      }
+      .main-content { }
     }
 
     @media (max-width: 768px) {
-      /* Layout de App vira "Mobile" */
-      #app {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-      }
-      .sidebar-logo {
-        height: 36px;
-        margin: 0;
-      }
-      .sidebar-footer, .sidebar-nav {
-        display: none; /* Esconde para um menu hamburger futuro */
-      }
-      .main-content {
-        padding: 24px 16px;
-      }
-      .main-header {
-        font-size: 1.5rem;
-      }
+      #app { }
+      .sidebar { }
+      .sidebar-logo { }
+      .sidebar-footer, .sidebar-nav { }
+      .main-content { }
+      .main-header { }
 
       /* Layout de Login vira "Mobile" */
-      body#page-login {
+      body#page-login, body#page-register {
         padding: 0;
       }
       .login-glass-panel {
@@ -598,6 +387,117 @@
     © 2025 Domine Português.
   </footer>
   
-  <script type="module" src="js/main.js"></script>
+  <script type="module">
+    // --- MÓDULO DE FIREBASE ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDocs, 
+      where, 
+      query, 
+      updateDoc, 
+      arrayUnion, 
+      collection
+    } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
+      authDomain: "domine-portugues.firebaseapp.com",
+      projectId: "domine-portugues",
+      storageBucket: "domine-portugues.firebasestorage.app",
+      messagingSenderId: "717323019793",
+      appId: "1:717323019793:web:46c0baaae240b17dbdf3b0",
+      measurementId: "G-WXQNKS0VY7"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const auth = getAuth(fbApp);
+    const db = getFirestore(fbApp);
+
+    // --- MÓDULO DE STORE (Banco de Dados) ---
+    async function createUserProfile(uid, name, email, role = 'aluno') {
+      const userRef = doc(db, 'users', uid);
+      await setDoc(userRef, { uid, name, email, role });
+      return { uid, name, email, role };
+    }
+
+    async function findTurmaByCode(code) {
+      const turmasRef = collection(db, 'turmas');
+      const q = query(turmasRef, where('code', '==', code));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) return null;
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+
+    async function addUserToTurma(turmaId, uid) {
+      const turmaRef = doc(db, 'turmas', turmaId);
+      await updateDoc(turmaRef, { alunos: arrayUnion(uid) });
+    }
+
+    // --- MÓDULO DE AUTH (Autenticação) ---
+    function onAuthCheck(callback) {
+      return onAuthStateChanged(auth, (user) => {
+        callback(user);
+      });
+    }
+
+    async function register(name, email, password, code) {
+      const turma = await findTurmaByCode(code);
+      if (!turma) {
+        throw new Error('Código da turma inválido.');
+      }
+      
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await createUserProfile(user.uid, name, email, 'aluno');
+      await addUserToTurma(turma.id, user.uid);
+    }
+
+    // --- MÓDULO DE MAIN (Lógica da Página) ---
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body.id === 'page-register') {
+        initRegisterPage();
+      }
+    });
+
+    function initRegisterPage() {
+      console.log('Página de Cadastro Carregada');
+
+      onAuthCheck(user => {
+        if (user) location.href = 'index.html';
+      });
+      
+      const registerForm = document.getElementById('registerForm');
+      const errRegister = document.getElementById('registerError');
+      const succRegister = document.getElementById('registerSuccess');
+
+      registerForm.onsubmit = async (e) => {
+        e.preventDefault();
+        errRegister.textContent = '';
+        succRegister.textContent = '';
+
+        const name = registerForm.nameRegister.value.trim();
+        const email = registerForm.emailRegister.value.trim();
+        const pwd = registerForm.passwordRegister.value.trim();
+        const code = registerForm.codeTurma.value.trim();
+
+        try {
+          await register(name, email, pwd, code);
+          // O onAuthCheck vai redirecionar
+        } catch (error) {
+          errRegister.textContent = error.message;
+        }
+      };
+    }
+  </script>
 </body>
 </html>
