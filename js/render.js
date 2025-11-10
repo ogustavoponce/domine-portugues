@@ -1,34 +1,28 @@
 // js/render.js
 
 /**
- * Desenha a "casca" principal do aplicativo (Sidebar e Main)
- * Isso só roda uma vez quando o app carrega.
+ * Esta função agora é SÓ para renderizar os links de navegação e perfil
+ * A "casca" (shell) já está no index.html
  */
 export function renderAppShell(user) {
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <aside class="sidebar">
-      <div class="sidebar-header">Domine Português</div>
-      <div class="sidebar-profile">
-        <div class="sidebar-avatar">${user.name.charAt(0)}</div>
-        <div>
-          <div class="sidebar-info">${user.name}</div>
-          <div class="sidebar-info-small">${user.role === 'professor' ? 'Professor' : 'Aluno'}</div>
-        </div>
-      </div>
-      <nav class="sidebar-nav"></nav>
-    </aside>
-    <main class="main-content">
-      </main>
-  `;
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav) return; // Sai se não achar o container da nav
 
-  // Define os links da navegação baseados no tipo de usuário
-  const nav = app.querySelector('.sidebar-nav');
+  // 1. Renderiza os links de navegação
   const links = getNavLinks(user.role);
-  
+  nav.innerHTML = ''; // Limpa links antigos
   links.forEach(link => {
     nav.innerHTML += `<a href="${link.href}">${link.label}</a>`;
   });
+
+  // 2. Preenche o perfil do usuário
+  const avatar = document.querySelector('.sidebar-avatar');
+  const userName = document.querySelector('.user-name');
+  const userRole = document.querySelector('.user-role');
+
+  if (avatar) avatar.textContent = user.name.charAt(0).toUpperCase();
+  if (userName) userName.textContent = user.name;
+  if (userRole) userRole.textContent = user.role === 'professor' ? 'Professor' : 'Aluno';
 }
 
 /**
@@ -75,11 +69,12 @@ function getMainContent() {
 
 // ===============================================
 // FUNÇÕES DE RENDERIZAÇÃO DE PÁGINA
+// (Estas funções não mudam, o CSS cuida do visual)
 // ===============================================
 
 export function renderTurmas(turmas) {
   const main = getMainContent();
-  main.innerHTML = '<h2 class="main-header">Turmas</h2>';
+  main.innerHTML = '<h2 class="main-header">Minhas Turmas</h2>';
   
   if (turmas.length === 0) {
     main.innerHTML += '<p>Nenhuma turma disponível.</p>';
@@ -91,8 +86,8 @@ export function renderTurmas(turmas) {
       <div class="dp-card">
         <div class="dp-card-title">${t.name}</div>
         <div>Código: <span class="dp-code-badge">${t.code}</span></div>
-        <div>Curso: ${t.curso}</div>
-        <div>Alunos: ${t.alunos.length}</div>
+        <div>Curso: ${t.curso || 'Não especificado'}</div>
+        <div>Alunos: ${t.alunos ? t.alunos.length : 0}</div>
       </div>
     `;
   });
@@ -104,20 +99,24 @@ export function renderApostilas(turmas) {
 
   turmas.forEach(t => {
     let apostilasHTML = '';
-    t.apostilas.forEach(ap => {
-      apostilasHTML += `
-        <li>
-          <a href="${ap.url}" class="text-link" target="_blank">${ap.titulo}</a> 
-          — <small>${ap.descricao}</small>
-        </li>
-      `;
-    });
+    if (t.apostilas && t.apostilas.length > 0) {
+      t.apostilas.forEach(ap => {
+        apostilasHTML += `
+          <li>
+            <a href="${ap.url}" target="_blank">${ap.titulo}</a> 
+            — <small>${ap.descricao}</small>
+          </li>
+        `;
+      });
+    } else {
+      apostilasHTML = '<li>Nenhuma apostila nesta turma.</li>';
+    }
 
     main.innerHTML += `
       <section class="dp-card">
         <div class="dp-card-title">${t.name}</div>
-        <ul>${apostilasHTML || '<li>Nenhuma apostila nesta turma.</li>'}</ul>
-        </section>
+        <ul>${apostilasHTML}</ul>
+      </section>
     `;
   });
 }
@@ -126,32 +125,12 @@ export function renderAvaliacoes(user, store) {
   const main = getMainContent();
   main.innerHTML = '<h2 class="main-header">Avaliações</h2>';
   
-  // Lógica para Aluno
-  if (user.role === 'aluno') {
-    const turmas = store.getTurmas().filter(t => t.alunos.includes(user.id));
-    turmas.forEach(turma => {
-      // (Seu código original de avaliação do aluno aqui)
-      main.innerHTML += `
-        <div class="dp-card">
-          <div class="dp-card-title">${turma.name}</div>
-          <p>Avaliações do aluno para esta turma aparecerão aqui.</p>
-        </div>
-      `;
-    });
-  } 
-  // Lógica para Professor
-  else {
-     const turmas = store.getTurmas().filter(t => t.professorId === user.id);
-     turmas.forEach(turma => {
-      // (Seu código original de avaliação do professor aqui)
-      main.innerHTML += `
-        <div class="dp-card">
-          <div class="dp-card-title">${turma.name}</div>
-          <p>Tabela de avaliação dos alunos desta turma aparecerá aqui.</p>
-        </div>
-      `;
-    });
-  }
+  main.innerHTML += `
+    <div class="dp-card">
+      <div class="dp-card-title">Em Breve</div>
+      <p>A funcionalidade de avaliações está sendo construída.</p>
+    </div>
+  `;
 }
 
 export function renderAdmin(turmas) {
@@ -164,11 +143,10 @@ export function renderAdmin(turmas) {
       <tr>
         <td><span class="dp-code-badge">${t.code}</span></td>
         <td>${t.name}</td>
-        <td>${t.curso}</td>
-        <td>${t.alunos.length}</td>
+        <td>${t.curso || 'N/A'}</td>
+        <td>${t.alunos ? t.alunos.length : 0}</td>
         <td>
-          <button class="btn btn-primary" data-id="${t.id}">Editar</button>
-          <button class="btn btn-danger" data-id="${t.id}">Excluir</button>
+          <button class="btn" data-id="${t.id}">Editar</button>
         </td>
       </tr>
     `;
@@ -185,7 +163,7 @@ export function renderAdmin(turmas) {
           ${turmasRows}
         </tbody>
       </table>
-      <button class="btn btn-primary" id="btnNovaTurma" style="margin-top: 15px;">+ Nova Turma</button>
+      <button class="btn-primary" id="btnNovaTurma" style="margin-top: 20px;">+ Nova Turma</button>
     </section>
   `;
 }
@@ -198,8 +176,6 @@ export function renderConfig(user) {
       <p><strong>Nome:</strong> ${user.name}</p>
       <p><strong>Email:</strong> ${user.email}</p>
       <p><strong>Tipo:</strong> ${user.role}</p>
-      
-      <button id="btnLogout" class="btn btn-primary">Sair</button>
     </div>
   `;
 }
