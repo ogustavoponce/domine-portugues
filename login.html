@@ -3,43 +3,44 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Domine Português - Login</title>
+  <title>Entrar - Domine Português</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  <!-- TRAVA ANTI-CACHE -->
+  <link rel="stylesheet" href="style.css?v=final"/>
 </head>
 <body id="page-login">
 
   <div class="login-wallpaper"></div>
 
   <main class="login-glass-panel">
-    
     <img src="logo.jpg" alt="Domine Português" class="login-logo"/>
-    
-    <h2 class="login-title">Acesse sua conta</h2>
+    <h1 class="login-title">Bem-vindo de volta</h1>
+    <p class="login-subtitle">Acesse sua conta para continuar</p>
 
-      <form id="loginForm" class="login-form" autocomplete="off">
+    <form id="loginForm" class="login-form" autocomplete="off">
       <div class="form-group">
         <label for="emailLogin">E-mail</label>
-      	<input type="email" id="emailLogin" name="emailLogin" required autocomplete="username" placeholder="seu@email.com"/>
+        <input type="email" id="emailLogin" required placeholder="seu@email.com"/>
       </div>
       <div class="form-group">
         <label for="passwordLogin">Senha</label>
-      	<input type="password" id="passwordLogin" name="passwordLogin" required autocomplete="current-password"/>
+        <input type="password" id="passwordLogin" required placeholder="Sua senha"/>
       </div>
-    	<button type="submit" class="btn-primary">Entrar</button>
-    	<p class="error-msg" id="loginError"></p>
-    </form>
+      
+      <p class="error-msg" id="loginError"></p>
+      <button type="submit" class="btn-primary">Entrar na Plataforma</button>
+    </form>
     
-    <p class="form-divider">ou</p>
+    <div class="form-divider"><span>ou continue com</span></div>
 
     <button id="googleLoginBtn" class="btn-google">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.64 9.20455C17.64 8.56682 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5609V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/>
-        <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5609C11.2418 14.1014 10.2109 14.4205 9 14.4205C6.96273 14.4205 5.22091 13.0173 4.63909 11.1668H1.61636V13.5009C3.10636 16.2659 5.82273 18 9 18Z" fill="#34A853"/>
-        <path d="M4.63909 11.1668C4.43091 10.5291 4.31591 9.84545 4.31591 9.13636C4.31591 8.42727 4.43091 7.74364 4.63909 7.10591V4.77182H1.61636C0.973636 6.00273 0.6 7.42591 0.6 9.13636C0.6 10.8468 0.973636 12.2695 1.61636 13.5005L4.63909 11.1668Z" fill="#FBBC05"/>
-        <path d="M9 3.85227C10.3273 3.85227 11.5073 4.28818 12.4809 5.20591L15.0218 2.66455C13.4673 1.19727 11.43 0.272727 9 0.272727C5.82273 0.272727 3.10636 2.00727 1.61636 4.77227L4.63909 7.10591C5.22091 5.25545 6.96273 3.85227 9 3.85227Z" fill="#EA4335"/>
+      <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.6 10.23c0-.63-.06-1.25-.18-1.84H10v3.48h5.38c-.23 1.24-.96 2.29-2.04 3.02v2.51h3.3c1.93-1.78 3.04-4.39 3.04-7.17z" fill="#4285F4"/>
+        <path d="M10 20c2.7 0 4.96-.89 6.62-2.42l-3.3-2.51c-.9.6-2.04.96-3.32.96-2.61 0-4.81-1.76-5.6-4.12H1.03v2.6C2.69 17.81 6.07 20 10 20z" fill="#34A853"/>
+        <path d="M4.4 11.91c-.2-.6-.31-1.24-.31-1.91 0-.67.11-1.31.31-1.91v-2.6H1.03C.37 5.19 0 7.52 0 10c0 2.48.37 4.81 1.03 6.49l3.37-2.58z" fill="#FBBC05"/>
+        <path d="M10 3.88c1.47 0 2.79.51 3.82 1.5l2.87-2.87C14.96.89 12.7 0 10 0 6.07 0 2.69 2.19 1.03 5.49l3.37 2.6c.79-2.36 2.99-4.12 5.6-4.12z" fill="#EA4335"/>
       </svg>
-      <span>Continuar com Google</span>
+      Google
     </button>
     
     <p class="form-link">
@@ -47,9 +48,7 @@
     </p>
   </main>
 
-  <footer class="dp-footer">
-    © 2025 Domine Português.
-  </footer>
+  <footer class="dp-footer">© 2025 Domine Português</footer>
   
   <script type="module" src="js/main.js"></script>
 </body>
