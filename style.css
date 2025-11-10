@@ -65,6 +65,13 @@ body {
     font-size: 15px; /* Slightly larger for modern readability */
 }
 
+/* SAFETY NET: Prevent huge images/icons from breaking layout */
+img, svg {
+    max-width: 100%;
+    height: auto;
+    display: block; /* Removes weird bottom gaps on inline images */
+}
+
 a { text-decoration: none; color: inherit; }
 button, input { font-family: inherit; }
 
@@ -195,8 +202,7 @@ body#page-login {
     width: auto;
     margin: 0 auto 32px auto;
     display: block;
-    /* Optional: if using an SVG mask for logo color */
-    /* fill: var(--primary); */ 
+    object-fit: contain; /* Prevents logo distortion */
 }
 
 #page-login .login-title {
@@ -265,6 +271,7 @@ body#page-login {
     height: 20px;
     width: 20px;
     margin-right: 12px;
+    flex-shrink: 0; /* Prevents icon squishing */
 }
 
 /* Divider */
@@ -317,6 +324,7 @@ body#page-app {
     flex-direction: column;
     padding: 24px 16px;
     z-index: 10;
+    overflow-y: auto; /* Adds scroll if sidebar content is too tall */
 }
 
 #page-app .sidebar-header {
@@ -325,9 +333,10 @@ body#page-app {
 }
 
 #page-app .sidebar-logo {
-    height: 32px;
+    height: 40px; /* EXPLICIT HEIGHT FIXED */
     width: auto;
     display: block;
+    object-fit: contain;
 }
 
 #page-app .sidebar-nav {
@@ -359,15 +368,23 @@ body#page-app {
     color: var(--text-on-primary);
 }
 
-/* Icons in nav */
+/* FIXED: Explicit size for sidebar icons to prevent huge blowouts */
 #page-app .nav-item svg,
-#page-app .nav-item i {
+#page-app .nav-item i,
+#page-app .nav-item img {
+    width: 20px;
+    height: 20px;
     margin-right: 12px;
-    font-size: 1.1rem;
+    font-size: 20px; /* For icon fonts */
     opacity: 0.8;
+    flex-shrink: 0; /* CRITICAL: prevents icon from being squashed */
+    display: inline-block;
+    vertical-align: middle;
 }
 
-#page-app .nav-item.active svg {
+#page-app .nav-item.active svg,
+#page-app .nav-item.active i,
+#page-app .nav-item.active img {
     opacity: 1;
 }
 
@@ -396,7 +413,7 @@ body#page-app {
     padding: 48px 64px; 
     max-width: 1400px; /* Cap width on huge screens so it doesn't stretch too far */
     margin: 0 auto;
-    overflow-y: auto;
+    /* overflow-y removed from here, let the body scroll naturally or use a specific wrapper if needed */
 }
 
 /* Header inside main content (optional but common) */
@@ -494,7 +511,7 @@ body#page-app {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 24px;
+        padding: 12px 16px;
         border-right: none;
         border-bottom: 1px solid var(--border-light);
     }
@@ -508,6 +525,10 @@ body#page-app {
     #page-app .sidebar-header {
         margin-bottom: 0;
         padding: 0;
+    }
+
+    #page-app .sidebar-logo {
+        height: 32px; /* Smaller logo on mobile */
     }
 
     /* Add a mobile menu toggle (assuming it might exist in HTML) */
