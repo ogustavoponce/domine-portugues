@@ -1,6 +1,5 @@
 /* --- 
-  iOS "26" - GLASS PANEL THEME (v8 - Impeccable)
-  por Gemini
+  iOS "26" - GLASS PANEL THEME (v8 - Impeccable & Corrigido)
 --- */
 
 :root {
@@ -525,6 +524,9 @@ body#page-app {
     min-height: 100vh;
     justify-content: center;
     padding: 24px;
+    background: rgba(255, 255, 255, 0.95); /* Menos transparência */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   .login-wallpaper {
     display: none; /* Remove o fundo complexo em mobile */
