@@ -1,5 +1,4 @@
 // js/router.js
-
 let render, store, user;
 
 export function init(renderModule, storeModule, userSession) {
@@ -7,57 +6,56 @@ export function init(renderModule, storeModule, userSession) {
   store = storeModule;
   user = userSession;
 
-  document.querySelectorAll('.sidebar-nav a').forEach(link => {
-    link.addEventListener('click', (e) => {
+  // Ouve cliques em links internos
+  document.body.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (link && link.getAttribute('href').startsWith('#')) {
       e.preventDefault();
-      const hash = new URL(e.currentTarget.href).hash;
-      location.hash = hash;
-    });
+      location.hash = link.getAttribute('href');
+    }
   });
 
   window.addEventListener('hashchange', route);
-  route(); // Carrega a rota inicial
+  route();
 }
 
-/**
- * A função principal de roteamento
- * Agora é ASYNC para esperar o banco de dados
- */
 async function route() {
-  const hash = location.hash || '#turmas';
+  const hash = location.hash || (user.role === 'admin' ? '#gestao' : '#turmas');
   render.updateActiveLink(hash);
 
-  // Agora usamos 'await' para buscar os dados
   switch (hash) {
     case '#turmas':
-      const turmasVisiveis = await store.getTurmasForUser(user);
-      render.renderTurmas(turmasVisiveis);
+      const turmas = await store.getTurmasForUser(user);
+      render.renderTurmas(turmas, user.role);
       break;
-
     case '#apostilas':
-      const turmasApostilas = await store.getTurmasForUser(user);
-      render.renderApostilas(turmasApostilas);
+      // Exemplo: pega a primeira turma do aluno para mostrar apostilas
+      // Num app real, o aluno selecionaria a turma antes.
+      const minhasTurmas = await store.getTurmasForUser(user);
+      if (minhasTurmas.length > 0) {
+        render.renderApostilas(minhasTurmas[0], user, store);
+      } else {
+        render.renderPlaceholder('Apostilas', 'Você não está em nenhuma turma.');
+      }
       break;
-
-    case '#avaliacoes':
-      // O render.js vai precisar ser atualizado para
-      // buscar os dados de avaliação
-      render.renderAvaliacoes(user, store);
+    case '#comunidade':
+       const t = await store.getTurmasForUser(user);
+       if (t.length > 0) {
+         render.renderComunidade(t[0], user, store);
+       } else {
+         render.renderPlaceholder('Comunidade', 'Entre em uma turma para ver o chat.');
+       }
       break;
-    
-    case '#admin':
-      if (user.role === 'professor') {
-        const turmasProfessor = await store.getTurmasForUser(user);
-        render.renderAdmin(turmasProfessor);
+    case '#gestao':
+      if (user.role === 'admin' || user.role === 'professor') {
+        render.renderGestao(user, store);
       } else {
         render.renderAccessDenied();
       }
       break;
-
     case '#config':
       render.renderConfig(user);
       break;
-
     default:
       render.renderNotFound();
   }

@@ -1,79 +1,76 @@
 // js/store.js
-import { db, doc, getDoc, setDoc, collection, getDocs, where, query, updateDoc, arrayUnion } from './firebase.js';
+import { 
+  db, doc, getDoc, setDoc, addDoc, collection, getDocs, onSnapshot,
+  where, query, orderBy, limit, updateDoc, arrayUnion, serverTimestamp 
+} from './firebase.js';
 
-/**
- * Busca o perfil de um usuário no Firestore
- */
 export async function getUserProfile(uid) {
-  const userRef = doc(db, 'users', uid);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    return userSnap.data();
-  } else {
-    // Usuário logou (ex: Google) mas não tem perfil salvo
-    return null;
-  }
+  const snap = await getDoc(doc(db, 'users', uid));
+  return snap.exists() ? snap.data() : null;
 }
 
-/**
- * Cria o perfil de um usuário no Firestore
- */
-export async function createUserProfile(uid, name, email, role = 'aluno') {
-  const userRef = doc(db, 'users', uid);
-  await setDoc(userRef, {
-    uid: uid,
-    name: name,
-    email: email,
-    role: role
-  });
-  return { uid, name, email, role };
-}
-
-/**
- * Encontra uma turma pelo código
- */
 export async function findTurmaByCode(code) {
-  const turmasRef = collection(db, 'turmas');
-  const q = query(turmasRef, where('code', '==', code));
-  
-  const querySnapshot = await getDocs(q);
-  if (querySnapshot.empty) {
-    return null; // Nenhuma turma encontrada
-  }
-  // Retorna o primeiro documento encontrado e seu ID
-  const doc = querySnapshot.docs[0];
-  return { id: doc.id, ...doc.data() };
+  const q = query(collection(db, 'turmas'), where('code', '==', code));
+  const snap = await getDocs(q);
+  return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
 }
 
-/**
- * Adiciona um aluno a uma turma
- */
 export async function addUserToTurma(turmaId, uid) {
-  const turmaRef = doc(db, 'turmas', turmaId);
-  await updateDoc(turmaRef, {
-    alunos: arrayUnion(uid) // Adiciona o UID ao array 'alunos'
+  await updateDoc(doc(db, 'turmas', turmaId), { alunos: arrayUnion(uid) });
+}
+
+export async function getTurmasForUser(user) {
+  let q;
+  if (user.role === 'admin' || user.role === 'professor') {
+    // Admin/Professor vê todas as turmas (ou filtradas por ID se tiver multiplos profs)
+    q = query(collection(db, 'turmas'));
+  } else {
+    // Aluno só vê as suas
+    q = query(collection(db, 'turmas'), where('alunos', 'array-contains', user.uid));
+  }
+  const snap = await getDocs(q);
+  const turmas = [];
+  snap.forEach(doc => turmas.push({ id: doc.id, ...doc.data() }));
+  return turmas;
+}
+
+// --- NOVAS FUNÇÕES (MATERIAIS & CHAT) ---
+
+// Cria um novo material (para o Professor)
+export async function createMaterial(turmaId, titulo, tipo, conteudo) {
+  await addDoc(collection(db, 'materiais'), {
+    turmaId, titulo, tipo, conteudo, createdAt: serverTimestamp()
   });
 }
 
-/**
- * Busca todas as turmas de um usuário
- */
-export async function getTurmasForUser(user) {
-  const turmasRef = collection(db, 'turmas');
-  let q;
-  
-  if (user.role === 'professor') {
-    // Busca turmas onde o professorId é o UID do usuário
-    q = query(turmasRef, where('professorId', '==', user.uid));
-  } else {
-    // Busca turmas onde o array 'alunos' contém o UID do usuário
-    q = query(turmasRef, where('alunos', 'array-contains', user.uid));
-  }
+// Busca materiais de uma turma
+export async function getMateriais(turmaId) {
+  const q = query(collection(db, 'materiais'), where('turmaId', '==', turmaId), orderBy('createdAt', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({id: d.id, ...d.data()}));
+}
 
-  const querySnapshot = await getDocs(q);
-  const turmas = [];
-  querySnapshot.forEach(doc => {
-    turmas.push({ id: doc.id, ...doc.data() });
+// Envia mensagem no chat da turma
+export async function sendChatMessage(turmaId, user, text) {
+  await addDoc(collection(db, 'chat_mensagens'), {
+    turmaId,
+    userId: user.uid,
+    userName: user.name,
+    text,
+    createdAt: serverTimestamp()
   });
-  return turmas;
+}
+
+// "Ouve" o chat em tempo real (usaremos no render.js)
+export function subscribeToChat(turmaId, callback) {
+  const q = query(
+    collection(db, 'chat_mensagens'), 
+    where('turmaId', '==', turmaId), 
+    orderBy('createdAt', 'asc'),
+    limit(50)
+  );
+  return onSnapshot(q, (snapshot) => {
+    const mensagens = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    callback(mensagens);
+  });
 }

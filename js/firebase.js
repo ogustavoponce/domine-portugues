@@ -1,30 +1,34 @@
 // js/firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-// Importações de Autenticação
 import { 
   getAuth, 
   GoogleAuthProvider, 
+  OAuthProvider,
   signInWithPopup, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updateProfile as firebaseUpdateProfile
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-// Importações do Firestore
 import { 
   getFirestore, 
   doc, 
   setDoc, 
   getDoc, 
+  addDoc,
   collection, 
   getDocs, 
+  onSnapshot, // Para o chat em tempo real
   where, 
   query, 
+  orderBy, // Para ordenar mensagens
+  limit,
   updateDoc, 
-  arrayUnion 
+  arrayUnion,
+  serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// Sua config (não muda)
 const firebaseConfig = {
   apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
   authDomain: "domine-portugues.firebaseapp.com",
@@ -35,28 +39,14 @@ const firebaseConfig = {
   measurementId: "G-WXQNKS0VY7"
 };
 
-// Inicializa e exporta os serviços
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Exporta as funções que vamos usar
 export {
-  // Auth
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  // Firestore
-  doc, 
-  setDoc, 
-  getDoc, 
-  collection, 
-  getDocs, 
-  where, 
-  query, 
-  updateDoc, 
-  arrayUnion
+  GoogleAuthProvider, OAuthProvider, signInWithPopup, 
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+  signOut, onAuthStateChanged, firebaseUpdateProfile,
+  doc, setDoc, getDoc, addDoc, collection, getDocs, onSnapshot,
+  where, query, orderBy, limit, updateDoc, arrayUnion, serverTimestamp
 };
