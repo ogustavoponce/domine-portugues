@@ -4,17 +4,17 @@
 
 :root {
   /* Paleta de Cores (Light Theme) */
-  --bg-base: #f0f2f5;      /* Fundo base mais sólido */
-  --bg-panel: #ffffff;    /* Fundo dos cards, sidebar */
-  --border: #e5e7eb;      /* Borda sutil */
-  
-  --text-primary: #1d1d1f;   /* Texto (preto iOS) */
-  --text-secondary: #86868b; /* Texto secundário (cinza Apple) */
-  
+  --bg-base: #f0f2f5;
+  --bg-panel: #ffffff;
+  --border: #e5e7eb;
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+
   /* Cor de Destaque (Accent) */
-  --accent: #007aff; /* Azul Clássico iOS */
+  --accent: #007aff;
   --accent-hover: #0063cc;
-  --accent-light: #eef7ff; /* Fundo de hover/ativo */
+  --accent-light: #eef7ff;
 
   /* Cores de Feedback */
   --success: #34c759;
@@ -23,13 +23,13 @@
   /* Métricas de UI */
   --radius-sm: 10px;
   --radius-md: 16px;
-  --radius-lg: 28px; /* Para o painel de login */
+  --radius-lg: 28px;
   --radius-full: 99px;
-  
+
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-glass: 0 20px 40px rgba(0, 0, 0, 0.15); /* Sombra mais profunda */
-  
+  --shadow-glass: 0 20px 40px rgba(0, 0, 0, 0.15);
+
   --transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
@@ -317,11 +317,9 @@ body#page-login, body#page-register {
   border-radius: var(--radius-md);
   transition: var(--transition);
 }
-
 .sidebar-nav a:hover {
   background: rgba(0,0,0,0.04);
 }
-
 .sidebar-nav a.active {
   background: var(--accent);
   color: #fff;
@@ -355,7 +353,6 @@ body#page-login, body#page-register {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
 }
-
 .sidebar-avatar {
   width: 40px;
   height: 40px;
@@ -367,7 +364,6 @@ body#page-login, body#page-register {
   align-items: center;
   justify-content: center;
 }
-
 .sidebar-info {
   flex: 1;
   overflow: hidden;
@@ -384,7 +380,6 @@ body#page-login, body#page-register {
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
-
 .btn-logout {
   margin-left: auto;
   background: none;
@@ -402,7 +397,6 @@ body#page-login, body#page-register {
   padding: 40px 48px;
   background: var(--bg-base);
 }
-
 .main-header {
   font-size: 2rem;
   font-weight: 700;
@@ -465,7 +459,7 @@ body#page-login, body#page-register {
   font-weight: 600;
 }
 
-/* Responsivo */
+/* --- RESPONSIVO --- */
 @media (max-width: 768px) {
   #app { flex-direction: column; height: auto; }
   .sidebar {
@@ -484,4 +478,30 @@ body#page-login, body#page-register {
   .sidebar-nav, .sidebar-footer { display: none; }
   .sidebar-header { margin: 0; }
   .main-content { padding: 24px 16px; }
+}
+
+/* RESPONSIVIDADE PARA PAINEL DE LOGIN/CADASTRO */
+@media (max-width: 540px) {
+  .login-glass-panel {
+    padding: 28px 8px;
+    max-width: 98vw;
+    min-width: unset;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+  .login-form input,
+  .btn-primary,
+  .btn-google {
+    font-size: 0.98rem;
+    padding: 12px;
+  }
+  .login-wallpaper {
+    background: radial-gradient(circle at 0% 0%, #e3eeff 15%, #f3e7e9 50%, #eef2f3 100%);
+  }
+}
+@media (max-height: 520px) {
+  .login-glass-panel {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
 }
