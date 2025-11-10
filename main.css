@@ -52,6 +52,7 @@ body {
 /* --- NOVO LOGIN "GLASS PANEL" (Estilo iOS) --- */
 body#page-login {
   display: flex;
+  flex-direction: column; /* Alinha o footer abaixo */
   align-items: center;
   justify-content: center;
   min-height: 100%;
@@ -76,7 +77,7 @@ body#page-login {
 .login-glass-panel {
   width: 100%;
   max-width: 440px;
-  margin: 0 auto;
+  margin: 0 auto; /* Centraliza */
   position: relative;
   z-index: 2;
   
@@ -409,9 +410,8 @@ body#page-app {
   font-size: 0.9rem;
   
   /* Rodapé na pág de login */
-  /* Ele é irmão do .login-glass-panel, não filho */
-  z-index: 2;
   position: relative;
+  z-index: 2;
   color: var(--text-secondary); 
 }
 
@@ -522,7 +522,7 @@ body#page-app {
     border-radius: 0;
     border: none;
     box-shadow: none;
-    min-height: 100%;
+    min-height: 100vh;
     justify-content: center;
     padding: 24px;
   }
