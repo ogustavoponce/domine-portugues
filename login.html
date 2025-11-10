@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Domine Português - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="main.css"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body id="page-login">
 
@@ -23,36 +23,36 @@
       <form id="loginForm" class="login-form" autocomplete="off">
       <div class="form-group">
         <label for="emailLogin">E-mail</label>
-        <input type="email" id="emailLogin" name="emailLogin" required autocomplete="username" placeholder="seu@email.com"/>
+      	<input type="email" id="emailLogin" name="emailLogin" required autocomplete="username" placeholder="seu@email.com"/>
       </div>
       <div class="form-group">
         <label for="passwordLogin">Senha</label>
-        <input type="password" id="passwordLogin" name="passwordLogin" required autocomplete="current-password"/>
+      	<input type="password" id="passwordLogin" name="passwordLogin" required autocomplete="current-password"/>
       </div>
-      <button type="submit" class="btn-primary">Entrar</button>
-      <p class="error-msg" id="loginError"></p>
+    	<button type="submit" class="btn-primary">Entrar</button>
+    	<p class="error-msg" id="loginError"></p>
     </form>
 
       <form id="registerForm" class="login-form hidden" autocomplete="off">
       <div class="form-group">
         <label for="nameRegister">Nome completo</label>
-        <input type="text" id="nameRegister" name="nameRegister" required autocomplete="name"/>
+      	<input type="text" id="nameRegister" name="nameRegister" required autocomplete="name"/>
       </div>
       <div class="form-group">
         <label for="emailRegister">E-mail</label>
-        <input type="email" id="emailRegister" name="emailRegister" required autocomplete="email" placeholder="seu@email.com"/>
+      	<input type="email" id="emailRegister" name="emailRegister" required autocomplete="email" placeholder="seu@email.com"/>
       </div>
       <div class="form-group">
         <label for="passwordRegister">Senha</label>
-        <input type="password" id="passwordRegister" name="passwordRegister" required placeholder="Mínimo 6 caracteres"/>
+      	<input type="password" id="passwordRegister" name="passwordRegister" required placeholder="Mínimo 6 caracteres"/>
       </div>
       <div class="form-group">
         <label for="codeTurma">Código da Turma</label>
-        <input type="text" id="codeTurma" name="codeTurma" required/>
+      	<input type="text" id="codeTurma" name="codeTurma" required/>
       </div>
-      <button type="submit" class="btn-primary">Criar conta</button>
-      <p class="error-msg" id="registerError"></p>
-      <p class="success-msg" id="registerSuccess"></p>
+    	<button type="submit" class="btn-primary">Criar conta</button>
+    	<p class="error-msg" id="registerError"></p>
+    	<p class="success-msg" id="registerSuccess"></p>
     </form>
     
     <p class="form-divider">ou</p>
