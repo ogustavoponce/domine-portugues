@@ -1,38 +1,34 @@
 /* --- 
-  IMPACTO & FOCO THEME (v7 - Sintaxe Corrigida)
+  iOS "26" THEME (v7 - Clean & Spacious)
   por Gemini
 --- */
 
 :root {
-  /* Paleta Híbrida (Dark/Light) */
-  --bg-dark: #111111;        /* Sidebar (Obsidiana) */
-  --bg-light: #ffffff;      /* Conteúdo (Branco) */
+  /* Paleta de Cores (Light Theme) */
   --bg-base: #f7f9fc;      /* Fundo da página (Cinza claro) */
+  --bg-panel: #ffffff;    /* Fundo dos cards, sidebar */
+  --border: #e5e7eb;      /* Borda sutil */
   
-  --border-dark: #333333;
-  --border-light: #e5e7eb;
-
-  --text-dark-primary: #f0f4f8;   /* Texto na Sidebar */
-  --text-dark-secondary: #a0aec0; /* Links inativos na Sidebar */
-  --text-light-primary: #111111;   /* Texto no Conteúdo (Preto forte) */
-  --text-light-secondary: #6b7280;
+  --text-primary: #1d1d1f;   /* Texto (preto iOS) */
+  --text-secondary: #6b7280; /* Texto (cinza) */
   
   /* Cor de Destaque (Accent) */
-  --accent: #4f46e5; /* Índigo/Roxo Vibrante */
-  --accent-hover: #4338ca;
-  --accent-light-bg: #eef2ff; /* Fundo de hover/ativo */
+  --accent: #007aff; /* Azul Clássico iOS */
+  --accent-hover: #0071e6;
+  --accent-light-bg: #f0f7ff; /* Fundo de hover/ativo */
 
   /* Cores de Feedback */
-  --success: #10b981;
-  --danger: #f43f5e;
+  --success: #34c759; /* Verde iOS */
+  --danger: #ff3b30; /* Vermelho iOS */
 
   /* Métricas de UI */
   --radius-sm: 8px;
   --radius-md: 12px;
+  --radius-lg: 16px; /* Para o card de login */
   --radius-full: 99px;
-  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0,0,0,0.06);
-  --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.3);
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-glass: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease-out;
 }
 
 /* --- Base e Reset --- */
@@ -48,12 +44,12 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   background-color: var(--bg-base);
-  color: var(--text-light-primary);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- NOVO LAYOUT DE LOGIN (Minimalista) --- */
+/* --- NOVO LOGIN "FROSTED GLASS" (Estilo iOS) --- */
 body#page-login {
   display: flex;
   flex-direction: column;
@@ -61,21 +57,24 @@ body#page-login {
   justify-content: center;
   min-height: 100%;
   padding: 24px;
-  /* Fundo gradiente sutil */
-  background: #f7f9fc;
-  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0);
-  background-size: 20px 20px;
+  /* Fundo gradiente sutil estilo wallpaper iOS */
+  background: linear-gradient(120deg, #f3e7e9 0%, #e3eeff 100%);
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px; /* Mais focado e estreito */
+  max-width: 420px;
   margin-bottom: 24px;
-  padding: 40px 32px;
-  background: var(--bg-light);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-light);
-  border: 1px solid var(--border-light);
+  
+  /* Efeito "Frosted Glass" */
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  padding: 32px 32px 40px 32px;
 }
 
 .login-logo {
@@ -83,16 +82,7 @@ body#page-login {
   height: 50px;
   width: auto;
   margin: 0 auto 24px auto;
-  /* Sua logo azul original */
-  filter: none; 
-}
-
-.login-title {
-  color: var(--text-light-primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
-  margin: 0 0 24px 0;
+  filter: none; /* Logo azul original */
 }
 
 .hidden { display: none; }
@@ -102,28 +92,29 @@ body#page-login {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Espaço entre os grupos */
+  gap: 20px; /* Mais "respiro" entre os campos */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Espaço entre label e input */
+  gap: 8px; /* Espaço entre label e input */
 }
 
 .login-form label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-light-secondary);
+  color: var(--text-secondary);
 }
 
 .login-form input {
   padding: 14px 16px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 1rem;
   color: var(--text-primary);
-  background: #ffffff; /* Fundo branco limpo */
+  /* Fundo sutilmente transparente */
+  background: rgba(247, 249, 252, 0.8);
   transition: var(--transition);
 }
 
@@ -131,40 +122,40 @@ body#page-login {
   outline: none;
   background: var(--bg-light);
   border-color: var(--accent);
-  /* "Glow" no foco */
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
 
-/* Abas (Estilo "Underline") */
+/* Abas (Estilo "Pílula" iOS) */
 .tab-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  background: rgba(229, 231, 235, 0.7);
+  border-radius: var(--radius-full);
+  padding: 4px;
   margin-bottom: 24px;
-  border-bottom: 2px solid var(--border-light);
 }
 
 .tab-buttons button {
   background: transparent;
   border: 0;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px; /* Puxa a borda para sobrepor a borda do container */
+  border-radius: var(--radius-full);
   padding: 10px 16px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-light-secondary);
+  color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
   transition: var(--transition);
 }
 
 .tab-buttons button:hover:not(.tab-active) {
-  color: var(--text-light-primary);
+  color: var(--text-primary);
 }
 
 .tab-buttons .tab-active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 700;
+  background: var(--bg-light);
+  color: var(--text-primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 /* --- Botões de Ação --- */
@@ -172,9 +163,9 @@ body#page-login {
   background: var(--accent);
   color: #ffffff;
   padding: 12px 24px;
-  font-weight: 700;
+  font-weight: 600; /* Peso de fonte iOS */
   font-size: 1rem;
-  border-radius: var(--radius-sm); /* Menos redondo, mais "pro" */
+  border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
   margin-top: 10px;
@@ -185,7 +176,7 @@ body#page-login {
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
 }
 
 .btn-primary:active {
@@ -202,8 +193,8 @@ body#page-login {
   width: 100%;
   padding: 10px 16px;
   background-color: var(--bg-light);
-  color: var(--text-light-primary);
-  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: 'Roboto', 'Inter', sans-serif;
   font-size: 1rem;
@@ -219,28 +210,18 @@ body#page-login {
 .btn-google svg { width: 18px; height: 18px; }
 
 .form-divider {
-  display: flex;
-  align-items: center;
   text-align: center;
-  color: var(--text-light-secondary);
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin: 24px 0;
-}
-.form-divider::before,
-.form-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--border-light);
-}
-.form-divider span {
-  padding: 0 12px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin: 24px 0; /* Espaçamento corrigido */
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-/* --- Layout Principal do App (Híbrido) --- */
+/* --- Layout Principal do App (Light) --- */
 body#page-app {
-  background: var(--bg-light); /* Fundo branco */
-  color: var(--text-light-primary);
+  background: var(--bg-base); /* Fundo cinza */
+  color: var(--text-primary);
 }
 
 #app {
@@ -250,11 +231,11 @@ body#page-app {
   user-select: none;
 }
 
-/* --- NOVA SIDEBAR (Dark & Fixa) --- */
+/* --- NOVA SIDEBAR (Light & Fixa) --- */
 .sidebar {
   width: 260px;
-  background: var(--bg-dark);
-  border-right: 1px solid var(--border-dark);
+  background: var(--bg-panel); /* Branca */
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Empurra o footer para baixo */
@@ -270,19 +251,18 @@ body#page-app {
   height: 48px;
   width: auto;
   margin: 0 auto 32px auto;
-  /* Logo branca no fundo escuro */
-  filter: invert(1) brightness(2); 
+  filter: none; /* Logo azul original */
 }
 
 .sidebar-nav a {
   text-decoration: none;
-  color: var(--text-dark-secondary);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
-  font-weight: 500; /* Mais fino, estilo Linear */
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   margin-bottom: 8px;
   gap: 12px;
   transition: var(--transition);
@@ -295,12 +275,12 @@ body#page-app {
   stroke-width: 2;
 }
 .sidebar-nav a:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-dark-primary);
+  background: var(--bg-base);
+  color: var(--text-primary);
 }
 .sidebar-nav a.active {
-  background: var(--accent-light);
-  color: var(--accent);
+  background: var(--accent); /* "Pílula" sólida estilo iOS */
+  color: #ffffff; /* Texto branco */
   font-weight: 700;
 }
 
@@ -319,7 +299,7 @@ body#page-app {
   transition: var(--transition);
 }
 .sidebar-profile:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-base);
 }
 .sidebar-avatar {
   width: 40px;
@@ -343,20 +323,20 @@ body#page-app {
 .sidebar-info .user-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-dark-primary);
+  color: var(--text-primary);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 .sidebar-info .user-role {
   font-size: 0.85rem;
-  color: var(--text-dark-secondary);
+  color: var(--text-secondary);
 }
 
 .btn-logout {
-  background: transparent;
-  border: 1px solid var(--border-dark);
-  color: var(--text-dark-secondary);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px;
   font-weight: 600;
@@ -364,9 +344,9 @@ body#page-app {
   transition: var(--transition);
 }
 .btn-logout:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-dark-primary);
-  border-color: var(--text-dark-secondary);
+  background: #f0f0f0;
+  color: var(--text-primary);
+  border-color: #d0d0d0;
 }
 
 /* --- Conteúdo Principal (Light & Arejado) --- */
@@ -374,21 +354,21 @@ body#page-app {
   flex: 1; /* Ocupa todo o espaço restante */
   padding: 48px 64px; /* AREJADO */
   overflow-y: auto;
-  max-width: 1100px; /* Limite de largura (Estilo Notion) */
+  max-width: 1200px; /* Limite de largura (Estilo Notion) */
   margin: 0 auto; /* Centraliza o conteúdo */
 }
 
 .main-header {
   font-size: 2rem; /* Maior */
   font-weight: 700;
-  color: var(--text-light-primary);
+  color: var(--text-primary);
   margin-bottom: 32px;
 }
 
 /* Cards (Light) */
 .dp-card {
   background: var(--bg-light);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 24px;
   margin-bottom: 24px;
@@ -397,12 +377,12 @@ body#page-app {
 }
 .dp-card:hover {
   border-color: #d0d0d0;
-  box-shadow: var(--shadow-light);
+  box-shadow: var(--shadow);
 }
 .dp-card-title {
   font-weight: 600;
   font-size: 1.25rem;
-  color: var(--text-light-primary);
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 
@@ -411,13 +391,13 @@ body#page-app {
   width: 100%;
   text-align: center;
   padding: 24px;
-  color: var(--text-light-secondary);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 /* Rodapé na pág de login */
 body#page-login .dp-footer {
-  color: var(--text-light-secondary);
+  color: var(--text-secondary);
 }
 
 /* --- Componentes (Tabelas, Badges, etc) --- */
@@ -426,7 +406,7 @@ body#page-login .dp-footer {
   border-collapse: collapse;
   background: var(--bg-light);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   font-size: 0.95rem;
   margin-top: 16px;
   overflow: hidden;
@@ -434,13 +414,13 @@ body#page-login .dp-footer {
 .table th,
 .table td {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-light-secondary);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
   text-align: left;
 }
 .table th {
   background: var(--bg-base);
-  color: var(--text-light-primary);
+  color: var(--text-primary);
   font-weight: 600;
 }
 .table tr:hover {
@@ -461,20 +441,20 @@ body#page-login .dp-footer {
   transition: var(--transition);
 }
 .btn {
-  background: var(--accent-light);
+  background: var(--accent-light-bg);
   color: var(--accent-hover);
 }
-.btn:hover { background: rgba(79, 70, 229, 0.2); }
+.btn:hover { background: rgba(0, 122, 255, 0.2); }
 .btn-danger {
-  background: rgba(244, 63, 94, 0.1);
+  background: rgba(255, 59, 48, 0.1);
   color: var(--danger);
 }
-.btn-danger:hover { background: rgba(244, 63, 94, 0.2); }
+.btn-danger:hover { background: rgba(255, 59, 48, 0.2); }
 
 .dp-code-badge {
   background: var(--bg-base);
-  color: var(--text-light-secondary);
-  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
   font-size: 0.9em;
   font-family: monospace;
   padding: 3px 8px;
