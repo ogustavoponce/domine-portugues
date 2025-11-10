@@ -1,5 +1,5 @@
 /* --- 
-  iOS "26" THEME (v7 - Clean & Spacious)
+  iOS "26" - GLASS PANEL THEME (v8 - Impeccable)
   por Gemini
 --- */
 
@@ -24,10 +24,10 @@
   /* Métricas de UI */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 16px; /* Para o card de login */
+  --radius-lg: 24px; /* Para o painel de login */
   --radius-full: 99px;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-glass: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.15);
   --transition: all 0.2s ease-out;
 }
 
@@ -49,28 +49,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- NOVO LOGIN "FROSTED GLASS" (Estilo iOS) --- */
+/* --- NOVO LOGIN "GLASS PANEL" (Estilo iOS) --- */
 body#page-login {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100%;
   padding: 24px;
-  /* Fundo gradiente sutil estilo wallpaper iOS */
-  background: linear-gradient(120deg, #f3e7e9 0%, #e3eeff 100%);
+  overflow: hidden; /* Para o painel não vazar */
+  position: relative;
 }
 
-.login-card {
+.login-wallpaper {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  /* Fundo gradiente sutil estilo wallpaper iOS */
+  background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%);
+  /* Efeito de blur no próprio wallpaper */
+  filter: blur(10px);
+  z-index: 1;
+}
+
+.login-glass-panel {
   width: 100%;
-  max-width: 420px;
-  margin-bottom: 24px;
+  max-width: 440px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
   
-  /* Efeito "Frosted Glass" */
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  /* Efeito "Frosted Glass" (MAIS GLASS) */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
@@ -393,11 +407,12 @@ body#page-app {
   padding: 24px;
   color: var(--text-secondary);
   font-size: 0.9rem;
-}
-
-/* Rodapé na pág de login */
-body#page-login .dp-footer {
-  color: var(--text-secondary);
+  
+  /* Rodapé na pág de login */
+  /* Ele é irmão do .login-glass-panel, não filho */
+  z-index: 2;
+  position: relative;
+  color: var(--text-secondary); 
 }
 
 /* --- Componentes (Tabelas, Badges, etc) --- */
@@ -502,13 +517,16 @@ body#page-login .dp-footer {
   body#page-login {
     padding: 0;
   }
-  .login-card {
+  .login-glass-panel {
     max-width: 100%;
     border-radius: 0;
     border: none;
     box-shadow: none;
-    min-height: 100vh;
+    min-height: 100%;
     justify-content: center;
     padding: 24px;
+  }
+  .login-wallpaper {
+    display: none; /* Remove o fundo complexo em mobile */
   }
 }
