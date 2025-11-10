@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- FUNÇÕES AUXILIARES ---
+// --- FUNÇÕES DE BANCO DE DADOS ---
 async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, 'users', uid));
   return snap.exists() ? snap.data() : null;
@@ -34,30 +34,35 @@ async function findTurma(code) {
   return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
 }
 
-// --- GERENCIADOR DE ROTAS E PÁGINAS ---
+async function getTurmasForUser(user) {
+  const q = user.role === 'professor' 
+    ? query(collection(db, 'turmas'), where('professorId', '==', user.uid))
+    : query(collection(db, 'turmas'), where('alunos', 'array-contains', user.uid));
+  const snap = await getDocs(q);
+  const turmas = [];
+  snap.forEach(doc => turmas.push({ id: doc.id, ...doc.data() }));
+  return turmas;
+}
+
+// --- ROTAS E PÁGINAS ---
 document.addEventListener('DOMContentLoaded', () => {
   const pageId = document.body.id;
   
-  // Ouve o estado da autenticação globalmente
-  onAuthStateChanged(auth, async (firebaseUser) => {
-    if (firebaseUser) {
-      // Usuário logado
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
       if (pageId === 'page-login' || pageId === 'page-register') {
         window.location.href = 'index.html';
       } else if (pageId === 'page-app') {
-        const profile = await getUserProfile(firebaseUser.uid);
+        const profile = await getUserProfile(user.uid);
         if (profile) initApp(profile);
-        // Se não tiver perfil (raro), poderia forçar logout ou completar cadastro
       }
     } else {
-      // Usuário deslogado
       if (pageId === 'page-app') {
         window.location.href = 'login.html';
       }
     }
   });
 
-  // Inicializa listeners específicos de cada página
   if (pageId === 'page-login') setupLogin();
   if (pageId === 'page-register') setupRegister();
 });
@@ -71,34 +76,28 @@ function setupLogin() {
     e.preventDefault();
     errorMsg.textContent = '';
     try {
-      await signInWithEmailAndPassword(auth, form.emailLogin.value, form.passwordLogin.value);
+      await signInWithEmailAndPassword(auth, document.getElementById('emailLogin').value.trim(), document.getElementById('passwordLogin').value);
     } catch (error) {
       errorMsg.textContent = 'E-mail ou senha incorretos.';
     }
   };
 
-  googleLoginBtn.onclick = async () => {
+  googleBtn.onclick = async () => {
     errorMsg.textContent = '';
     try {
       const result = await signInWithPopup(auth, new GoogleAuthProvider());
       const user = result.user;
-      // Verifica se precisa criar perfil básico após login Google
       const profile = await getUserProfile(user.uid);
       if (!profile) {
         const code = prompt("Primeiro acesso! Digite o código da sua turma:");
-        if (!code) { await signOut(auth); return; } // Cancela se não der código
-        
+        if (!code) { await signOut(auth); return; }
         const turma = await findTurma(code);
-        if (!turma) { 
-          alert("Código inválido."); await signOut(auth); return; 
-        }
-        
+        if (!turma) { alert("Código inválido."); await signOut(auth); return; }
         await createUserProfile(user.uid, user.displayName, user.email);
         await updateDoc(doc(db, 'turmas', turma.id), { alunos: arrayUnion(user.uid) });
       }
     } catch (error) {
-      console.error(error);
-      errorMsg.textContent = 'Erro ao entrar com Google. Tente novamente.';
+      errorMsg.textContent = 'Erro ao entrar com Google.';
     }
   };
 }
@@ -111,24 +110,22 @@ function setupRegister() {
     e.preventDefault();
     errorMsg.textContent = '';
     try {
-      const turma = await findTurma(form.codeTurma.value);
+      const turma = await findTurma(document.getElementById('codeTurma').value.trim());
       if (!turma) throw new Error('Código da turma inválido.');
-
-      const cred = await createUserWithEmailAndPassword(auth, form.emailRegister.value, form.passwordRegister.value);
-      await createUserProfile(cred.user.uid, form.nameRegister.value, form.emailRegister.value);
+      const cred = await createUserWithEmailAndPassword(auth, document.getElementById('emailRegister').value.trim(), document.getElementById('passwordRegister').value);
+      await createUserProfile(cred.user.uid, document.getElementById('nameRegister').value.trim(), document.getElementById('emailRegister').value.trim());
       await updateDoc(doc(db, 'turmas', turma.id), { alunos: arrayUnion(cred.user.uid) });
     } catch (error) {
-      errorMsg.textContent = error.message.includes('auth/') ? 'Erro ao criar conta (verifique o e-mail).' : error.message;
+      errorMsg.textContent = error.message;
     }
   };
 }
 
+// --- FUNÇÕES DE RENDERIZAÇÃO DO APP ---
 async function initApp(user) {
-  // Renderiza Sidebar
   document.querySelector('.user-name').textContent = user.name;
   document.querySelector('.user-role').textContent = user.role === 'professor' ? 'Professor' : 'Aluno';
   document.querySelector('.sidebar-avatar').textContent = user.name.charAt(0).toUpperCase();
-  
   document.getElementById('btnLogout').onclick = () => signOut(auth);
 
   const nav = document.querySelector('.sidebar-nav');
@@ -142,36 +139,37 @@ async function initApp(user) {
       Apostilas
     </a>
   `;
-  // (Adicione mais links aqui conforme necessário)
 
-  // Carrega conteúdo inicial (Exemplo: Turmas)
-  loadTurmas(user);
+  window.addEventListener('hashchange', () => route(user));
+  route(user);
 }
 
-async function loadTurmas(user) {
-  const main = document.querySelector('.main-content');
-  main.innerHTML = '<h2 class="main-header">Minhas Turmas</h2><div id="turmas-list">Carregando...</div>';
-  
-  const q = user.role === 'professor' 
-    ? query(collection(db, 'turmas'), where('professorId', '==', user.uid))
-    : query(collection(db, 'turmas'), where('alunos', 'array-contains', user.uid));
-
-  const snap = await getDocs(q);
-  const list = document.getElementById('turmas-list');
-  
-  if (snap.empty) {
-    list.innerHTML = '<p>Nenhuma turma encontrada.</p>';
-    return;
-  }
-
-  list.innerHTML = '';
-  snap.forEach(doc => {
-    const t = doc.data();
-    list.innerHTML += `
-      <div class="dp-card">
-        <div class="dp-card-title">${t.name}</div>
-        <p>Código: <span class="dp-code-badge">${t.code}</span></p>
-      </div>
-    `;
+async function route(user) {
+  const hash = location.hash || '#turmas';
+  document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === hash);
   });
+
+  const main = document.querySelector('.main-content');
+  
+  if (hash === '#turmas') {
+    main.innerHTML = '<h2 class="main-header">Minhas Turmas</h2><div id="turmas-list">Carregando...</div>';
+    const turmas = await getTurmasForUser(user);
+    const list = document.getElementById('turmas-list');
+    if (turmas.length === 0) {
+      list.innerHTML = '<p>Nenhuma turma encontrada.</p>';
+    } else {
+      list.innerHTML = '';
+      turmas.forEach(t => {
+        list.innerHTML += `
+          <div class="dp-card">
+            <div class="dp-card-title">${t.name}</div>
+            <p>Código: <span class="dp-code-badge">${t.code}</span></p>
+          </div>
+        `;
+      });
+    }
+  } else if (hash === '#apostilas') {
+     main.innerHTML = '<h2 class="main-header">Apostilas</h2><p>Em construção...</p>';
+  }
 }
