@@ -4,66 +4,49 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Entrar - Domine Português</title>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css?v=fix"/>
   <link rel="icon" href="favicon.jpg" type="image/jpeg"/>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  
-  <link rel="stylesheet" href="style.css?v=final2"/>
 </head>
 <body id="page-login">
 
-  <div class="login-wallpaper"></div>
+  <header class="dp-header">
+    <img src="logo.jpg" alt="Domine Português" class="dp-logo" style="max-height: 50px; width: auto;"/>
+  </header>
 
-  <main class="login-glass-panel">
-    <img src="logo.jpg" alt="Domine Português" class="login-logo"/>
-    <h1 class="login-title">Bem-vindo de volta</h1>
-    <p class="login-subtitle">Acesse sua conta para continuar</p>
+  <main class="login-page">
+    <div class="tab-buttons">
+      <button type="button" class="tab-active">Login</button>
+      <button type="button" onclick="window.location.href='register.html'">Cadastrar</button>
+    </div>
 
     <form id="loginForm" class="login-form" autocomplete="off">
-      <div class="form-group">
-        <label for="emailLogin">E-mail</label>
-        <input type="email" id="emailLogin" required placeholder="seu@email.com"/>
-      </div>
-      <div class="form-group">
-        <label for="passwordLogin">Senha</label>
-        <input type="password" id="passwordLogin" required placeholder="Sua senha"/>
-      </div>
+      <h2 class="login-title">Acesse a plataforma</h2>
       
+      <label for="emailLogin">E-mail</label>
+      <input type="email" id="emailLogin" required autocomplete="username" placeholder="seu@email.com"/>
+      
+      <label for="passwordLogin">Senha</label>
+      <input type="password" id="passwordLogin" required autocomplete="current-password" placeholder="Sua senha"/>
+      
+      <button type="submit" class="btn-primary">Entrar</button>
       <p class="error-msg" id="loginError"></p>
-      <button type="submit" class="btn-primary">Entrar na Plataforma</button>
     </form>
-    
-    <div class="form-divider"><span>ou continue com</span></div>
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      
-      <button id="googleLoginBtn" class="btn-google">
-        <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19.6 10.23c0-.63-.06-1.25-.18-1.84H10v3.48h5.38c-.23 1.24-.96 2.29-2.04 3.02v2.51h3.3c1.93-1.78 3.04-4.39 3.04-7.17z" fill="#4285F4"/>
-          <path d="M10 20c2.7 0 4.96-.89 6.62-2.42l-3.3-2.51c-.9.6-2.04.96-3.32.96-2.61 0-4.81-1.76-5.6-4.12H1.03v2.6C2.69 17.81 6.07 20 10 20z" fill="#34A853"/>
-          <path d="M4.4 11.91c-.2-.6-.31-1.24-.31-1.91 0-.67.11-1.31.31-1.91v-2.6H1.03C.37 5.19 0 7.52 0 10c0 2.48.37 4.81 1.03 6.49l3.37-2.58z" fill="#FBBC05"/>
-          <path d="M10 3.88c1.47 0 2.79.51 3.82 1.5l2.87-2.87C14.96.89 12.7 0 10 0 6.07 0 2.69 2.19 1.03 5.49l3.37 2.6c.79-2.36 2.99-4.12 5.6-4.12z" fill="#EA4335"/>
-        </svg>
-        <span>Continuar com Google</span>
-      </button>
+    <p class="form-divider">ou</p>
 
-      <button id="appleLoginBtn" class="btn-google" style="color: black; border-color: black;">
-        <svg width="20" height="20" fill="black" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
-          <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
-        </svg>
-        <span>Continuar com Apple</span>
-      </button>
+    <button id="googleLoginBtn" class="btn-google">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M19.6 10.23c0-.63-.06-1.25-.18-1.84H10v3.48h5.38c-.23 1.24-.96 2.29-2.04 3.02v2.51h3.3c1.93-1.78 3.04-4.39 3.04-7.17z" fill="#4285F4"/><path d="M10 20c2.7 0 4.96-.89 6.62-2.42l-3.3-2.51c-.9.6-2.04.96-3.32.96-2.61 0-4.81-1.76-5.6-4.12H1.03v2.6C2.69 17.81 6.07 20 10 20z" fill="#34A853"/><path d="M4.4 11.91c-.2-.6-.31-1.24-.31-1.91 0-.67.11-1.31.31-1.91v-2.6H1.03C.37 5.19 0 7.52 0 10c0 2.48.37 4.81 1.03 6.49l3.37-2.58z" fill="#FBBC05"/><path d="M10 3.88c1.47 0 2.79.51 3.82 1.5l2.87-2.87C14.96.89 12.7 0 10 0 6.07 0 2.69 2.19 1.03 5.49l3.37 2.6c.79-2.36 2.99-4.12 5.6-4.12z" fill="#EA4335"/></svg>
+      <span>Entrar com Google</span>
+    </button>
 
-    </div>
-    
-    <p class="form-link">
-      Não tem uma conta? <a href="register.html">Cadastre-se</a>
-    </p>
+    <button id="appleLoginBtn" class="btn-apple">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+      <span>Entrar com Apple</span>
+    </button>
+
   </main>
 
-  <footer class="dp-footer">© 2025 Domine Português</footer>
-  
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

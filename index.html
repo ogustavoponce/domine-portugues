@@ -3,55 +3,43 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Domine Português</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <!-- Trava de cache v=final2 -->
-  <link rel="stylesheet" href="style.css?v=final2"/>
+  <title>Plataforma - Domine Português</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css?v=fix"/>
+  <link rel="icon" href="favicon.jpg" type="image/jpeg"/>
 </head>
 <body id="page-app">
 
   <div id="app">
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <img src="logo.jpg" alt="Domine Português" class="sidebar-logo"/>
+      <div class="sidebar-header" style="text-align: center;">
+        <img src="logo.jpg" alt="Domine Português" class="dp-logo" style="max-height: 50px; width: auto; display: block; margin: 0 auto;"/>
       </div>
       
-      <nav class="sidebar-nav">
-        <!-- Links serão inseridos via JS -->
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="sidebar-profile">
-          <div class="sidebar-avatar">U</div>
-          <div class="sidebar-info">
-            <span class="user-name">Carregando...</span>
-            <span class="user-role">...</span>
-          </div>
-          <!-- Ícone de Logout SVG -->
-          <button id="btnLogout" class="btn-logout" title="Sair">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          </button>
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar" style="color: #114060;">U</div>
+        <div class="sidebar-info">
+          <div class="user-name">Carregando...</div>
+          <div class="user-role">Aluno</div>
         </div>
       </div>
+
+      <nav class="sidebar-nav" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+        <a href="#turmas" class="active">📚 Minhas Turmas</a>
+        <a href="#apostilas">📄 Apostilas</a>
+        </nav>
+
+      <button id="btnLogout" style="margin-top: auto; color: #d93025; background: none; border: 1px solid #d93025; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold;">Sair</button>
     </aside>
 
     <main class="main-content">
-      <!-- Conteúdo será inserido via JS -->
+      <h2 class="main-header">Bem-vindo ao Domine Português</h2>
+      <div id="dynamic-content">
+        <p>Carregando painel...</p>
+      </div>
     </main>
   </div>
   
   <script type="module" src="js/main.js"></script>
-
-  <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>...</title>
-  
-  <link rel="icon" href="favicon.jpg" type="image/jpeg"/>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=final2"/>
-</head>
-
 </body>
 </html>

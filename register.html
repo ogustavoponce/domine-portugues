@@ -3,44 +3,45 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Domine Português - Cadastro</title>
+  <title>Cadastro - Domine Português</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/> 
+  <link rel="stylesheet" href="style.css?v=fix"/>
+  <link rel="icon" href="favicon.jpg" type="image/jpeg"/>
 </head>
 <body id="page-register">
 
-<header class="dp-header">
-  <img src="logo.jpg" alt="Domine Português" class="dp-logo"/>
-</header>
+  <header class="dp-header">
+    <img src="logo.jpg" alt="Domine Português" class="dp-logo" style="max-height: 50px; width: auto;"/>
+  </header>
 
-<main class="login-page">
-  <div class="tab-buttons">
-    <button type="button" onclick="window.location.href='login.html'">Login</button>
-    <button type="button" class="tab-active">Cadastrar</button>
-  </div>
+  <main class="login-page">
+    <div class="tab-buttons">
+      <button type="button" onclick="window.location.href='login.html'">Login</button>
+      <button type="button" class="tab-active">Cadastrar</button>
+    </div>
 
-  <form id="registerForm" class="login-form" autocomplete="off">
-    <h2 class="login-title">Crie sua conta</h2>
-    
-    <label for="nameRegister">Nome completo</label>
-    <input type="text" id="nameRegister" required autocomplete="name"/>
-    
-    <label for="emailRegister">E-mail</label>
-    <input type="email" id="emailRegister" required autocomplete="email"/>
-    
-    <label for="passwordRegister">Senha</label>
-    <input type="password" id="passwordRegister" required/>
-    
-    <label for="codeTurma">Código da Turma</label>
-    <input type="text" id="codeTurma" required placeholder="Ex: TURMA123"/>
-    
-    <button type="submit" class="btn-primary">Concluir Cadastro</button>
-    
-    <p class="error-msg" id="registerError"></p>
-    <p class="success-msg" id="registerSuccess"></p>
-  </form>
-</main>
+    <form id="registerForm" class="login-form" autocomplete="off">
+      <h2 class="login-title">Criar Conta</h2>
+      
+      <label for="nameRegister">Nome Completo</label>
+      <input type="text" id="nameRegister" required placeholder="Seu nome"/>
 
-<script type="module" src="js/main.js"></script>
+      <label for="emailRegister">E-mail</label>
+      <input type="email" id="emailRegister" required placeholder="seu@email.com"/>
+
+      <label for="passwordRegister">Senha</label>
+      <input type="password" id="passwordRegister" required placeholder="Mínimo 6 caracteres"/>
+
+      <label for="codeTurma">Código da Turma</label>
+      <input type="text" id="codeTurma" required placeholder="Ex: TURMA123"/>
+
+      <button type="submit" class="btn-primary">Finalizar Cadastro</button>
+      
+      <p class="error-msg" id="registerError"></p>
+      <p class="success-msg" id="registerSuccess"></p>
+    </form>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
