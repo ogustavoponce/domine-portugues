@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Domine Português | IFPR</title>
     
-    <!-- Fontes (Inter) -->
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.jpg" type="image/jpg">
+
+    <!-- Fontes (Inter e SF Pro Display concept) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,33 +24,38 @@
     <!-- Container de Notificações -->
     <div id="toast-container"></div>
 
-    <!-- Fundo Animado -->
+    <!-- Fundo Animado (Azul da Identidade) -->
     <div class="animated-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+        <div class="glass-mesh"></div>
     </div>
 
     <!-- === TELA DE LOGIN / CADASTRO === -->
     <div id="auth-view" class="view-container active">
-        <div class="glass-card fade-in">
+        <div class="glass-card fade-in auth-card-size">
             <div class="logo-area">
-                <i class="ph ph-books duotone" style="font-size: 48px; color: var(--primary);"></i>
+                <!-- Sua Logo Aqui -->
+                <img src="logo.jpg" alt="Domine Português Logo" class="auth-logo">
             </div>
             
             <h1 id="auth-title">Bem-vindo</h1>
-            <p class="subtitle" id="auth-subtitle">Acesse a plataforma de ensino.</p>
+            <p class="subtitle" id="auth-subtitle">Sua plataforma completa de ensino.</p>
 
             <!-- Login Form -->
             <form id="login-form" class="auth-form">
                 <div class="input-group">
                     <i class="ph ph-envelope-simple"></i>
-                    <input type="email" id="login-email" placeholder="E-mail" required autocomplete="email">
+                    <input type="email" id="login-email" placeholder="E-mail Institucional" required autocomplete="email">
                 </div>
                 <div class="input-group">
                     <i class="ph ph-lock-key"></i>
                     <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn btn-primary">Entrar</button>
+                <button type="submit" class="btn btn-primary">
+                    <span>Acessar Plataforma</span>
+                    <i class="ph ph-arrow-right"></i>
+                </button>
             </form>
 
             <!-- Register Form (Oculto inicialmente) -->
@@ -62,21 +70,27 @@
                 </div>
                 <div class="input-group">
                     <i class="ph ph-student"></i>
-                    <input type="text" id="reg-class-code" placeholder="Código da Turma (Ex: TURMA-A)" required>
+                    <input type="text" id="reg-class-code" placeholder="Código da Turma (Ex: IFPR-3A)" required>
                 </div>
                 <div class="input-group">
                     <i class="ph ph-lock-key"></i>
-                    <input type="password" id="reg-pass" placeholder="Senha (min. 6 caracteres)" required minlength="6" autocomplete="new-password">
+                    <input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6" autocomplete="new-password">
                 </div>
                 <button type="submit" class="btn btn-primary">Criar Conta</button>
             </form>
 
-            <div class="divider">ou</div>
+            <div class="divider">ou entre com</div>
 
-            <button id="btn-google" class="btn btn-social">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="20">
-                Entrar com Google
-            </button>
+            <div class="social-buttons">
+                <button id="btn-google" class="btn btn-social">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="20">
+                    Google
+                </button>
+                <button id="btn-apple" class="btn btn-social">
+                    <i class="ph ph-apple-logo" style="font-size: 20px; color: #000;"></i>
+                    Apple
+                </button>
+            </div>
 
             <p class="switch-text">
                 <span id="text-switch">Não tem conta?</span> 
@@ -90,7 +104,7 @@
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
             <div class="brand">
-                <i class="ph ph-books" style="color: var(--primary);"></i>
+                <img src="logo.jpg" alt="Logo" class="sidebar-logo">
                 <span>Domine<br>Português</span>
             </div>
             
@@ -99,18 +113,18 @@
                     <i class="ph ph-house"></i> <span>Início</span>
                 </div>
                 <div class="nav-item" data-target="classes">
-                    <i class="ph ph-chalkboard-teacher"></i> <span>Aulas</span>
+                    <i class="ph ph-chalkboard-teacher"></i> <span>Aulas e Materiais</span>
                 </div>
                 <div class="nav-item" data-target="chat">
-                    <i class="ph ph-chat-circle-dots"></i> <span>Chat</span>
+                    <i class="ph ph-chat-circle-dots"></i> <span>Chat da Turma</span>
                 </div>
             </nav>
 
             <div class="user-profile" id="btn-logout" title="Sair">
                 <div class="avatar" id="user-avatar">U</div>
                 <div class="user-info">
-                    <span class="name" id="user-name">Carregando...</span>
-                    <span class="role" id="user-role">Aluno</span>
+                    <span class="name" id="user-name">...</span>
+                    <span class="role" id="user-role">...</span>
                 </div>
                 <i class="ph ph-sign-out logout-icon"></i>
             </div>
@@ -119,7 +133,7 @@
         <!-- Conteúdo Principal -->
         <main class="main-content">
             <header class="mobile-header glass-panel">
-                <span class="brand-mobile">Domine Português</span>
+                <img src="logo.jpg" alt="Logo" style="height: 30px;">
                 <button id="mobile-menu-toggle"><i class="ph ph-list"></i></button>
             </header>
 
