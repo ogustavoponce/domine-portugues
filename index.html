@@ -1,142 +1,488 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domine Português - Plataforma de Ensino</title>
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css?v=3.0">
-    <!-- Favicon -->
-    <link rel="icon" href="favicon.jpg" type="image/jpeg">
-    <!-- FontAwesome para ícones -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Domine Português | Plataforma de Ensino</title>
+    
+    <!-- Ícones e Fontes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- DESIGN SYSTEM "IOS GLASS" --- */
+        :root {
+            --primary: #007AFF; /* Azul iOS */
+            --primary-gradient: linear-gradient(135deg, #007AFF, #00C6FF);
+            --bg-body: #F2F2F7;
+            --glass-material: rgba(255, 255, 255, 0.75);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+            --text-main: #1C1C1E;
+            --text-secondary: #8E8E93;
+            --danger: #FF3B30;
+            --success: #34C759;
+            --radius-xl: 24px;
+            --radius-md: 14px;
+            --shadow-soft: 0 8px 30px rgba(0,0,0,0.04);
+            --shadow-glass: 0 20px 50px rgba(0,0,0,0.1);
+            --sidebar-width: 280px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0;
+            font-family: 'SF Pro Display', 'Inter', -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- BACKGROUND ANIMADO --- */
+        .animated-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: radial-gradient(circle at 0% 0%, #E0F2FF 0%, #F2F2F7 50%, #E6E6FA 100%);
+        }
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6;
+            animation: float 10s infinite alternate;
+        }
+        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #C4E0FF; }
+        .orb-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #E0D4FF; animation-delay: -5s; }
+
+        @keyframes float { from { transform: translate(0, 0); } to { transform: translate(20px, 30px); } }
+
+        /* --- UTILITÁRIOS --- */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- TELA DE LOGIN (GLASS) --- */
+        #auth-view {
+            height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass-material);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-glass);
+            padding: 40px;
+            width: 100%; max-width: 420px;
+            text-align: center;
+        }
+
+        .logo-img { height: 60px; margin-bottom: 20px; border-radius: 12px; }
+        
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.5px; }
+        p.subtitle { color: var(--text-secondary); margin-bottom: 30px; font-size: 0.95rem; }
+
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); margin-left: 4px; }
+        
+        input {
+            width: 100%; padding: 14px 16px; font-size: 1rem;
+            border: 1px solid rgba(0,0,0,0.05); border-radius: var(--radius-md);
+            background: rgba(255,255,255,0.5); transition: 0.2s;
+        }
+        input:focus { outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.15); border-color: var(--primary); }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: var(--radius-md);
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(0,122,255,0.3); }
+        .btn-primary:hover { background: #0063cc; }
+
+        .btn-social { background: #fff; color: #000; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.1); }
+        
+        .divider { display: flex; align-items: center; margin: 24px 0; color: var(--text-secondary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
+        .divider span { padding: 0 10px; }
+
+        /* --- APP LAYOUT (DASHBOARD) --- */
+        #app-view { display: flex; height: 100vh; }
+
+        .sidebar {
+            width: var(--sidebar-width); background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; padding: 24px 16px; z-index: 100;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; margin-bottom: 40px; padding-left: 10px; }
+        .brand img { height: 30px; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            color: var(--text-secondary); text-decoration: none; border-radius: 12px;
+            margin-bottom: 4px; font-weight: 500; transition: 0.2s; cursor: pointer;
+        }
+        .nav-item:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
+        .nav-item.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 12px rgba(0,122,255,0.25); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem; }
+
+        .main-area { flex: 1; overflow-y: auto; padding: 32px 40px; position: relative; }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; }
+
+        .user-chip {
+            display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px;
+            background: #fff; border-radius: 99px; box-shadow: var(--shadow-soft); cursor: pointer;
+        }
+        .avatar { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+        .user-name { font-size: 0.9rem; font-weight: 600; }
+
+        /* CARDS & GRIDS */
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        
+        .ios-card {
+            background: #fff; border-radius: 20px; padding: 24px;
+            box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.02);
+            transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
+        }
+        .ios-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-glass); }
+        
+        .card-icon { 
+            width: 48px; height: 48px; border-radius: 12px; background: #F2F2F7; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            margin-bottom: 16px; color: var(--primary);
+        }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+        .card-desc { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* TABELA MODERNA */
+        .ios-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-soft); }
+        .ios-table th { text-align: left; padding: 16px; background: #FAFAFC; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid #eee; }
+        .ios-table td { padding: 16px; border-bottom: 1px solid #f5f5f5; font-size: 0.95rem; }
+        .ios-table tr:last-child td { border-bottom: none; }
+
+        /* CHAT */
+        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 150px); background: #fff; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-soft); }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #F9F9FB; }
+        .message { margin-bottom: 12px; max-width: 70%; padding: 10px 16px; border-radius: 16px; font-size: 0.95rem; position: relative; }
+        .msg-me { align-self: flex-end; background: var(--primary); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg-other { background: #E5E5EA; color: #000; border-bottom-left-radius: 4px; }
+        .chat-input-area { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #eee; }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            #app-view { flex-direction: column; }
+            .sidebar { 
+                width: 100%; height: auto; flex-direction: row; align-items: center; justify-content: space-between; 
+                padding: 12px 20px; position: fixed; bottom: 0; top: auto; border-top: 1px solid rgba(0,0,0,0.1);
+                background: rgba(255,255,255,0.9);
+            }
+            .brand, .sidebar-footer { display: none; }
+            .sidebar-nav { flex-direction: row; justify-content: space-around; padding: 0; width: 100%; }
+            .nav-item { flex-direction: column; gap: 4px; font-size: 0.7rem; padding: 8px; border-radius: 8px; }
+            .nav-item i { font-size: 1.4rem; }
+            .nav-item.active { background: transparent; color: var(--primary); box-shadow: none; }
+            
+            .main-content { padding: 20px 20px 100px 20px; } /* Espaço pro menu bottom */
+            .header-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .user-chip { position: absolute; top: 20px; right: 20px; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- OVERLAY DE CARREGAMENTO -->
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="spinner"></div>
+    <div class="animated-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO (Login/Cadastro) -->
-    <div id="auth-container">
-        <div class="auth-card">
-            <img src="logo.jpg" alt="Domine Português" class="auth-logo">
+    <!-- VIEW: LOGIN -->
+    <div id="auth-view">
+        <div class="glass-card fade-in">
+            <img src="logo.jpg" alt="Domine Português" class="logo-img">
             
-            <!-- Formulário de Login -->
-            <div id="loginView">
-                <h2 class="auth-title">Bem-vindo</h2>
-                <p class="auth-subtitle">Faça login para acessar a plataforma.</p>
-                
-                <form id="loginForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="loginEmail">E-mail</label>
-                        <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+            <!-- Alternador JS -->
+            <div id="loginFormContainer">
+                <h1>Bem-vindo</h1>
+                <p class="subtitle">Faça login para continuar.</p>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label>E-mail</label>
+                        <input type="email" id="email" required placeholder="aluno@email.com">
                     </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Senha</label>
-                        <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <input type="password" id="password" required placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn btn-primary w-full">Entrar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
                 </form>
 
                 <div class="divider"><span>ou continue com</span></div>
 
-                <div class="social-login">
-                    <button id="googleLoginBtn" class="btn btn-social">
-                        <i class="fab fa-google" style="color: #DB4437;"></i> Google
-                    </button>
-                    <!-- Botão Apple (Visual) -->
-                    <button class="btn btn-social">
-                         <i class="fab fa-apple"></i> Apple
-                    </button>
-                </div>
+                <button onclick="handleGoogleLogin()" class="btn btn-social">
+                    <i class="fab fa-google" style="color: #DB4437;"></i> Google
+                </button>
 
-                <div class="auth-footer">
-                    Não tem uma conta? <a class="auth-link" onclick="app.showRegister()">Cadastre-se</a>
-                </div>
+                <p style="margin-top: 20px; font-size: 0.9rem;">
+                    Não tem conta? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: 600; text-decoration: none;">Cadastre-se</a>
+                </p>
             </div>
 
-            <!-- Formulário de Cadastro -->
-            <div id="registerView" class="hidden">
-                <h2 class="auth-title">Criar Conta</h2>
-                <p class="auth-subtitle">Junte-se à turma do Prof. Domenico</p>
-                
-                <form id="registerForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="regName">Nome Completo</label>
-                        <input type="text" id="regName" placeholder="Seu nome" required>
+            <div id="registerFormContainer" class="hidden">
+                <h1>Criar Conta</h1>
+                <p class="subtitle">Junte-se à turma do Prof. Domenico.</p>
+
+                <form onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="regName" required>
                     </div>
-                    <div class="form-group">
-                        <label for="regEmail">E-mail</label>
-                        <input type="email" id="regEmail" placeholder="seu@email.com" required>
+                    <div class="input-group">
+                        <label>E-mail</label>
+                        <input type="email" id="regEmail" required>
                     </div>
-                    <div class="form-group">
-                        <label for="regPassword">Senha</label>
-                        <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <input type="password" id="regPassword" required minlength="6">
                     </div>
-                    <div class="form-group">
-                        <label for="regCode">Código da Turma</label>
-                        <input type="text" id="regCode" placeholder="Ex: INFO1" required>
+                    <div class="input-group">
+                        <label>Código da Turma</label>
+                        <input type="text" id="regCode" required placeholder="Ex: TURMA1">
                     </div>
-                    <button type="submit" class="btn btn-primary w-full">Cadastrar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </form>
 
-                <div class="auth-footer">
-                    Já tem uma conta? <a class="auth-link" onclick="app.showLogin()">Faça Login</a>
-                </div>
+                <p style="margin-top: 20px; font-size: 0.9rem;">
+                    Já tem conta? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary); font-weight: 600; text-decoration: none;">Faça Login</a>
+                </p>
             </div>
-
         </div>
     </div>
 
-    <!-- PAINEL DO APLICATIVO (Dashboard) -->
-    <div id="app-container" class="hidden">
-        
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-book-reader mr-2"></i> Domine Português
+    <!-- VIEW: APP -->
+    <div id="app-view" class="hidden">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fas fa-book-open" style="color: var(--primary);"></i> Domine Português
             </div>
-            
             <nav class="sidebar-nav" id="sidebarNav">
                 <!-- Links injetados via JS -->
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-mini-profile">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="user-info-text">
-                        <span class="user-name" id="userNameDisplay">Usuário</span>
-                        <span class="user-role" id="userRoleDisplay">Aluno</span>
-                    </div>
-                </div>
-                <button id="logoutBtn" class="btn btn-outline w-full btn-sm" style="color: #fff; border-color: #555;">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
+            <div class="sidebar-footer" id="desktopFooter">
+                <!-- Botão sair desktop -->
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <div class="main-wrapper">
-            <header class="top-header">
-                <div class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <i class="fas fa-bars"></i>
+        <div class="main-area">
+            <div class="header-bar">
+                <div>
+                    <h2 class="page-title" id="pageTitle">Início</h2>
+                    <p style="color: var(--text-secondary);" id="pageSubtitle">Visão geral das suas atividades</p>
                 </div>
-                <div class="header-actions">
-                    <!-- Espaço para notificações ou busca futura -->
+                <div class="user-chip" onclick="logout()">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div class="user-name" id="userName">Usuário</div>
+                    <i class="fas fa-sign-out-alt" style="color: var(--danger); margin-left: 5px;"></i>
                 </div>
-            </header>
+            </div>
 
-            <main class="content-area" id="mainContent">
-                <!-- Conteúdo dinâmico carregado aqui -->
-                <h2>Carregando...</h2>
-            </main>
+            <div id="contentArea">
+                <!-- Conteúdo Dinâmico -->
+            </div>
         </div>
-
     </div>
 
-    <!-- Lógica Principal -->
-    <script type="module" src="js/app.js"></script>
+    <!-- LÓGICA JAVASCRIPT INTEGRADA -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, updateDoc, arrayUnion, serverTimestamp, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // CONFIGURAÇÃO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
+            authDomain: "domine-portugues.firebaseapp.com",
+            projectId: "domine-portugues",
+            storageBucket: "domine-portugues.firebasestorage.app",
+            messagingSenderId: "717323019793",
+            appId: "1:717323019793:web:46c0baaae240b17dbdf3b0",
+            measurementId: "G-WXQNKS0VY7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        let currentUser = null;
+        let userProfile = null;
+
+        // --- FUNÇÕES GLOBAIS ---
+        window.toggleAuthMode = () => {
+            document.getElementById('loginFormContainer').classList.toggle('hidden');
+            document.getElementById('registerFormContainer').classList.toggle('hidden');
+        };
+
+        window.handleLogin = async (e) => {
+            e.preventDefault();
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+            } catch (err) { alert("Erro: " + err.message); }
+        };
+
+        window.handleRegister = async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('regCode').value;
+            try {
+                // Verifica Turma
+                const q = query(collection(db, 'turmas'), where('code', '==', code));
+                const snap = await getDocs(q);
+                if (snap.empty) throw new Error('Código de turma inválido!');
+                
+                const turmaId = snap.docs[0].id;
+                const cred = await createUserWithEmailAndPassword(auth, document.getElementById('regEmail').value, document.getElementById('regPassword').value);
+                
+                // Cria Perfil
+                await setDoc(doc(db, 'users', cred.user.uid), {
+                    uid: cred.user.uid,
+                    name: document.getElementById('regName').value,
+                    email: cred.user.email,
+                    role: 'aluno',
+                    turmas: [turmaId]
+                });
+                
+                // Adiciona à Turma
+                await updateDoc(doc(db, 'turmas', turmaId), { alunos: arrayUnion(cred.user.uid) });
+
+            } catch (err) { alert("Erro: " + err.message); }
+        };
+
+        window.handleGoogleLogin = async () => {
+            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { alert(e.message); }
+        };
+
+        window.logout = () => signOut(auth);
+
+        // --- APP LOGIC ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // Carrega perfil
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if (snap.exists()) {
+                    userProfile = snap.data();
+                    initApp();
+                } else {
+                    // Fallback para login Google sem cadastro prévio
+                    userProfile = { name: user.displayName, role: 'aluno', email: user.email, uid: user.uid };
+                    if(user.email === 'domenico.suriale@ifpr.edu.br') userProfile.role = 'admin';
+                    await setDoc(doc(db, 'users', user.uid), userProfile);
+                    initApp();
+                }
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+            } else {
+                document.getElementById('app-view').classList.add('hidden');
+                document.getElementById('auth-view').classList.remove('hidden');
+            }
+        });
+
+        function initApp() {
+            document.getElementById('userName').innerText = userProfile.name;
+            document.getElementById('userAvatar').innerText = userProfile.name[0];
+            
+            const nav = document.getElementById('sidebarNav');
+            let links = `
+                <div class="nav-item active" onclick="loadPage('home', this)"><i class="fas fa-home"></i> Início</div>
+            `;
+
+            if (userProfile.role === 'admin') {
+                links += `
+                    <div class="nav-item" onclick="loadPage('admin-turmas', this)"><i class="fas fa-users"></i> Gerir Turmas</div>
+                    <div class="nav-item" onclick="loadPage('admin-post', this)"><i class="fas fa-pen-nib"></i> Publicar</div>
+                `;
+            } else {
+                links += `
+                    <div class="nav-item" onclick="loadPage('my-turmas', this)"><i class="fas fa-graduation-cap"></i> Minhas Aulas</div>
+                `;
+            }
+            links += `<div class="nav-item" onclick="loadPage('chat', this)"><i class="fas fa-comments"></i> Chat da Turma</div>`;
+            nav.innerHTML = links;
+            
+            loadPage('home');
+        }
+
+        window.loadPage = async (page, el) => {
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            }
+
+            const main = document.getElementById('contentArea');
+            document.getElementById('pageTitle').innerText = page === 'home' ? 'Bem-vindo de volta!' : 'Área de Estudo';
+
+            if (page === 'home') {
+                // GRADE DE HORÁRIOS DO DOMENICO
+                main.innerHTML = `
+                    <div class="ios-card fade-in">
+                        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="card-title">Agenda Semanal - Prof. Domenico</div>
+                        <div style="overflow-x:auto;">
+                            <table class="ios-table">
+                                <thead><tr><th>Horário</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th></tr></thead>
+                                <tbody>
+                                    <tr style="background:#f9f9f9"><td>10:00-12:00</td><td>Atendimento</td><td>-</td><td>Atendimento</td><td>Atendimento</td><td>Atendimento</td></tr>
+                                    <tr><td>13:30-15:30</td><td>Mecânica 1</td><td>Automação 1</td><td>Jogos 1</td><td>-</td><td>-</td></tr>
+                                    <tr><td>16:00-18:00</td><td>-</td><td>-</td><td>-</td><td>Info 1</td><td>-</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="grid-dashboard" style="margin-top:20px;">
+                        <div class="ios-card">
+                            <div class="card-icon"><i class="fas fa-bell"></i></div>
+                            <div class="card-title">Avisos</div>
+                            <p class="card-desc">Bem-vindo ao novo sistema!</p>
+                        </div>
+                    </div>
+                `;
+            } else if (page === 'my-turmas') {
+                main.innerHTML = '<h3>Carregando turmas...</h3>';
+                const q = query(collection(db, 'turmas'), where('alunos', 'array-contains', userProfile.uid));
+                const snap = await getDocs(q);
+                let html = '<div class="grid-dashboard">';
+                snap.forEach(d => {
+                    html += `
+                        <div class="ios-card fade-in">
+                            <div class="card-icon"><i class="fas fa-book"></i></div>
+                            <div class="card-title">${d.data().name}</div>
+                            <p class="card-desc">Código: ${d.data().code}</p>
+                            <button class="btn btn-primary" style="margin-top:10px;" onclick="alert('Abrir material')">Acessar Material</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                main.innerHTML = html;
+            } else if (page === 'admin-turmas') {
+                 const snap = await getDocs(collection(db, 'turmas'));
+                 let html = '<button class="btn btn-primary" style="width:auto; margin-bottom:20px;" onclick="createTurma()">+ Nova Turma</button><div class="grid-dashboard">';
+                 snap.forEach(d => {
+                    html += `<div class="ios-card"><div class="card-title">${d.data().name}</div><code>${d.data().code}</code></div>`;
+                 });
+                 main.innerHTML = html + '</div>';
+            }
+        };
+        
+        window.createTurma = async () => {
+            const nome = prompt("Nome da turma");
+            const codigo = prompt("Código da turma");
+            if(nome && codigo) {
+                await addDoc(collection(db, 'turmas'), { name: nome, code: codigo, alunos: [] });
+                loadPage('admin-turmas');
+            }
+        }
+    </script>
 </body>
 </html>
