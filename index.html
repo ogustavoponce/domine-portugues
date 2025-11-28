@@ -5,44 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Domine Português | IFPR</title>
     
-    <!-- Favicon -->
     <link rel="shortcut icon" href="favicon.jpg" type="image/jpg">
-
-    <!-- Fontes (Inter e SF Pro Display concept) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Ícones (Phosphor Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Container de Notificações -->
     <div id="toast-container"></div>
 
-    <!-- Fundo Animado (Azul da Identidade) -->
-    <div class="animated-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="glass-mesh"></div>
-    </div>
+    <!-- Fundo Animado Premium (O mesmo que você gostou) -->
+    <div class="animated-bg"></div>
 
-    <!-- === TELA DE LOGIN / CADASTRO === -->
+    <!-- === TELA DE LOGIN === -->
     <div id="auth-view" class="view-container active">
-        <div class="glass-card fade-in auth-card-size">
+        <div class="glass-card fade-in">
             <div class="logo-area">
-                <!-- Sua Logo Aqui -->
-                <img src="logo.jpg" alt="Domine Português Logo" class="auth-logo">
+                <img src="logo.jpg" alt="Logo" class="auth-logo">
             </div>
-            
-            <h1 id="auth-title">Bem-vindo</h1>
-            <p class="subtitle" id="auth-subtitle">Sua plataforma completa de ensino.</p>
+            <h1 id="auth-title">Acesso Restrito</h1>
+            <p class="subtitle" id="auth-subtitle">Plataforma de Ensino IFPR</p>
 
-            <!-- Login Form -->
             <form id="login-form" class="auth-form">
                 <div class="input-group">
                     <i class="ph ph-envelope-simple"></i>
@@ -53,74 +38,57 @@
                     <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn btn-primary">
-                    <span>Acessar Plataforma</span>
+                    <span>Entrar</span>
                     <i class="ph ph-arrow-right"></i>
                 </button>
             </form>
 
-            <!-- Register Form (Oculto inicialmente) -->
             <form id="register-form" class="auth-form hidden">
-                <div class="input-group">
-                    <i class="ph ph-user"></i>
-                    <input type="text" id="reg-name" placeholder="Nome Completo" required>
-                </div>
-                <div class="input-group">
-                    <i class="ph ph-envelope-simple"></i>
-                    <input type="email" id="reg-email" placeholder="E-mail" required autocomplete="email">
-                </div>
-                <div class="input-group">
-                    <i class="ph ph-student"></i>
-                    <input type="text" id="reg-class-code" placeholder="Código da Turma (Ex: IFPR-3A)" required>
-                </div>
-                <div class="input-group">
-                    <i class="ph ph-lock-key"></i>
-                    <input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6" autocomplete="new-password">
-                </div>
-                <button type="submit" class="btn btn-primary">Criar Conta</button>
+                <div class="input-group"><i class="ph ph-user"></i><input type="text" id="reg-name" placeholder="Nome Completo" required></div>
+                <div class="input-group"><i class="ph ph-envelope-simple"></i><input type="email" id="reg-email" placeholder="E-mail" required></div>
+                <div class="input-group"><i class="ph ph-student"></i><input type="text" id="reg-class-code" placeholder="Código da Turma" required></div>
+                <div class="input-group"><i class="ph ph-lock-key"></i><input type="password" id="reg-pass" placeholder="Senha" required minlength="6"></div>
+                <button type="submit" class="btn btn-primary">Criar Cadastro</button>
             </form>
 
-            <div class="divider">ou entre com</div>
-
+            <div class="divider">Acesso Rápido</div>
             <div class="social-buttons">
-                <button id="btn-google" class="btn btn-social">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="20">
-                    Google
-                </button>
+                <button id="btn-google" class="btn btn-social"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google</button>
                 <button id="btn-apple" class="btn btn-social">
-                    <i class="ph ph-apple-logo" style="font-size: 20px; color: #000;"></i>
-                    Apple
+                    <svg width="14" height="17" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.2307 14.5057C10.592 15.4227 9.88235 16.334 8.81491 16.3537C7.78857 16.3751 7.45664 15.7441 6.27364 15.7441C5.08796 15.7441 4.71714 16.3509 3.73357 16.3751C2.6865 16.4179 1.83686 15.3414 1.17143 14.382C-0.198929 12.404 -0.375929 8.87813 1.15179 6.22556C1.9085 4.90999 3.26436 4.07927 4.54471 4.05784C5.54143 4.03642 6.48393 4.7307 7.09429 4.7307C7.70207 4.7307 8.83607 3.9107 9.99179 4.03356C10.4354 4.05213 11.6743 4.20927 12.5761 5.5327C12.5029 5.57842 10.6621 6.64984 10.6864 8.78384C10.7093 11.2381 12.8396 12.0638 12.8682 12.0767C12.8482 12.1324 12.5318 13.1896 11.7504 14.3291L11.2307 14.5057ZM6.89071 2.70927C7.43643 2.04642 7.79929 1.1307 7.70071 0.224991C6.91357 0.256419 5.96107 0.749277 5.39321 1.41499C4.88893 1.99642 4.4925 2.94356 4.59964 3.82499C5.47464 3.89213 6.37643 3.37642 6.89071 2.70927Z" fill="black"/></svg> Apple
                 </button>
             </div>
 
-            <p class="switch-text">
-                <span id="text-switch">Não tem conta?</span> 
-                <a href="#" id="btn-toggle-auth">Cadastre-se</a>
-            </p>
+            <p class="switch-text"><span id="text-switch">Novo aluno?</span> <a href="#" id="btn-toggle-auth">Cadastrar-se</a></p>
         </div>
     </div>
 
-    <!-- === TELA DO APP (DASHBOARD) === -->
+    <!-- === APP VIEW === -->
     <div id="app-view" class="view-container">
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
             <div class="brand">
-                <img src="logo.jpg" alt="Logo" class="sidebar-logo">
+                <img src="logo.jpg" class="sidebar-logo">
                 <span>Domine<br>Português</span>
             </div>
             
             <nav class="nav-menu">
-                <div class="nav-item active" data-target="home">
-                    <i class="ph ph-house"></i> <span>Início</span>
+                <div class="nav-item active" data-target="home"><i class="ph ph-house"></i> <span>Visão Geral</span></div>
+                
+                <!-- Admin Only -->
+                <div id="admin-menu-items" class="hidden">
+                    <div class="nav-label">GESTÃO</div>
+                    <div class="nav-item" data-target="admin-classes"><i class="ph ph-chalkboard-teacher"></i> <span>Turmas</span></div>
+                    <div class="nav-item" data-target="admin-students"><i class="ph ph-users"></i> <span>Alunos</span></div>
                 </div>
-                <div class="nav-item" data-target="classes">
-                    <i class="ph ph-chalkboard-teacher"></i> <span>Aulas e Materiais</span>
-                </div>
-                <div class="nav-item" data-target="chat">
-                    <i class="ph ph-chat-circle-dots"></i> <span>Chat da Turma</span>
+                
+                <!-- Student Only -->
+                <div id="student-menu-items">
+                    <div class="nav-item" data-target="my-class"><i class="ph ph-student"></i> <span>Minha Turma</span></div>
                 </div>
             </nav>
 
-            <div class="user-profile" id="btn-logout" title="Sair">
+            <div class="user-profile" id="btn-logout">
                 <div class="avatar" id="user-avatar">U</div>
                 <div class="user-info">
                     <span class="name" id="user-name">...</span>
@@ -130,20 +98,69 @@
             </div>
         </aside>
 
-        <!-- Conteúdo Principal -->
+        <!-- Main Content -->
         <main class="main-content">
-            <header class="mobile-header glass-panel">
-                <img src="logo.jpg" alt="Logo" style="height: 30px;">
+            <header class="mobile-header">
+                <img src="logo.jpg" style="height:30px">
                 <button id="mobile-menu-toggle"><i class="ph ph-list"></i></button>
             </header>
-
-            <div id="dynamic-content">
-                <!-- Conteúdo injetado via JS -->
-            </div>
+            <div id="dynamic-content"></div>
         </main>
     </div>
 
-    <!-- Lógica (Módulo) -->
+    <!-- MODAIS (Para criar tarefas, notas, etc) -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <!-- Criar Turma -->
+        <div id="modal-class" class="glass-card modal-card hidden">
+            <h3>Nova Turma</h3>
+            <input type="text" id="new-class-name" placeholder="Nome (Ex: 3º Ano A)">
+            <input type="text" id="new-class-code" placeholder="Código Único (Ex: 3ANO-A)">
+            <div class="modal-actions">
+                <button class="btn-social" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="confirmCreateClass()">Criar</button>
+            </div>
+        </div>
+        <!-- Postar Material -->
+        <div id="modal-material" class="glass-card modal-card hidden">
+            <h3>Novo Material/Aviso</h3>
+            <input type="text" id="mat-title" placeholder="Título">
+            <textarea id="mat-desc" placeholder="Descrição..." rows="3"></textarea>
+            <input type="text" id="mat-link" placeholder="Link (Opcional)">
+            <div class="modal-actions">
+                <button class="btn-social" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="confirmPostMaterial()">Postar</button>
+            </div>
+        </div>
+        <!-- Postar Atividade -->
+        <div id="modal-activity" class="glass-card modal-card hidden">
+            <h3>Nova Atividade</h3>
+            <input type="text" id="act-title" placeholder="Título">
+            <textarea id="act-desc" placeholder="Instruções..." rows="3"></textarea>
+            <input type="date" id="act-date">
+            <div class="modal-actions">
+                <button class="btn-social" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="confirmPostActivity()">Criar Tarefa</button>
+            </div>
+        </div>
+        <!-- Lançar Nota -->
+        <div id="modal-concept" class="glass-card modal-card hidden">
+            <h3>Lançar Conceito</h3>
+            <p id="concept-student-name" style="margin-bottom:10px; font-weight:600;"></p>
+            <input type="hidden" id="concept-student-id">
+            <select id="concept-value">
+                <option value="A">Conceito A</option>
+                <option value="B">Conceito B</option>
+                <option value="C">Conceito C</option>
+                <option value="D">Conceito D</option>
+            </select>
+            <input type="text" id="concept-obs" placeholder="Observação (Ex: Prova 1)">
+            <div class="modal-actions">
+                <button class="btn-social" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="confirmPostConcept()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
