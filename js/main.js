@@ -81,19 +81,40 @@ async function loadApp(user) {
   document.querySelector('.sidebar-avatar').textContent = userData.name.charAt(0).toUpperCase();
   document.getElementById('btnLogout').onclick = () => signOut(auth);
 
-  // Grade do Domenico
   const container = document.getElementById('dynamic-content');
-  container.innerHTML = `
+  
+  // --- GRADE DE HORÁRIOS (AULAS À TARDE) ---
+  const gradeHtml = `
     <div class="dp-card">
-      <div class="dp-card-title">📅 Grade de Horários - Prof. Domenico</div>
+      <div class="dp-card-title">Grade de Horários - Prof. Domenico</div>
       <div style="overflow-x:auto;">
       <table class="table">
         <thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead>
         <tbody>
-          <tr><td>08:00-10:00</td><td>Jogos 1</td><td>Mecânica 1</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr style="background:#eaf4fb"><td>10:00-12:00</td><td>Atendimento</td><td>-</td><td>Atendimento</td><td>Atendimento</td><td>Atendimento</td></tr>
-          <tr><td>13:30-15:30</td><td>-</td><td>-</td><td>Automação 1</td><td>-</td><td>-</td></tr>
-          <tr><td>16:00-18:00</td><td>-</td><td>-</td><td>-</td><td>Info 1</td><td>-</td></tr>
+          <tr style="background:#eaf4fb">
+            <td>10:00 - 12:00</td>
+            <td>Atendimento</td>
+            <td style="color:#999">-</td>
+            <td>Atendimento</td>
+            <td>Atendimento</td>
+            <td>Atendimento</td>
+          </tr>
+          <tr>
+            <td>13:30 - 15:30</td>
+            <td>Mecânica 1</td>
+            <td>Automação 1</td>
+            <td>Jogos 1</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>16:00 - 18:00</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Informática 1</td>
+            <td>-</td>
+          </tr>
         </tbody>
       </table>
       </div>
@@ -101,6 +122,8 @@ async function loadApp(user) {
     <h3 style="margin: 20px 0; color:#114060;">Minhas Turmas</h3>
     <div id="turmas-list" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">Carregando...</div>
   `;
+
+  container.innerHTML = gradeHtml;
 
   const q = userData.role === 'admin' ? query(collection(db, 'turmas')) : query(collection(db, 'turmas'), where('alunos', 'array-contains', user.uid));
   const snap = await getDocs(q);
