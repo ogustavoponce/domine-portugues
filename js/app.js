@@ -7,8 +7,7 @@ import {
     GoogleAuthProvider, 
     OAuthProvider,
     signOut, 
-    onAuthStateChanged,
-    updateProfile 
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { 
     getFirestore, 
@@ -22,11 +21,10 @@ import {
     addDoc,
     serverTimestamp,
     onSnapshot,
-    orderBy,
-    updateDoc
+    orderBy
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// SUAS CHAVES DO FIREBASE
+// CONFIGURAÇÃO FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
     authDomain: "domine-portugues.firebaseapp.com",
@@ -41,12 +39,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// CONSTANTE DO ADMIN (Blindado contra erros de digitação)
+const ADMIN_EMAIL = "domenico.suriale@ifpr.edu.br";
+
 // ESTADO GLOBAL
 const state = {
     user: null,
     profile: null,
-    isAdmin: false,
-    currentClassCode: null
+    isAdmin: false
 };
 
 // ELEMENTOS DOM
@@ -57,6 +57,7 @@ const el = {
         formRegister: document.getElementById('register-form'),
         btnToggle: document.getElementById('btn-toggle-auth'),
         title: document.getElementById('auth-title'),
+        subtitle: document.getElementById('auth-subtitle'),
         btnGoogle: document.getElementById('btn-google'),
         btnApple: document.getElementById('btn-apple')
     },
@@ -76,257 +77,253 @@ function init() {
     setupListeners();
     onAuthStateChanged(auth, async (user) => {
         if (user) {
+            console.log("Usuário logado:", user.email);
             state.user = user;
-            await loadProfile(user.uid);
+            await loadProfile(user);
             el.views.auth.classList.remove('active');
             el.views.app.classList.add('active');
             navigateTo('home');
         } else {
-            resetState();
+            console.log("Usuário deslogado");
+            state.user = null;
+            state.profile = null;
+            state.isAdmin = false;
             el.views.app.classList.remove('active');
             el.views.auth.classList.add('active');
         }
     });
 }
 
-function resetState() {
-    state.user = null;
-    state.profile = null;
-    state.isAdmin = false;
-    state.currentClassCode = null;
-}
-
-// --- PERFIL E DADOS ---
-async function loadProfile(uid) {
+// --- PERFIL E VERIFICAÇÃO DE ADMIN ---
+async function loadProfile(user) {
     try {
-        const docRef = doc(db, "users", uid);
+        // 1. Verificação de Admin imediata e robusta
+        const emailAtual = user.email.toLowerCase().trim();
+        state.isAdmin = (emailAtual === ADMIN_EMAIL);
+        
+        console.log("É admin?", state.isAdmin);
+
+        // 2. Buscar perfil no Firestore
+        const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
             state.profile = docSnap.data();
-            state.isAdmin = state.profile.role === 'admin';
-            state.currentClassCode = state.profile.classCode;
         } else {
-            // Perfil temporário pós-login social
+            // Cria perfil temporário em memória se não existir
             state.profile = { 
-                name: state.user.displayName || "Novo Usuário", 
-                role: 'aluno', 
-                email: state.user.email 
+                name: user.displayName || "Usuário", 
+                role: state.isAdmin ? 'admin' : 'aluno',
+                email: user.email 
             };
-            // ADMIN CHECK
-            if(state.user.email === 'domenico.suriale@ifpr.edu.br') {
-                state.isAdmin = true;
-                state.profile.role = 'admin';
-            }
         }
-        updateUI();
-    } catch (e) { console.error(e); }
+
+        // Forçar role admin no objeto de perfil se o email bater
+        if (state.isAdmin) state.profile.role = 'admin';
+
+        updateSidebarUI();
+    } catch (e) { console.error("Erro perfil:", e); }
 }
 
-function updateUI() {
-    const name = state.profile.name || "Usuário";
-    el.app.userName.textContent = name.split(' ')[0];
-    el.app.userRole.textContent = state.isAdmin ? "Professor / Admin" : "Aluno";
-    el.app.userAvatar.textContent = name[0].toUpperCase();
+function updateSidebarUI() {
+    const firstName = state.profile.name.split(' ')[0];
+    el.app.userName.textContent = firstName;
+    el.app.userRole.textContent = state.isAdmin ? "Professor" : "Aluno";
+    el.app.userAvatar.textContent = firstName[0].toUpperCase();
 }
 
 // --- ROTEAMENTO ---
 window.navigateTo = function(page) {
-    // UI Navegação
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     const activeItem = document.querySelector(`[data-target="${page}"]`);
     if(activeItem) activeItem.classList.add('active');
-    el.app.sidebar.classList.remove('open');
+    
+    el.app.sidebar.classList.remove('open'); // Fecha mobile menu
 
-    // Renderizar Conteúdo
     if (page === 'home') renderHome();
     else if (page === 'classes') renderClasses();
     else if (page === 'chat') renderChat();
 };
 
-// --- RENDER: HOME (COM TABELA DE HORÁRIOS) ---
+// --- RENDERIZADORES ---
+
 async function renderHome() {
-    // Buscar horário salvo
-    let scheduleData = {
-        seg: "Atendimento 10h",
-        qua: "Aula 3B",
-        sex: "Coordenação"
-    };
-    
+    // Horários (Admin edita, Aluno vê)
+    let schedule = { seg: "", qua: "", sex: "" };
     try {
-        const docSnap = await getDoc(doc(db, "config", "schedule"));
-        if(docSnap.exists()) scheduleData = docSnap.data();
-    } catch(e) {}
+        const snap = await getDoc(doc(db, "config", "schedule"));
+        if(snap.exists()) schedule = snap.data();
+    } catch(e){}
 
-    const isEditable = state.isAdmin ? "" : "readonly";
-    const editHint = state.isAdmin ? "<small>(Edite os campos abaixo e eles salvam automaticamente)</small>" : "";
+    const readOnly = state.isAdmin ? "" : "readonly";
+    const greeting = state.isAdmin ? "Bem-vindo, Professor Domenico." : `Olá, ${state.profile.name.split(' ')[0]}.`;
+    const subtitle = state.isAdmin ? "Gestão da Plataforma Ativa." : "Aqui está o resumo da sua semana.";
 
-    el.app.content.innerHTML = `
+    let html = `
         <div class="fade-in">
-            <h2>Olá, ${state.profile.name.split(' ')[0]}!</h2>
-            <div class="dashboard-card" style="border-left: 5px solid var(--primary)">
-                <h3><i class="ph ph-clock"></i> Horários de Atendimento ${editHint}</h3>
+            <h2>${greeting}</h2>
+            <p style="margin-bottom: 30px;">${subtitle}</p>
+
+            <div class="dashboard-card">
+                <h3><i class="ph ph-clock"></i> Horários de Atendimento</h3>
                 <table class="schedule-table">
-                    <thead><tr><th>Dia</th><th>Disponibilidade / Local</th></tr></thead>
+                    <thead><tr><th>Dia da Semana</th><th>Disponibilidade / Local</th></tr></thead>
                     <tbody>
-                        <tr><td>Segunda</td><td><input class="schedule-input" id="sched-seg" value="${scheduleData.seg || ''}" ${isEditable} onchange="saveSchedule()"></td></tr>
-                        <tr><td>Quarta</td><td><input class="schedule-input" id="sched-qua" value="${scheduleData.qua || ''}" ${isEditable} onchange="saveSchedule()"></td></tr>
-                        <tr><td>Sexta</td><td><input class="schedule-input" id="sched-sex" value="${scheduleData.sex || ''}" ${isEditable} onchange="saveSchedule()"></td></tr>
+                        <tr><td>SEGUNDA</td><td><input class="schedule-input" id="sc-seg" value="${schedule.seg}" ${readOnly} placeholder="Indisponível"></td></tr>
+                        <tr><td>QUARTA</td><td><input class="schedule-input" id="sc-qua" value="${schedule.qua}" ${readOnly} placeholder="Indisponível"></td></tr>
+                        <tr><td>SEXTA</td><td><input class="schedule-input" id="sc-sex" value="${schedule.sex}" ${readOnly} placeholder="Indisponível"></td></tr>
                     </tbody>
                 </table>
+                ${state.isAdmin ? '<div style="text-align:right; margin-top:10px;"><button class="btn btn-primary" onclick="saveSchedule()" style="width:auto; padding:10px 20px; font-size:14px;">Salvar Alterações</button></div>' : ''}
             </div>
-            ${state.isAdmin ? renderAdminPanel() : renderStudentInfo()}
+            
+            ${state.isAdmin ? renderAdminWidgets() : renderStudentWidgets()}
+        </div>
+    `;
+    el.app.content.innerHTML = html;
+}
+
+function renderAdminWidgets() {
+    return `
+        <div class="dashboard-card" style="background: #F0F8FF; border: 1px solid #007AFF;">
+            <h3><i class="ph ph-crown"></i> Painel do Professor</h3>
+            <p>Você tem acesso total ao sistema.</p>
+            <div style="display:flex; gap:12px; margin-top:20px;">
+                <button class="btn-primary" style="width:auto;" onclick="alert('Criar Turma: Em breve')">Nova Turma</button>
+                <button class="btn-social" style="width:auto;" onclick="navigateTo('classes')">Gerenciar Materiais</button>
+            </div>
         </div>
     `;
 }
 
-function renderAdminPanel() {
+function renderStudentWidgets() {
     return `
         <div class="dashboard-card">
-            <h3>Painel Administrativo</h3>
-            <p>Gerencie turmas e alunos.</p>
-            <div style="display:flex; gap:10px; margin-top:15px">
-                <button class="btn-primary" onclick="alert('Funcionalidade de Criar Turma em breve!')">Criar Turma</button>
-                <button class="btn-social" onclick="navigateTo('classes')">Ver Turmas</button>
-            </div>
+            <h3>Sua Turma: ${state.profile.classCode || "Não definida"}</h3>
+            <p>Verifique o chat para avisos recentes.</p>
         </div>
     `;
 }
 
-function renderStudentInfo() {
-    return `
-        <div class="dashboard-card">
-            <h3>Sua Turma: ${state.currentClassCode || 'Não definida'}</h3>
-            <p>Acesse "Aulas" para ver o material disponível.</p>
-        </div>
-    `;
-}
-
-// Função Global para salvar horário
 window.saveSchedule = async function() {
     if(!state.isAdmin) return;
     const data = {
-        seg: document.getElementById('sched-seg').value,
-        qua: document.getElementById('sched-qua').value,
-        sex: document.getElementById('sched-sex').value
+        seg: document.getElementById('sc-seg').value,
+        qua: document.getElementById('sc-qua').value,
+        sex: document.getElementById('sc-sex').value
     };
     await setDoc(doc(db, "config", "schedule"), data);
-    // Feedback visual simples pode ser adicionado aqui
+    alert("Horários atualizados!");
 };
 
-// --- RENDER: CLASSES ---
 async function renderClasses() {
-    el.app.content.innerHTML = `<h2>Aulas e Materiais</h2><p>Carregando...</p>`;
-    // Se admin, vê tudo. Se aluno, vê sua turma.
-    const q = state.isAdmin ? collection(db, "classes") : query(collection(db, "classes"), where("code", "==", state.currentClassCode || ""));
+    el.app.content.innerHTML = `<h2 class="fade-in">Aulas e Materiais</h2><p>Carregando...</p>`;
+    // Lógica simples: Admin vê tudo
+    const q = state.isAdmin ? collection(db, "classes") : query(collection(db, "classes"), where("code", "==", state.profile.classCode || ""));
     
     try {
         const snap = await getDocs(q);
         let html = `<div class="fade-in"><h2>Aulas e Materiais</h2>`;
+        if(snap.empty) html += `<div class="dashboard-card"><p>Nenhuma turma encontrada.</p></div>`;
         
-        if(snap.empty) {
-            html += `<p>Nenhuma turma encontrada. Entre em contato com o professor.</p></div>`;
-        } else {
-            snap.forEach(doc => {
-                const d = doc.data();
-                html += `
-                    <div class="dashboard-card">
-                        <h3>${d.name}</h3>
-                        <p>Código: <strong>${d.code}</strong></p>
-                        <button class="btn-primary" style="margin-top:10px; width:auto" onclick="alert('Abrir PDF/Material')">Ver Materiais</button>
-                    </div>
-                `;
-            });
-            html += `</div>`;
-        }
-        el.app.content.innerHTML = html;
-    } catch(e) { el.app.content.innerHTML = "Erro ao carregar."; }
+        snap.forEach(doc => {
+            const d = doc.data();
+            html += `
+                <div class="dashboard-card">
+                    <h3>${d.name}</h3>
+                    <p style="margin-bottom:10px">Código: <strong>${d.code}</strong></p>
+                    <button class="btn-social" style="width:auto; border-radius:8px;" onclick="alert('PDFs em breve')">
+                        <i class="ph ph-file-pdf"></i> Acessar Material
+                    </button>
+                </div>
+            `;
+        });
+        el.app.content.innerHTML = html + "</div>";
+    } catch(e) { el.app.content.innerHTML = "Erro ao buscar aulas."; }
 }
 
-// --- RENDER: CHAT (TEMPO REAL) ---
-let unsubscribeChat = null;
-
+let unsubChat;
 function renderChat() {
-    // Se for admin, precisamos escolher qual chat ele vê. Por simplicidade, vamos ver o chat da turma "GERAL" ou o primeiro disponível.
-    // Para MVP, vamos assumir que o admin vê o chat da turma que ele digitar ou selecionar.
-    // Aluno vê o da sua turma.
-    
-    const chatRoom = state.currentClassCode || "GERAL"; // Fallback
-
+    const sala = state.profile.classCode || "GERAL";
     el.app.content.innerHTML = `
-        <div class="fade-in" style="height:100%">
-            <h2>Chat da Turma: ${chatRoom}</h2>
+        <div class="fade-in" style="height:100%; display:flex; flex-direction:column;">
+            <h2 style="margin-bottom:10px;">Chat: ${sala}</h2>
             <div class="chat-container">
-                <div id="chat-messages" class="chat-messages">
-                    <p style="text-align:center; opacity:0.5">Carregando mensagens...</p>
-                </div>
+                <div id="chat-box" class="chat-messages"></div>
                 <form id="chat-form" class="chat-input-area">
-                    <input type="text" id="chat-input" class="chat-input" placeholder="Digite sua mensagem..." required autocomplete="off">
-                    <button type="submit" class="btn-send"><i class="ph ph-paper-plane-right"></i></button>
+                    <input type="text" id="chat-msg" class="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
+                    <button type="submit" class="btn-primary" style="width:40px; height:40px; border-radius:50%; padding:0;">
+                        <i class="ph ph-paper-plane-right" style="font-size:18px;"></i>
+                    </button>
                 </form>
             </div>
         </div>
     `;
 
-    // Listener Firestore
-    const q = query(collection(db, `chats/${chatRoom}/messages`), orderBy("createdAt", "asc"));
+    const q = query(collection(db, `chats/${sala}/messages`), orderBy("createdAt", "asc"));
+    if(unsubChat) unsubChat();
     
-    if(unsubscribeChat) unsubscribeChat(); // Limpar anterior
-
-    unsubscribeChat = onSnapshot(q, (snapshot) => {
-        const div = document.getElementById('chat-messages');
-        if(!div) return;
-        div.innerHTML = "";
-        
-        snapshot.forEach(doc => {
-            const msg = doc.data();
-            const isMine = msg.uid === state.user.uid;
-            const msgEl = document.createElement('div');
-            msgEl.className = `message ${isMine ? 'msg-mine' : 'msg-other'}`;
-            msgEl.innerHTML = `
-                ${!isMine ? `<span class="msg-sender">${msg.senderName}</span>` : ''}
+    unsubChat = onSnapshot(q, (snapshot) => {
+        const box = document.getElementById('chat-box');
+        if(!box) return;
+        box.innerHTML = "";
+        snapshot.forEach(d => {
+            const msg = d.data();
+            const isMe = msg.uid === state.user.uid;
+            const div = document.createElement('div');
+            div.className = `message ${isMe ? 'msg-mine' : 'msg-other'}`;
+            // Se for professor, adiciona badge
+            const senderName = msg.senderRole === 'admin' ? `Professor ${msg.senderName}` : msg.senderName;
+            
+            div.innerHTML = `
+                <strong style="font-size:11px; opacity:0.7; display:block; margin-bottom:4px">${senderName}</strong>
                 ${msg.text}
             `;
-            div.appendChild(msgEl);
+            box.appendChild(div);
         });
-        div.scrollTop = div.scrollHeight; // Auto scroll
+        box.scrollTop = box.scrollHeight;
     });
 
-    // Enviar Msg
     document.getElementById('chat-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const input = document.getElementById('chat-input');
-        const text = input.value.trim();
+        const inp = document.getElementById('chat-msg');
+        const text = inp.value.trim();
         if(!text) return;
-
-        await addDoc(collection(db, `chats/${chatRoom}/messages`), {
-            text: text,
+        
+        await addDoc(collection(db, `chats/${sala}/messages`), {
+            text, 
             uid: state.user.uid,
             senderName: state.profile.name,
+            senderRole: state.isAdmin ? 'admin' : 'student',
             createdAt: serverTimestamp()
         });
-        input.value = "";
+        inp.value = "";
     });
 }
 
-// --- EVENTOS DE AUTH ---
+// --- LISTENERS ---
 function setupListeners() {
+    // Alternar Login/Cadastro
     el.auth.btnToggle.addEventListener('click', (e) => {
         e.preventDefault();
         const isLogin = !el.auth.formLogin.classList.contains('hidden');
         el.auth.formLogin.classList.toggle('hidden', isLogin);
         el.auth.formRegister.classList.toggle('hidden', !isLogin);
-        el.auth.title.textContent = isLogin ? "Criar Conta" : "Bem-vindo";
-        el.auth.btnToggle.textContent = isLogin ? "Voltar para Login" : "Cadastre-se";
+        el.auth.title.textContent = isLogin ? "Nova Conta" : "Bem-vindo";
+        el.auth.subtitle.textContent = isLogin ? "Preencha os dados abaixo." : "Sua plataforma completa de ensino.";
+        el.auth.btnToggle.textContent = isLogin ? "Voltar ao Login" : "Cadastre-se";
     });
 
+    // Login
     el.auth.formLogin.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
-        try { await signInWithEmailAndPassword(auth, email, pass); } catch(e) { alert(e.message); }
+        try { await signInWithEmailAndPassword(auth, email, pass); } 
+        catch(e) { alert("Erro ao entrar: " + e.message); }
     });
 
+    // Cadastro
     el.auth.formRegister.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('reg-name').value;
@@ -335,35 +332,28 @@ function setupListeners() {
         const code = document.getElementById('reg-class-code').value;
 
         try {
-            // Verifica turma (Simplificado para permitir primeiro cadastro)
-            const q = query(collection(db, "classes"), where("code", "==", code));
-            const snap = await getDocs(q);
-            // ATENÇÃO: Descomente a linha abaixo quando já tiver criado turmas no painel admin
-            // if (snap.empty) throw new Error("Turma não encontrada.");
+            // Verificar turma (Descomente se já tiver turmas criadas)
+            // const snap = await getDocs(query(collection(db, "classes"), where("code", "==", code)));
+            // if(snap.empty) throw new Error("Código de turma inválido.");
 
             const cred = await createUserWithEmailAndPassword(auth, email, pass);
             await setDoc(doc(db, "users", cred.user.uid), {
                 name, email, role: 'aluno', classCode: code, uid: cred.user.uid
             });
-        } catch(e) { alert("Erro: " + e.message); }
+        } catch(e) { alert(e.message); }
     });
 
-    // Social Login
+    // Social
     el.auth.btnGoogle.addEventListener('click', () => signInWithPopup(auth, new GoogleAuthProvider()));
-    
-    // LOGIN APPLE (Requer configuração no Console Firebase)
     el.auth.btnApple.addEventListener('click', () => {
         const provider = new OAuthProvider('apple.com');
-        signInWithPopup(auth, provider).catch(err => alert("Erro Apple: " + err.message));
+        signInWithPopup(auth, provider).catch(e => alert(e.message));
     });
 
-    el.app.btnLogout.addEventListener('click', () => signOut(auth));
+    // Navegação
     el.app.mobileToggle.addEventListener('click', () => el.app.sidebar.classList.toggle('open'));
-    
-    // Navegação Menu
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => navigateTo(item.dataset.target));
-    });
+    el.app.btnLogout.addEventListener('click', () => signOut(auth));
+    document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', () => navigateTo(i.dataset.target)));
 }
 
 init();
