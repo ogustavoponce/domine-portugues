@@ -16,211 +16,417 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// === EMAIL DO PROFESSOR ===
+// ADMIN MASTER
 const ADMIN_EMAIL = "domenico.suriale@ifpr.edu.br";
 
-const state = { user: null, profile: null, isAdmin: false, activeClassId: null };
-
-const el = {
-    authView: document.getElementById('auth-view'),
-    appView: document.getElementById('app-view'),
-    content: document.getElementById('dynamic-content'),
-    adminMenu: document.getElementById('admin-menu-items'),
-    studentMenu: document.getElementById('student-menu-items'),
-    sidebar: document.querySelector('.sidebar')
+const state = {
+    user: null,
+    profile: null,
+    isAdmin: false,
+    activeClassId: null,
+    tempAttachments: [] // Buffer para anexos antes de salvar
 };
 
-// INIT
+const el = (id) => document.getElementById(id);
+
+// --- INIT ---
 function init() {
     setupListeners();
     onAuthStateChanged(auth, async (user) => {
-        if (user) await handleLogin(user);
-        else handleLogout();
+        if (user) await loadSession(user);
+        else logoutUI();
     });
 }
 
-async function handleLogin(user) {
+// --- AUTH & SESSION ---
+async function loadSession(user) {
     state.user = user;
-    const emailLower = user.email.toLowerCase().trim();
+    const emailNormal = user.email.toLowerCase().trim();
     
-    // Auto Admin Force
-    if (emailLower === ADMIN_EMAIL) {
+    // Auto Admin Logic
+    if (emailNormal === ADMIN_EMAIL) {
         state.isAdmin = true;
-        await updateDoc(doc(db, "users", user.uid), { role: 'admin' }).catch(() => {
-            setDoc(doc(db, "users", user.uid), { role: 'admin', email: user.email }, { merge: true });
-        });
+        await setDoc(doc(db, "users", user.uid), { role: 'admin', email: user.email }, { merge: true });
     }
 
-    let docSnap = await getDoc(doc(db, "users", user.uid));
-    if (!docSnap.exists()) {
-        const newProfile = { name: user.displayName || "Usuário", email: user.email, role: state.isAdmin ? 'admin' : 'aluno', classCode: null };
-        await setDoc(doc(db, "users", user.uid), newProfile);
-        state.profile = newProfile;
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+        const base = { 
+            name: user.displayName || "Novo Usuário", 
+            email: user.email, 
+            role: state.isAdmin ? 'admin' : 'student',
+            classId: null, // Relacional: ID da turma
+            classCode: null // Backup visual
+        };
+        await setDoc(doc(db, "users", user.uid), base);
+        state.profile = base;
     } else {
-        state.profile = docSnap.data();
+        state.profile = snap.data();
     }
-    if(state.isAdmin) state.profile.role = 'admin';
+    if (state.isAdmin) state.profile.role = 'admin';
 
     updateSidebar();
-    el.authView.classList.remove('active');
-    el.appView.classList.add('active');
-    navigateTo('home');
+    el('auth-view').classList.remove('active');
+    el('app-view').classList.add('active');
+    
+    // Roteamento inteligente
+    if (state.isAdmin) navigateTo('dashboard');
+    else if (state.profile.classId) navigateTo('classroom');
+    else navigateTo('profile'); // Manda completar cadastro se sem turma
 }
 
-function handleLogout() {
+function logoutUI() {
     state.user = null; state.profile = null; state.isAdmin = false;
-    el.appView.classList.remove('active'); el.authView.classList.add('active');
+    el('app-view').classList.remove('active');
+    el('auth-view').classList.add('active');
 }
 
 function updateSidebar() {
-    const name = state.profile.name ? state.profile.name.split(' ')[0] : "Usuário";
-    document.getElementById('user-name').textContent = name;
-    document.getElementById('user-role').textContent = state.isAdmin ? "Professor" : "Aluno";
-    document.getElementById('user-avatar').textContent = name[0];
-    if (state.isAdmin) { el.adminMenu.classList.remove('hidden'); el.studentMenu.classList.add('hidden'); }
-    else { el.adminMenu.classList.add('hidden'); el.studentMenu.classList.remove('hidden'); }
+    const p = state.profile;
+    el('u-name').textContent = p.name.split(' ')[0];
+    el('u-role').textContent = state.isAdmin ? "Professor" : "Aluno";
+    el('u-avatar').textContent = p.name[0];
+
+    el('admin-menu').classList.toggle('hidden', !state.isAdmin);
+    el('student-menu').classList.toggle('hidden', state.isAdmin);
 }
 
+// --- NAVIGATION ---
 window.navigateTo = (page) => {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelector(`[data-target="${page}"]`)?.classList.add('active');
-    el.sidebar.classList.remove('open');
-    if (page === 'home') renderHome();
-    else if (page === 'admin-classes') renderAdminClasses();
-    else if (page === 'admin-students') renderAdminStudents();
-    else if (page === 'my-class') openClassView(null, state.profile.classCode);
+    document.querySelector('.sidebar').classList.remove('open');
+    
+    const content = el('dynamic-content');
+    const title = el('page-title');
+
+    if (page === 'dashboard') renderDashboard(content, title);
+    else if (page === 'profile') renderProfile(content, title);
+    else if (page === 'admin-classes') renderAdminClasses(content, title);
+    else if (page === 'admin-students') renderAdminStudents(content, title);
+    else if (page === 'classroom') openClassroom(content, title, state.profile.classId);
 };
 
 // --- RENDERERS ---
-async function renderHome() {
-    let sched = { seg: "", qua: "", sex: "" };
-    try { const s = await getDoc(doc(db, "config", "schedule")); if(s.exists()) sched = s.data(); } catch(e){}
-    const editAttr = state.isAdmin ? "" : "disabled";
 
-    el.content.innerHTML = `
-        <div class="fade-in">
-            <h2>${state.isAdmin ? "Painel de Gestão" : "Bem-vindo"}</h2>
-            <div class="dashboard-card" style="border-left: 5px solid var(--primary)">
-                <h3><i class="ph ph-clock"></i> Horário de Atendimento Geral</h3>
-                <table class="admin-table">
-                    <tr><td>Segunda</td><td><input id="s-seg" value="${sched.seg}" ${editAttr} placeholder="-"></td></tr>
-                    <tr><td>Quarta</td><td><input id="s-qua" value="${sched.qua}" ${editAttr} placeholder="-"></td></tr>
-                    <tr><td>Sexta</td><td><input id="s-sex" value="${sched.sex}" ${editAttr} placeholder="-"></td></tr>
+// 1. DASHBOARD & HORÁRIO GLOBAL
+async function renderDashboard(container, title) {
+    title.innerText = "Visão Geral";
+    let sched = { seg:"", ter:"", qua:"", qui:"", sex:"" };
+    try { const s = await getDoc(doc(db, "config", "schedule")); if(s.exists()) sched=s.data(); } catch(e){}
+    const ro = state.isAdmin ? "" : "readonly";
+
+    container.innerHTML = `
+        <div class="card fade-in">
+            <h3><i class="ph ph-clock"></i> Quadro de Horários</h3>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <tr><td width="20%">Segunda</td><td><input id="s-seg" class="input-field" value="${sched.seg||''}" ${ro}></td></tr>
+                    <tr><td>Terça</td><td><input id="s-ter" class="input-field" value="${sched.ter||''}" ${ro}></td></tr>
+                    <tr><td>Quarta</td><td><input id="s-qua" class="input-field" value="${sched.qua||''}" ${ro}></td></tr>
+                    <tr><td>Quinta</td><td><input id="s-qui" class="input-field" value="${sched.qui||''}" ${ro}></td></tr>
+                    <tr><td>Sexta</td><td><input id="s-sex" class="input-field" value="${sched.sex||''}" ${ro}></td></tr>
                 </table>
-                ${state.isAdmin ? '<button class="btn-primary" onclick="saveSchedule()" style="margin-top:15px; width:auto">Salvar</button>' : ''}
             </div>
-            ${!state.isAdmin ? `<div class="dashboard-card"><h3>Minha Turma: ${state.profile.classCode || "Sem Turma"}</h3><button class="btn-primary" onclick="navigateTo('my-class')">Acessar</button></div>` : ''}
-        </div>`;
+            ${state.isAdmin ? '<div style="margin-top:15px; text-align:right"><button class="btn-primary" style="width:auto" onclick="saveSchedule()">Salvar Horário</button></div>' : ''}
+        </div>
+    `;
 }
 
-window.saveSchedule = async () => {
-    await setDoc(doc(db, "config", "schedule"), {
-        seg: document.getElementById('s-seg').value,
-        qua: document.getElementById('s-qua').value,
-        sex: document.getElementById('s-sex').value
+// 2. PROFILE DO ALUNO
+function renderProfile(container, title) {
+    title.innerText = "Meu Perfil";
+    const p = state.profile;
+    container.innerHTML = `
+        <div class="card fade-in" style="max-width:600px">
+            <h3>Dados Pessoais</h3>
+            <div class="profile-grid">
+                <div class="form-group"><label>Nome</label><input id="p-name" class="input-field" value="${p.name}"></div>
+                <div class="form-group"><label>Telefone/WhatsApp</label><input id="p-phone" class="input-field" value="${p.phone||''}"></div>
+                <div class="form-group"><label>E-mail Recuperação</label><input id="p-rec-email" class="input-field" value="${p.recoveryEmail||''}"></div>
+                <div class="form-group"><label>Código da Turma</label><input class="input-field" value="${p.classCode||'Não vinculado'}" readonly style="background:#eee"></div>
+            </div>
+            <button class="btn-primary" style="margin-top:20px" onclick="saveProfile()">Salvar Alterações</button>
+        </div>
+    `;
+}
+
+// 3. ADMIN: CLASSES (CRUD)
+function renderAdminClasses(container, title) {
+    if(!state.isAdmin) return;
+    title.innerText = "Gerir Turmas";
+    container.innerHTML = `
+        <div style="text-align:right; margin-bottom:20px"><button class="btn-primary" style="width:auto" onclick="openClassModal()">+ Nova Turma</button></div>
+        <div id="classes-list" class="fade-in"></div>
+    `;
+    onSnapshot(collection(db, "classes"), snap => {
+        el('classes-list').innerHTML = snap.docs.map(d => {
+            const c = d.data();
+            return `<div class="card" style="display:flex; justify-content:space-between; align-items:center">
+                <div><strong>${c.name}</strong><br><span class="tag tag-blue">${c.code}</span></div>
+                <div style="display:flex; gap:10px">
+                    <button class="action-btn" title="Entrar" onclick="openClassroom(el('dynamic-content'), el('page-title'), '${d.id}')"><i class="ph ph-arrow-right"></i></button>
+                    <button class="action-btn" title="Editar" onclick="openClassModal('${d.id}', '${c.name}', '${c.code}')"><i class="ph ph-pencil"></i></button>
+                    <button class="action-btn delete" title="Excluir" onclick="deleteDoc(doc(db,'classes','${d.id}'))"><i class="ph ph-trash"></i></button>
+                </div>
+            </div>`;
+        }).join('') || '<p>Sem turmas.</p>';
     });
-    alert("Salvo!");
 }
 
-window.renderAdminClasses = () => {
-    el.content.innerHTML = `
-        <div class="class-header"><h2>Turmas</h2><button class="btn-primary" style="width:auto" onclick="openModal('modal-class')">+ Nova</button></div>
-        <div id="classes-list" class="fade-in">Carregando...</div>`;
-    onSnapshot(collection(db, "classes"), (snap) => {
-        const list = document.getElementById('classes-list'); if(!list) return;
-        let html = "";
+// 4. ADMIN: STUDENTS (SECRETARIA)
+async function renderAdminStudents(container, title) {
+    if(!state.isAdmin) return;
+    title.innerText = "Secretaria Virtual";
+    
+    // Pega todas as turmas para o dropdown de mover
+    const classesSnap = await getDocs(collection(db, "classes"));
+    let classOptions = `<option value="">Selecionar Turma...</option>`;
+    classesSnap.forEach(c => { classOptions += `<option value="${c.id}">${c.data().name}</option>`; });
+    el('move-class-select').innerHTML = classOptions;
+
+    container.innerHTML = `<div class="card fade-in"><div class="table-responsive"><table class="data-table" id="students-table"></table></div></div>`;
+    
+    const q = query(collection(db, "users"), where("role", "!=", "admin"));
+    onSnapshot(q, snap => {
+        let rows = `<thead><tr><th>Nome</th><th>Email</th><th>Turma Atual</th><th>Ações</th></tr></thead><tbody>`;
         snap.forEach(d => {
-            const cls = d.data();
-            html += `<div class="dashboard-card" style="display:flex; justify-content:space-between; align-items:center;">
-                <div><h3>${cls.name}</h3><p>Código: <span class="badge badge-blue">${cls.code}</span></p></div>
-                <div style="display:flex; gap:10px"><button class="btn-social" onclick="openClassView('${d.id}','${cls.code}','${cls.name}')">Entrar</button><button class="btn-icon" onclick="deleteDoc(doc(db,'classes','${d.id}'))"><i class="ph ph-trash" style="color:red"></i></button></div></div>`;
+            const u = d.data();
+            rows += `<tr>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td><span class="tag">${u.classCode || 'Sem Turma'}</span></td>
+                <td>
+                    <button class="action-btn" title="Mover de Turma" onclick="openMoveModal('${d.id}')"><i class="ph ph-arrows-left-right"></i></button>
+                    <button class="action-btn delete" title="Expulsar" onclick="if(confirm('Remover aluno?')) deleteDoc(doc(db,'users','${d.id}'))"><i class="ph ph-user-minus"></i></button>
+                </td>
+            </tr>`;
         });
-        list.innerHTML = html || "<p>Sem turmas.</p>";
+        el('students-table').innerHTML = rows + "</tbody>";
     });
-};
+}
 
-window.renderAdminStudents = async () => {
-    el.content.innerHTML = `<h2>Gerir Alunos</h2><div class="dashboard-card"><table class="admin-table" id="students-table"></table></div>`;
-    const snap = await getDocs(query(collection(db, "users"), where("role", "!=", "admin")));
-    let html = `<thead><tr><th>Nome</th><th>Email</th><th>Turma</th><th>Del</th></tr></thead><tbody>`;
-    snap.forEach(d => {
-        const u = d.data();
-        html += `<tr><td><strong>${u.name}</strong></td><td>${u.email}</td><td><span class="badge badge-gray">${u.classCode||'-'}</span></td><td><button class="btn-icon" onclick="deleteDoc(doc(db,'users','${d.id}'))"><i class="ph ph-trash"></i></button></td></tr>`;
-    });
-    document.getElementById('students-table').innerHTML = html + "</tbody>";
-};
-
-// CLASSROOM
-window.openClassView = async (classId, classCode, className) => {
-    if (!classId && classCode) {
-        const snap = await getDocs(query(collection(db, "classes"), where("code", "==", classCode)));
-        if(!snap.empty) { classId = snap.docs[0].id; className = snap.docs[0].data().name; }
-        else { el.content.innerHTML = `<div class="dashboard-card"><h2>Turma não encontrada.</h2></div>`; return; }
-    }
+// 5. CLASSROOM (MURAL & NOTAS)
+async function openClassroom(container, title, classId) {
+    if (!classId) { container.innerHTML = "<div class='card'><h3>Você não está em nenhuma turma.</h3><p>Vá em 'Meu Perfil' ou peça ao professor.</p></div>"; return; }
+    
+    const cSnap = await getDoc(doc(db, "classes", classId));
+    if(!cSnap.exists()) return alert("Turma não existe!");
+    
+    const cData = cSnap.data();
+    title.innerText = cData.name;
     state.activeClassId = classId;
-    el.content.innerHTML = `
+
+    const postBtn = state.isAdmin ? `<button class="btn-primary" style="width:auto" onclick="openPostModal()">+ Criar Postagem</button>` : '';
+
+    container.innerHTML = `
         <div class="fade-in">
-            <div class="class-header"><h2>${className || "Sala de Aula"}</h2>
-            ${state.isAdmin ? `<div style="display:flex; gap:10px"><button class="btn-primary" style="width:auto" onclick="openModal('modal-material')">+ Mat</button><button class="btn-primary" style="width:auto; background:#34C759" onclick="openModal('modal-activity')">+ Ativ</button></div>` : ''}</div>
-            <div class="tabs"><div class="tab active" onclick="switchTab('mural')">Mural</div><div class="tab" onclick="switchTab('activities')">Atividades</div><div class="tab" onclick="switchTab('concepts')">Conceitos</div><div class="tab" onclick="switchTab('chat')">Chat</div></div>
-            <div id="tab-mural" class="tab-content"><div id="feed-content"></div></div>
-            <div id="tab-activities" class="tab-content hidden"><div id="activity-content"></div></div>
-            <div id="tab-concepts" class="tab-content hidden"><div class="dashboard-card"><table class="admin-table" id="concepts-table"></table></div></div>
-            <div id="tab-chat" class="tab-content hidden"><div class="chat-wrapper"><div class="chat-box" id="chat-messages"></div><div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px"><input id="chat-input" placeholder="Mensagem..."><button class="btn-primary" style="width:auto" onclick="sendChat()">Enviar</button></div></div></div>
-        </div>`;
-    loadMural(classId); loadActivities(classId); loadConcepts(classId, classCode); loadChat(classId);
-};
+            <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center">
+                <div class="tabs" style="display:flex; gap:10px">
+                    <button class="btn-outline" onclick="loadMural('${classId}')">Mural</button>
+                    <button class="btn-outline" onclick="loadGrades('${classId}')">Boletim & Feedback</button>
+                </div>
+                ${postBtn}
+            </div>
+            <div id="classroom-content"></div>
+        </div>
+    `;
+    loadMural(classId);
+}
 
 function loadMural(cid) {
-    onSnapshot(query(collection(db, `classes/${cid}/posts`), orderBy("createdAt", "desc")), (snap) => {
-        const d = document.getElementById('feed-content'); if(d) d.innerHTML = snap.docs.map(doc => { const p = doc.data(); return `<div class="post-item"><div class="post-icon"><i class="ph ph-file-text"></i></div><div style="flex:1"><h3>${p.title}</h3><p>${p.desc}</p>${p.link?`<a href="${p.link}" target="_blank" style="color:var(--primary)">Abrir</a>`:''}</div></div>` }).join('') || "<p>Vazio.</p>";
+    const cont = el('classroom-content');
+    onSnapshot(query(collection(db, `classes/${cid}/posts`), orderBy("createdAt", "desc")), snap => {
+        if(snap.empty) { cont.innerHTML = "<p>Mural vazio.</p>"; return; }
+        cont.innerHTML = `<div class="post-list">` + snap.docs.map(d => {
+            const p = d.data();
+            const date = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('pt-BR') : 'Hoje';
+            const attachs = (p.attachments || []).map(a => `<a href="${a.url}" target="_blank" class="att-chip"><i class="ph ph-link"></i> ${a.type.toUpperCase()}</a>`).join('');
+            
+            return `
+            <div class="post-item">
+                <div class="post-header">
+                    <span class="post-tag tag-${p.type}">${p.type}</span>
+                    <span style="font-size:12px; color:#999">${date}</span>
+                </div>
+                <div class="post-title">${p.title}</div>
+                <div class="post-body">${p.body}</div>
+                <div class="attachments-grid">${attachs}</div>
+                ${state.isAdmin ? `<div style="margin-top:10px; border-top:1px solid #eee; padding-top:5px"><button class="btn-text" style="color:red; font-size:12px" onclick="deleteDoc(doc(db,'classes/${cid}/posts','${d.id}'))">Excluir Post</button></div>` : ''}
+            </div>`;
+        }).join('') + `</div>`;
     });
 }
-function loadActivities(cid) {
-    onSnapshot(query(collection(db, `classes/${cid}/activities`), orderBy("date", "asc")), (snap) => {
-        const d = document.getElementById('activity-content'); if(d) d.innerHTML = snap.docs.map(doc => { const a = doc.data(); return `<div class="post-item" style="border-left:4px solid #34C759"><div class="post-icon" style="color:#34C759"><i class="ph ph-check-square"></i></div><div style="flex:1"><h3>${a.title}</h3><p>${a.desc}</p><div class="post-meta">Data: ${a.date}</div></div></div>` }).join('') || "<p>Nenhuma.</p>";
-    });
-}
-async function loadConcepts(cid, code) {
-    const t = document.getElementById('concepts-table');
-    if (!state.isAdmin) {
-        const snap = await getDocs(query(collection(db, `classes/${cid}/concepts`), where("uid", "==", state.user.uid)));
-        t.innerHTML = snap.docs.map(d => `<tr><td>${d.data().obs}</td><td><span class="badge badge-blue">${d.data().value}</span></td></tr>`).join('');
+
+async function loadGrades(cid) {
+    const cont = el('classroom-content');
+    if(!state.isAdmin) {
+        // Aluno vê suas notas
+        const q = query(collection(db, `classes/${cid}/grades`), where("uid", "==", state.user.uid));
+        const snap = await getDocs(q);
+        let html = `<div class="card"><h3>Meu Boletim</h3><table class="data-table"><thead><tr><th>Feedback</th><th>Conceito</th></tr></thead><tbody>`;
+        snap.forEach(d => {
+            const g = d.data();
+            html += `<tr><td>${g.feedback}</td><td><span class="tag tag-blue">${g.concept}</span></td></tr>`;
+        });
+        cont.innerHTML = html + "</tbody></table></div>";
     } else {
-        const snap = await getDocs(query(collection(db, "users"), where("classCode", "==", code)));
-        t.innerHTML = snap.docs.map(d => `<tr><td>${d.data().name}</td><td><button class="btn-social" onclick="openConceptModal('${d.id}','${d.data().name}')">Nota</button></td></tr>`).join('');
+        // Professor vê lista para dar nota
+        const usersSnap = await getDocs(query(collection(db, "users"), where("classId", "==", cid)));
+        let html = `<div class="card"><h3>Lançar Notas</h3><table class="data-table"><thead><tr><th>Aluno</th><th>Ação</th></tr></thead><tbody>`;
+        usersSnap.forEach(u => {
+            html += `<tr><td>${u.data().name}</td><td><button class="btn-outline" style="padding:5px 10px" onclick="openGradeModal('${u.id}', '${u.data().name}')">Avaliar</button></td></tr>`;
+        });
+        cont.innerHTML = html + "</tbody></table></div>";
     }
 }
-function loadChat(cid) {
-    onSnapshot(query(collection(db, `classes/${cid}/chat`), orderBy("createdAt", "asc")), (snap) => {
-        const b = document.getElementById('chat-messages'); if(!b) return;
-        b.innerHTML = snap.docs.map(d => { const m = d.data(); return `<div class="msg ${m.uid===state.user.uid?'msg-mine':'msg-other'}"><div class="msg-author">${m.name}</div>${m.text}</div>` }).join('');
-        b.scrollTop = b.scrollHeight;
+
+// --- ACTIONS & MODALS ---
+
+// Profile
+window.saveProfile = async () => {
+    const p = {
+        name: el('p-name').value,
+        phone: el('p-phone').value,
+        recoveryEmail: el('p-rec-email').value
+    };
+    await updateDoc(doc(db, "users", state.user.uid), p);
+    alert("Perfil atualizado!");
+};
+
+// Schedule
+window.saveSchedule = async () => {
+    const s = {
+        seg: el('s-seg').value, ter: el('s-ter').value, qua: el('s-qua').value, qui: el('s-qui').value, sex: el('s-sex').value
+    };
+    await setDoc(doc(db, "config", "schedule"), s);
+    alert("Horário Salvo!");
+};
+
+// Classes
+window.openClassModal = (id, name, code) => {
+    el('cls-name').value = name || '';
+    el('cls-code').value = code || '';
+    // Lógica para editar vs criar seria aqui (simplificado para criar sempre)
+    el('modal-overlay').classList.remove('hidden');
+    el('modal-class').classList.remove('hidden');
+};
+window.saveClassAction = async () => {
+    const n = el('cls-name').value; const c = el('cls-code').value;
+    if(!n || !c) return;
+    await addDoc(collection(db, "classes"), { name: n, code: c });
+    closeModals();
+};
+
+// Move Student
+window.openMoveModal = (uid) => {
+    el('move-uid').value = uid;
+    el('modal-overlay').classList.remove('hidden');
+    el('modal-move').classList.remove('hidden');
+};
+window.confirmMoveStudent = async () => {
+    const uid = el('move-uid').value;
+    const newClassId = el('move-class-select').value;
+    if(!newClassId) return;
+    
+    // Busca código da nova turma para manter sync
+    const cSnap = await getDoc(doc(db, "classes", newClassId));
+    const newCode = cSnap.data().code;
+
+    await updateDoc(doc(db, "users", uid), { classId: newClassId, classCode: newCode });
+    closeModals();
+    alert("Aluno transferido com sucesso!");
+};
+
+// Rich Post
+window.openPostModal = () => {
+    state.tempAttachments = [];
+    renderAttachments();
+    el('modal-overlay').classList.remove('hidden');
+    el('modal-post').classList.remove('hidden');
+};
+window.addAttachmentItem = () => {
+    const type = el('att-type').value;
+    const url = el('att-url').value;
+    if(!url) return;
+    state.tempAttachments.push({ type, url });
+    el('att-url').value = '';
+    renderAttachments();
+};
+function renderAttachments() {
+    el('attachments-list').innerHTML = state.tempAttachments.map((a, i) => `<div class="att-item-remove"><span>${a.type}: ${a.url.substring(0,20)}...</span> <span class="btn-remove" onclick="removeAtt(${i})">X</span></div>`).join('');
+}
+window.removeAtt = (i) => { state.tempAttachments.splice(i, 1); renderAttachments(); };
+
+window.publishPostAction = async () => {
+    const title = el('post-title').value;
+    const body = el('post-body').value;
+    const type = el('post-type').value;
+    
+    await addDoc(collection(db, `classes/${state.activeClassId}/posts`), {
+        title, body, type, attachments: state.tempAttachments, createdAt: serverTimestamp()
     });
-}
+    closeModals();
+};
 
-// UTILS & EVENTS
-window.confirmCreateClass = async () => { await addDoc(collection(db, "classes"), { name: document.getElementById('new-class-name').value, code: document.getElementById('new-class-code').value }); closeModals(); }
-window.confirmPostMaterial = async () => { await addDoc(collection(db, `classes/${state.activeClassId}/posts`), { title: document.getElementById('mat-title').value, desc: document.getElementById('mat-desc').value, link: document.getElementById('mat-link').value, createdAt: serverTimestamp() }); closeModals(); }
-window.confirmPostActivity = async () => { await addDoc(collection(db, `classes/${state.activeClassId}/activities`), { title: document.getElementById('act-title').value, desc: document.getElementById('act-desc').value, date: document.getElementById('act-date').value, createdAt: serverTimestamp() }); closeModals(); }
-window.confirmPostConcept = async () => { await addDoc(collection(db, `classes/${state.activeClassId}/concepts`), { uid: document.getElementById('concept-student-id').value, value: document.getElementById('concept-value').value, obs: document.getElementById('concept-obs').value }); closeModals(); alert("Nota lançada!"); }
-window.sendChat = async () => { const i = document.getElementById('chat-input'); if(i.value) { await addDoc(collection(db, `classes/${state.activeClassId}/chat`), { text: i.value, uid: state.user.uid, name: state.profile.name, createdAt: serverTimestamp() }); i.value = ""; } }
-window.openConceptModal = (uid, name) => { document.getElementById('concept-student-id').value = uid; document.getElementById('concept-student-name').innerText = name; openModal('modal-concept'); }
-window.openModal = (id) => { document.getElementById('modal-overlay').classList.remove('hidden'); document.getElementById(id).classList.remove('hidden'); }
-window.closeModals = () => { document.getElementById('modal-overlay').classList.add('hidden'); document.querySelectorAll('.modal-card').forEach(c => c.classList.add('hidden')); }
-window.switchTab = (id) => { document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); event.target.classList.add('active'); document.getElementById(`tab-${id}`).classList.remove('hidden'); }
+// Grades
+window.openGradeModal = (uid, name) => {
+    el('grade-uid').value = uid;
+    el('grade-student-name').innerText = name;
+    el('modal-overlay').classList.remove('hidden');
+    el('modal-grade').classList.remove('hidden');
+    document.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('selected'));
+};
+window.selectConcept = (c) => {
+    el('selected-concept').value = c;
+    document.querySelectorAll('.concept-btn').forEach(b => b.classList.remove('selected'));
+    event.target.classList.add('selected');
+};
+window.saveGradeAction = async () => {
+    const uid = el('grade-uid').value;
+    const concept = el('selected-concept').value;
+    const feedback = el('grade-feedback').value;
+    if(!concept || !feedback) return alert("Preencha tudo!");
+    
+    await addDoc(collection(db, `classes/${state.activeClassId}/grades`), {
+        uid, concept, feedback, createdAt: serverTimestamp()
+    });
+    closeModals();
+    alert("Avaliação Registrada!");
+};
 
+window.closeModals = () => {
+    el('modal-overlay').classList.add('hidden');
+    document.querySelectorAll('.modal-card').forEach(c => c.classList.add('hidden'));
+};
+
+// Auth Listeners
 function setupListeners() {
-    document.getElementById('login-form').addEventListener('submit', (e)=>{e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e=>alert(e.message))});
-    document.getElementById('register-form').addEventListener('submit', async (e)=>{e.preventDefault(); try{ const c = await createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, document.getElementById('reg-pass').value); await setDoc(doc(db, "users", c.user.uid), { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, role: 'aluno', classCode: document.getElementById('reg-class-code').value }); }catch(e){alert(e.message)} });
-    document.getElementById('btn-toggle-auth').addEventListener('click', ()=>{ document.getElementById('login-form').classList.toggle('hidden'); document.getElementById('register-form').classList.toggle('hidden'); });
-    document.getElementById('btn-logout').addEventListener('click', ()=>signOut(auth));
-    document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click', ()=>navigateTo(i.dataset.target)));
-    el.sidebar.querySelector('#mobile-menu-toggle')?.addEventListener('click', ()=>el.sidebar.classList.toggle('open'));
-    document.getElementById('btn-google').addEventListener('click', ()=>signInWithPopup(auth, new GoogleAuthProvider()));
-    document.getElementById('btn-apple').addEventListener('click', ()=>signInWithPopup(auth, new OAuthProvider('apple.com')));
+    el('login-form').addEventListener('submit', e=>{e.preventDefault(); signInWithEmailAndPassword(auth, el('login-email').value, el('login-pass').value).catch(e=>alert(e.message))});
+    el('register-form').addEventListener('submit', async e=>{
+        e.preventDefault();
+        const code = el('reg-code').value;
+        // Valida Código da Turma no Cadastro
+        const q = query(collection(db, "classes"), where("code", "==", code));
+        const snap = await getDocs(q);
+        if(snap.empty) return alert("Código de turma inválido!");
+        
+        const classId = snap.docs[0].id;
+        try {
+            const c = await createUserWithEmailAndPassword(auth, el('reg-email').value, el('reg-pass').value);
+            await setDoc(doc(db, "users", c.user.uid), {
+                name: el('reg-name').value, email: el('reg-email').value,
+                role: 'student', classCode: code, classId: classId
+            });
+        } catch(err){alert(err.message)}
+    });
+    
+    el('btn-toggle-auth').addEventListener('click', ()=>{ el('login-form').classList.toggle('hidden'); el('register-form').classList.toggle('hidden'); });
+    el('btn-logout').addEventListener('click', ()=>signOut(auth));
+    document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click', ()=>navigateTo(b.dataset.target)));
+    el('mobile-menu-btn').addEventListener('click', ()=>document.querySelector('.sidebar').classList.toggle('open'));
+    el('btn-google').addEventListener('click', ()=>signInWithPopup(auth, new GoogleAuthProvider()));
+    el('btn-apple').addEventListener('click', ()=>signInWithPopup(auth, new OAuthProvider('apple.com')));
 }
+
 init();
-
-
-

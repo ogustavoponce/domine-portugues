@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Domine Português | IFPR</title>
+    <title>Domine Português | LMS</title>
     
-    <link rel="shortcut icon" href="favicon.jpg" type="image/jpg">
+    <link rel="shortcut icon" href="favicon.jpg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,149 +16,191 @@
 
     <div id="toast-container"></div>
 
-    <!-- Fundo Animado Premium (O mesmo que você gostou) -->
+    <!-- Fundo Aurora -->
     <div class="animated-bg"></div>
 
     <!-- === TELA DE LOGIN === -->
     <div id="auth-view" class="view-container active">
-        <div class="glass-card fade-in">
-            <div class="logo-area">
-                <img src="logo.jpg" alt="Logo" class="auth-logo">
+        <div class="glass-card login-card fade-in">
+            <div class="login-header">
+                <img src="logo.jpg" alt="Logo" class="auth-logo" onerror="this.style.display='none'">
+                <h1>Portal do Aluno</h1>
+                <p>Domine Português - IFPR</p>
             </div>
-            <h1 id="auth-title">Acesso Restrito</h1>
-            <p class="subtitle" id="auth-subtitle">Plataforma de Ensino IFPR</p>
 
-            <form id="login-form" class="auth-form">
-                <div class="input-group">
-                    <i class="ph ph-envelope-simple"></i>
+            <!-- Login -->
+            <form id="login-form">
+                <div class="input-wrapper">
+                    <i class="ph ph-envelope"></i>
                     <input type="email" id="login-email" placeholder="E-mail Institucional" required autocomplete="email">
                 </div>
-                <div class="input-group">
+                <div class="input-wrapper">
                     <i class="ph ph-lock-key"></i>
                     <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <span>Entrar</span>
-                    <i class="ph ph-arrow-right"></i>
-                </button>
+                <button type="submit" class="btn-primary glow">Entrar na Plataforma</button>
             </form>
 
-            <form id="register-form" class="auth-form hidden">
-                <div class="input-group"><i class="ph ph-user"></i><input type="text" id="reg-name" placeholder="Nome Completo" required></div>
-                <div class="input-group"><i class="ph ph-envelope-simple"></i><input type="email" id="reg-email" placeholder="E-mail" required></div>
-                <div class="input-group"><i class="ph ph-student"></i><input type="text" id="reg-class-code" placeholder="Código da Turma" required></div>
-                <div class="input-group"><i class="ph ph-lock-key"></i><input type="password" id="reg-pass" placeholder="Senha" required minlength="6"></div>
-                <button type="submit" class="btn btn-primary">Criar Cadastro</button>
+            <!-- Cadastro -->
+            <form id="register-form" class="hidden">
+                <div class="input-wrapper"><i class="ph ph-user"></i><input type="text" id="reg-name" placeholder="Nome Completo" required></div>
+                <div class="input-wrapper"><i class="ph ph-envelope"></i><input type="email" id="reg-email" placeholder="E-mail" required></div>
+                <div class="input-wrapper"><i class="ph ph-hash"></i><input type="text" id="reg-code" placeholder="Código da Turma (Ex: TURMA-A)" required></div>
+                <div class="input-wrapper"><i class="ph ph-lock-key"></i><input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6"></div>
+                <button type="submit" class="btn-primary glow">Confirmar Cadastro</button>
             </form>
 
             <div class="divider">Acesso Rápido</div>
-            <div class="social-buttons">
-                <button id="btn-google" class="btn btn-social"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google</button>
-                <button id="btn-apple" class="btn btn-social">
-                    <svg width="14" height="17" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.2307 14.5057C10.592 15.4227 9.88235 16.334 8.81491 16.3537C7.78857 16.3751 7.45664 15.7441 6.27364 15.7441C5.08796 15.7441 4.71714 16.3509 3.73357 16.3751C2.6865 16.4179 1.83686 15.3414 1.17143 14.382C-0.198929 12.404 -0.375929 8.87813 1.15179 6.22556C1.9085 4.90999 3.26436 4.07927 4.54471 4.05784C5.54143 4.03642 6.48393 4.7307 7.09429 4.7307C7.70207 4.7307 8.83607 3.9107 9.99179 4.03356C10.4354 4.05213 11.6743 4.20927 12.5761 5.5327C12.5029 5.57842 10.6621 6.64984 10.6864 8.78384C10.7093 11.2381 12.8396 12.0638 12.8682 12.0767C12.8482 12.1324 12.5318 13.1896 11.7504 14.3291L11.2307 14.5057ZM6.89071 2.70927C7.43643 2.04642 7.79929 1.1307 7.70071 0.224991C6.91357 0.256419 5.96107 0.749277 5.39321 1.41499C4.88893 1.99642 4.4925 2.94356 4.59964 3.82499C5.47464 3.89213 6.37643 3.37642 6.89071 2.70927Z" fill="black"/></svg> Apple
-                </button>
+            <div class="social-row">
+                <button id="btn-google" class="btn-social"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google</button>
+                <button id="btn-apple" class="btn-social"><i class="ph ph-apple-logo-fill"></i> Apple</button>
             </div>
 
-            <p class="switch-text"><span id="text-switch">Novo aluno?</span> <a href="#" id="btn-toggle-auth">Cadastrar-se</a></p>
+            <p class="toggle-link">
+                <span id="auth-switch-text">Primeiro acesso?</span> 
+                <a href="#" id="btn-toggle-auth">Criar conta</a>
+            </p>
         </div>
     </div>
 
-    <!-- === APP VIEW === -->
+    <!-- === SISTEMA LMS === -->
     <div id="app-view" class="view-container">
+        
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
             <div class="brand">
-                <img src="logo.jpg" class="sidebar-logo">
-                <span>Domine<br>Português</span>
+                <div class="logo-box"><i class="ph ph-books"></i></div>
+                <div class="brand-text">
+                    <strong>Domine</strong>
+                    <span>Português</span>
+                </div>
             </div>
             
             <nav class="nav-menu">
-                <div class="nav-item active" data-target="home"><i class="ph ph-house"></i> <span>Visão Geral</span></div>
+                <button class="nav-item active" data-target="dashboard"><i class="ph ph-squares-four"></i> <span>Visão Geral</span></button>
+                <button class="nav-item" data-target="profile"><i class="ph ph-user-circle"></i> <span>Meu Perfil</span></button>
                 
-                <!-- Admin Only -->
-                <div id="admin-menu-items" class="hidden">
-                    <div class="nav-label">GESTÃO</div>
-                    <div class="nav-item" data-target="admin-classes"><i class="ph ph-chalkboard-teacher"></i> <span>Turmas</span></div>
-                    <div class="nav-item" data-target="admin-students"><i class="ph ph-users"></i> <span>Alunos</span></div>
+                <!-- Menu Admin -->
+                <div id="admin-menu" class="hidden">
+                    <div class="nav-section">GESTÃO</div>
+                    <button class="nav-item" data-target="admin-classes"><i class="ph ph-chalkboard-teacher"></i> <span>Turmas</span></button>
+                    <button class="nav-item" data-target="admin-students"><i class="ph ph-users-three"></i> <span>Secretaria</span></button>
                 </div>
                 
-                <!-- Student Only -->
-                <div id="student-menu-items">
-                    <div class="nav-item" data-target="my-class"><i class="ph ph-student"></i> <span>Minha Turma</span></div>
+                <!-- Menu Aluno -->
+                <div id="student-menu" class="hidden">
+                    <div class="nav-section">AULAS</div>
+                    <button class="nav-item" data-target="classroom"><i class="ph ph-graduation-cap"></i> <span>Sala de Aula</span></button>
                 </div>
             </nav>
 
-            <div class="user-profile" id="btn-logout">
-                <div class="avatar" id="user-avatar">U</div>
-                <div class="user-info">
-                    <span class="name" id="user-name">...</span>
-                    <span class="role" id="user-role">...</span>
+            <div class="user-footer" id="btn-logout" title="Sair">
+                <div class="avatar" id="u-avatar">U</div>
+                <div class="u-info">
+                    <strong id="u-name">...</strong>
+                    <span id="u-role">...</span>
                 </div>
-                <i class="ph ph-sign-out logout-icon"></i>
+                <i class="ph ph-sign-out"></i>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Conteúdo -->
         <main class="main-content">
-            <header class="mobile-header">
-                <img src="logo.jpg" style="height:30px">
-                <button id="mobile-menu-toggle"><i class="ph ph-list"></i></button>
+            <header class="top-bar glass-panel">
+                <button id="mobile-menu-btn"><i class="ph ph-list"></i></button>
+                <h2 id="page-title">Dashboard</h2>
+                <div class="top-actions">
+                    <div class="status-indicator"></div>
+                </div>
             </header>
-            <div id="dynamic-content"></div>
+            
+            <div id="dynamic-content" class="content-wrapper fade-in">
+                <!-- Conteúdo injetado via JS -->
+            </div>
         </main>
     </div>
 
-    <!-- MODAIS (Para criar tarefas, notas, etc) -->
+    <!-- === MODAIS ROBUSTOS === -->
     <div id="modal-overlay" class="modal-overlay hidden">
-        <!-- Criar Turma -->
-        <div id="modal-class" class="glass-card modal-card hidden">
-            <h3>Nova Turma</h3>
-            <input type="text" id="new-class-name" placeholder="Nome (Ex: 3º Ano A)">
-            <input type="text" id="new-class-code" placeholder="Código Único (Ex: 3ANO-A)">
-            <div class="modal-actions">
-                <button class="btn-social" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="confirmCreateClass()">Criar</button>
+        
+        <!-- Modal: Criar/Editar Turma -->
+        <div id="modal-class" class="modal-card hidden">
+            <div class="modal-header"><h3>Dados da Turma</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <input type="text" id="cls-name" placeholder="Nome (Ex: 3º Ano A)" class="input-field">
+            <input type="text" id="cls-code" placeholder="Código de Acesso (Ex: PORT-3A)" class="input-field">
+            <div class="modal-footer">
+                <button class="btn-text" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="saveClassAction()">Salvar Turma</button>
             </div>
         </div>
-        <!-- Postar Material -->
-        <div id="modal-material" class="glass-card modal-card hidden">
-            <h3>Novo Material/Aviso</h3>
-            <input type="text" id="mat-title" placeholder="Título">
-            <textarea id="mat-desc" placeholder="Descrição..." rows="3"></textarea>
-            <input type="text" id="mat-link" placeholder="Link (Opcional)">
-            <div class="modal-actions">
-                <button class="btn-social" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="confirmPostMaterial()">Postar</button>
-            </div>
-        </div>
-        <!-- Postar Atividade -->
-        <div id="modal-activity" class="glass-card modal-card hidden">
-            <h3>Nova Atividade</h3>
-            <input type="text" id="act-title" placeholder="Título">
-            <textarea id="act-desc" placeholder="Instruções..." rows="3"></textarea>
-            <input type="date" id="act-date">
-            <div class="modal-actions">
-                <button class="btn-social" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="confirmPostActivity()">Criar Tarefa</button>
-            </div>
-        </div>
-        <!-- Lançar Nota -->
-        <div id="modal-concept" class="glass-card modal-card hidden">
-            <h3>Lançar Conceito</h3>
-            <p id="concept-student-name" style="margin-bottom:10px; font-weight:600;"></p>
-            <input type="hidden" id="concept-student-id">
-            <select id="concept-value">
-                <option value="A">Conceito A</option>
-                <option value="B">Conceito B</option>
-                <option value="C">Conceito C</option>
-                <option value="D">Conceito D</option>
+
+        <!-- Modal: Postagem Rica (Anexos) -->
+        <div id="modal-post" class="modal-card hidden">
+            <div class="modal-header"><h3>Novo Conteúdo</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            
+            <input type="text" id="post-title" placeholder="Título do Material/Aviso" class="input-field">
+            <select id="post-type" class="input-field">
+                <option value="aviso">Aviso Geral</option>
+                <option value="material">Apostila / Material Didático</option>
+                <option value="atividade">Atividade</option>
             </select>
-            <input type="text" id="concept-obs" placeholder="Observação (Ex: Prova 1)">
-            <div class="modal-actions">
-                <button class="btn-social" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="confirmPostConcept()">Salvar</button>
+            <textarea id="post-body" placeholder="Escreva o conteúdo aqui..." rows="5" class="input-field"></textarea>
+            
+            <!-- Área de Anexos -->
+            <div class="attachments-area">
+                <label>Adicionar Anexo:</label>
+                <div class="attachment-input-group">
+                    <select id="att-type">
+                        <option value="link">Link Web</option>
+                        <option value="pdf">PDF</option>
+                        <option value="drive">Google Drive</option>
+                    </select>
+                    <input type="text" id="att-url" placeholder="Cole a URL aqui">
+                    <button class="btn-small" onclick="addAttachmentItem()">+</button>
+                </div>
+                <ul id="attachments-list" class="attachments-list"></ul>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-text" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="publishPostAction()">Publicar</button>
             </div>
         </div>
+
+        <!-- Modal: Feedback & Nota -->
+        <div id="modal-grade" class="modal-card hidden">
+            <div class="modal-header"><h3>Avaliação</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <p id="grade-student-name" style="margin-bottom:10px; font-weight:600"></p>
+            <input type="hidden" id="grade-uid">
+            
+            <label class="field-label">Conceito</label>
+            <div class="concepts-grid">
+                <button class="concept-btn" onclick="selectConcept('A')">A</button>
+                <button class="concept-btn" onclick="selectConcept('B')">B</button>
+                <button class="concept-btn" onclick="selectConcept('C')">C</button>
+                <button class="concept-btn" onclick="selectConcept('D')">D</button>
+            </div>
+            <input type="hidden" id="selected-concept">
+            
+            <label class="field-label">Feedback (Obrigatório)</label>
+            <textarea id="grade-feedback" placeholder="Explique o motivo da nota e pontos de melhoria..." rows="3" class="input-field"></textarea>
+            
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="saveGradeAction()">Lançar Nota</button>
+            </div>
+        </div>
+
+        <!-- Modal: Mover Aluno -->
+        <div id="modal-move" class="modal-card hidden">
+            <div class="modal-header"><h3>Mover Aluno</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <p>Selecione a nova turma para este aluno.</p>
+            <input type="hidden" id="move-uid">
+            <select id="move-class-select" class="input-field"></select>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="confirmMoveStudent()">Confirmar Troca</button>
+            </div>
+        </div>
+
     </div>
 
     <script type="module" src="js/app.js"></script>
