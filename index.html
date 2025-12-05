@@ -3,202 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Domine Português | LMS</title>
+    <title>Domine Português | Área de Gestão</title>
     
     <link rel="shortcut icon" href="favicon.jpg" type="image/jpeg">
+    
+    <!-- Tipografia Inter (Padrão de Interface Moderna) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Ícones -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- Notificações Flutuantes -->
     <div id="toast-container"></div>
 
-    <!-- Fundo Aurora -->
-    <div class="animated-bg"></div>
+    <!-- === TELA DE LOGIN (Clean & Professional) === -->
+    <div id="auth-view" class="view-wrapper active">
+        <div class="auth-container">
+            <div class="auth-left">
+                <div class="auth-brand">
+                    <div class="logo-box"><i class="ph ph-books"></i></div>
+                    <span>Domine Português</span>
+                </div>
+                <div class="auth-welcome">
+                    <h1>Bem-vindo de volta</h1>
+                    <p>Faça login para gerenciar suas turmas e conteúdos.</p>
+                </div>
+                
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <label>E-mail Institucional</label>
+                        <div class="input-icon">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" id="login-email" placeholder="nome@escola.edu.br" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <div class="input-icon">
+                            <i class="ph ph-lock-key"></i>
+                            <input type="password" id="login-pass" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Entrar na Plataforma</button>
+                </form>
 
-    <!-- === TELA DE LOGIN === -->
-    <div id="auth-view" class="view-container active">
-        <div class="glass-card login-card fade-in">
-            <div class="login-header">
-                <img src="logo.jpg" alt="Logo" class="auth-logo" onerror="this.style.display='none'">
-                <h1>Portal do Aluno</h1>
-                <p>Domine Português - IFPR</p>
+                <div class="auth-divider"><span>ou acesse com</span></div>
+
+                <div class="social-actions">
+                    <button id="btn-google" class="btn-outline"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google</button>
+                    <button id="btn-apple" class="btn-outline"><i class="ph ph-apple-logo"></i> Apple</button>
+                </div>
+
+                <p class="auth-footer">
+                    Não tem conta? <a href="#" onclick="toggleAuth('register')">Cadastrar Aluno</a>
+                </p>
+            </div>
+            
+            <!-- Painel de Cadastro (Escondido por padrão) -->
+            <div id="register-panel" class="auth-left hidden">
+                <div class="auth-brand">
+                    <div class="logo-box"><i class="ph ph-student"></i></div>
+                    <span>Nova Matrícula</span>
+                </div>
+                <h1 style="margin-bottom:20px; font-size:24px;">Criar Conta</h1>
+                <form id="register-form" class="auth-form">
+                    <div class="input-group"><label>Nome Completo</label><input type="text" id="reg-name" required></div>
+                    <div class="input-group"><label>E-mail</label><input type="email" id="reg-email" required></div>
+                    <div class="input-group">
+                        <label>Código da Turma</label>
+                        <input type="text" id="reg-code" placeholder="Ex: PORT-3A" required>
+                        <small style="color:#666; font-size:12px">Fornecido pelo professor.</small>
+                    </div>
+                    <div class="input-group"><label>Senha</label><input type="password" id="reg-pass" required minlength="6"></div>
+                    <button type="submit" class="btn-primary">Confirmar Cadastro</button>
+                </form>
+                <p class="auth-footer"><a href="#" onclick="toggleAuth('login')">← Voltar para Login</a></p>
             </div>
 
-            <!-- Login -->
-            <form id="login-form">
-                <div class="input-wrapper">
-                    <i class="ph ph-envelope"></i>
-                    <input type="email" id="login-email" placeholder="E-mail Institucional" required autocomplete="email">
+            <div class="auth-right">
+                <!-- Imagem Ilustrativa ou Gradiente -->
+                <div class="auth-decoration">
+                    <h2>Ensino de Excelência</h2>
+                    <p>Gerencie notas, frequências e materiais didáticos em um só lugar.</p>
                 </div>
-                <div class="input-wrapper">
-                    <i class="ph ph-lock-key"></i>
-                    <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn-primary glow">Entrar na Plataforma</button>
-            </form>
-
-            <!-- Cadastro -->
-            <form id="register-form" class="hidden">
-                <div class="input-wrapper"><i class="ph ph-user"></i><input type="text" id="reg-name" placeholder="Nome Completo" required></div>
-                <div class="input-wrapper"><i class="ph ph-envelope"></i><input type="email" id="reg-email" placeholder="E-mail" required></div>
-                <div class="input-wrapper"><i class="ph ph-hash"></i><input type="text" id="reg-code" placeholder="Código da Turma (Ex: TURMA-A)" required></div>
-                <div class="input-wrapper"><i class="ph ph-lock-key"></i><input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6"></div>
-                <button type="submit" class="btn-primary glow">Confirmar Cadastro</button>
-            </form>
-
-            <div class="divider">Acesso Rápido</div>
-            <div class="social-row">
-                <button id="btn-google" class="btn-social"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google</button>
-                <button id="btn-apple" class="btn-social"><i class="ph ph-apple-logo-fill"></i> Apple</button>
             </div>
-
-            <p class="toggle-link">
-                <span id="auth-switch-text">Primeiro acesso?</span> 
-                <a href="#" id="btn-toggle-auth">Criar conta</a>
-            </p>
         </div>
     </div>
 
-    <!-- === SISTEMA LMS === -->
-    <div id="app-view" class="view-container">
+    <!-- === DASHBOARD (Layout Profissional) === -->
+    <div id="app-view" class="view-wrapper">
         
-        <!-- Sidebar -->
-        <aside class="sidebar glass-panel">
-            <div class="brand">
-                <div class="logo-box"><i class="ph ph-books"></i></div>
-                <div class="brand-text">
-                    <strong>Domine</strong>
-                    <span>Português</span>
+        <!-- Sidebar Fixa -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="logo.jpg" class="brand-logo" onerror="this.style.display='none'">
+                <div class="brand-info">
+                    <strong>Domine Port.</strong>
+                    <span>Painel Gestor</span>
                 </div>
             </div>
-            
-            <nav class="nav-menu">
-                <button class="nav-item active" data-target="dashboard"><i class="ph ph-squares-four"></i> <span>Visão Geral</span></button>
-                <button class="nav-item" data-target="profile"><i class="ph ph-user-circle"></i> <span>Meu Perfil</span></button>
-                
-                <!-- Menu Admin -->
-                <div id="admin-menu" class="hidden">
-                    <div class="nav-section">GESTÃO</div>
-                    <button class="nav-item" data-target="admin-classes"><i class="ph ph-chalkboard-teacher"></i> <span>Turmas</span></button>
-                    <button class="nav-item" data-target="admin-students"><i class="ph ph-users-three"></i> <span>Secretaria</span></button>
-                </div>
-                
-                <!-- Menu Aluno -->
-                <div id="student-menu" class="hidden">
-                    <div class="nav-section">AULAS</div>
-                    <button class="nav-item" data-target="classroom"><i class="ph ph-graduation-cap"></i> <span>Sala de Aula</span></button>
-                </div>
-            </nav>
 
-            <div class="user-footer" id="btn-logout" title="Sair">
-                <div class="avatar" id="u-avatar">U</div>
-                <div class="u-info">
-                    <strong id="u-name">...</strong>
-                    <span id="u-role">...</span>
+            <div class="nav-scroll">
+                <div class="nav-group">
+                    <span class="nav-label">PRINCIPAL</span>
+                    <button class="nav-item active" data-page="dashboard"><i class="ph ph-squares-four"></i> Visão Geral</button>
+                    <button class="nav-item" data-page="profile"><i class="ph ph-user-circle"></i> Meu Perfil</button>
                 </div>
-                <i class="ph ph-sign-out"></i>
+
+                <!-- Menu Admin -->
+                <div id="admin-menu" class="nav-group hidden">
+                    <span class="nav-label">ADMINISTRAÇÃO</span>
+                    <button class="nav-item" data-page="classes"><i class="ph ph-chalkboard-teacher"></i> Turmas</button>
+                    <button class="nav-item" data-page="students"><i class="ph ph-users"></i> Alunos</button>
+                </div>
+
+                <!-- Menu Aluno -->
+                <div id="student-menu" class="nav-group hidden">
+                    <span class="nav-label">ACADÊMICO</span>
+                    <button class="nav-item" data-page="classroom"><i class="ph ph-graduation-cap"></i> Minha Sala</button>
+                </div>
+            </div>
+
+            <div class="user-menu">
+                <div class="avatar-circle" id="u-avatar">U</div>
+                <div class="user-data">
+                    <span id="u-name">Carregando...</span>
+                    <small id="u-email">...</small>
+                </div>
+                <button id="btn-logout" title="Sair"><i class="ph ph-sign-out"></i></button>
             </div>
         </aside>
 
-        <!-- Conteúdo -->
+        <!-- Área de Conteúdo -->
         <main class="main-content">
-            <header class="top-bar glass-panel">
-                <button id="mobile-menu-btn"><i class="ph ph-list"></i></button>
-                <h2 id="page-title">Dashboard</h2>
-                <div class="top-actions">
-                    <div class="status-indicator"></div>
+            <header class="topbar">
+                <div class="mobile-toggle" id="mobile-btn"><i class="ph ph-list"></i></div>
+                <h2 id="page-title">Visão Geral</h2>
+                <div class="topbar-actions">
+                    <span class="role-badge" id="u-role-badge">Aluno</span>
                 </div>
             </header>
-            
-            <div id="dynamic-content" class="content-wrapper fade-in">
-                <!-- Conteúdo injetado via JS -->
+
+            <div id="content-area" class="content-body">
+                <!-- Conteúdo Injetado via JS -->
             </div>
         </main>
     </div>
 
-    <!-- === MODAIS ROBUSTOS === -->
-    <div id="modal-overlay" class="modal-overlay hidden">
+    <!-- === MODAIS DE GESTÃO === -->
+    <div id="modal-overlay" class="modal-backdrop hidden">
         
-        <!-- Modal: Criar/Editar Turma -->
-        <div id="modal-class" class="modal-card hidden">
-            <div class="modal-header"><h3>Dados da Turma</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
-            <input type="text" id="cls-name" placeholder="Nome (Ex: 3º Ano A)" class="input-field">
-            <input type="text" id="cls-code" placeholder="Código de Acesso (Ex: PORT-3A)" class="input-field">
-            <div class="modal-footer">
-                <button class="btn-text" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="saveClassAction()">Salvar Turma</button>
+        <!-- Modal: Nova Turma -->
+        <div id="modal-class" class="modal-window hidden">
+            <div class="modal-header">
+                <h3>Cadastrar Turma</h3>
+                <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <label>Nome da Turma</label>
+                <input type="text" id="cls-name" placeholder="Ex: 3º Ano A - Matutino" class="form-input">
+                <label>Código de Acesso (Único)</label>
+                <input type="text" id="cls-code" placeholder="Ex: PORT3A" class="form-input">
+                <button class="btn-primary full" onclick="createClassAction()">Salvar Turma</button>
             </div>
         </div>
 
-        <!-- Modal: Postagem Rica (Anexos) -->
-        <div id="modal-post" class="modal-card hidden">
-            <div class="modal-header"><h3>Novo Conteúdo</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
-            
-            <input type="text" id="post-title" placeholder="Título do Material/Aviso" class="input-field">
-            <select id="post-type" class="input-field">
-                <option value="aviso">Aviso Geral</option>
-                <option value="material">Apostila / Material Didático</option>
-                <option value="atividade">Atividade</option>
-            </select>
-            <textarea id="post-body" placeholder="Escreva o conteúdo aqui..." rows="5" class="input-field"></textarea>
-            
-            <!-- Área de Anexos -->
-            <div class="attachments-area">
-                <label>Adicionar Anexo:</label>
-                <div class="attachment-input-group">
-                    <select id="att-type">
-                        <option value="link">Link Web</option>
-                        <option value="pdf">PDF</option>
-                        <option value="drive">Google Drive</option>
-                    </select>
-                    <input type="text" id="att-url" placeholder="Cole a URL aqui">
-                    <button class="btn-small" onclick="addAttachmentItem()">+</button>
-                </div>
-                <ul id="attachments-list" class="attachments-list"></ul>
+        <!-- Modal: Novo Material/Post -->
+        <div id="modal-post" class="modal-window hidden">
+            <div class="modal-header">
+                <h3>Novo Conteúdo</h3>
+                <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
             </div>
+            <div class="modal-body">
+                <label>Título</label>
+                <input type="text" id="post-title" class="form-input">
+                
+                <label>Tipo</label>
+                <select id="post-type" class="form-input">
+                    <option value="aviso">Aviso / Comunicado</option>
+                    <option value="material">Material Didático (PDF/Apostila)</option>
+                    <option value="atividade">Atividade</option>
+                </select>
 
-            <div class="modal-footer">
-                <button class="btn-text" onclick="closeModals()">Cancelar</button>
-                <button class="btn-primary" onclick="publishPostAction()">Publicar</button>
-            </div>
-        </div>
+                <label>Descrição / Conteúdo</label>
+                <textarea id="post-content" rows="4" class="form-input"></textarea>
 
-        <!-- Modal: Feedback & Nota -->
-        <div id="modal-grade" class="modal-card hidden">
-            <div class="modal-header"><h3>Avaliação</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
-            <p id="grade-student-name" style="margin-bottom:10px; font-weight:600"></p>
-            <input type="hidden" id="grade-uid">
-            
-            <label class="field-label">Conceito</label>
-            <div class="concepts-grid">
-                <button class="concept-btn" onclick="selectConcept('A')">A</button>
-                <button class="concept-btn" onclick="selectConcept('B')">B</button>
-                <button class="concept-btn" onclick="selectConcept('C')">C</button>
-                <button class="concept-btn" onclick="selectConcept('D')">D</button>
-            </div>
-            <input type="hidden" id="selected-concept">
-            
-            <label class="field-label">Feedback (Obrigatório)</label>
-            <textarea id="grade-feedback" placeholder="Explique o motivo da nota e pontos de melhoria..." rows="3" class="input-field"></textarea>
-            
-            <div class="modal-footer">
-                <button class="btn-primary" onclick="saveGradeAction()">Lançar Nota</button>
+                <label>Link Externo (Drive/Docs)</label>
+                <input type="text" id="post-link" placeholder="https://" class="form-input">
+
+                <button class="btn-primary full" onclick="createPostAction()">Publicar no Mural</button>
             </div>
         </div>
 
         <!-- Modal: Mover Aluno -->
-        <div id="modal-move" class="modal-card hidden">
-            <div class="modal-header"><h3>Mover Aluno</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
-            <p>Selecione a nova turma para este aluno.</p>
+        <div id="modal-move" class="modal-window hidden">
+            <div class="modal-header"><h3>Transferir Aluno</h3><button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <p style="margin-bottom:15px; font-size:14px; color:#666;">Selecione a nova turma para este aluno.</p>
             <input type="hidden" id="move-uid">
-            <select id="move-class-select" class="input-field"></select>
-            <div class="modal-footer">
-                <button class="btn-primary" onclick="confirmMoveStudent()">Confirmar Troca</button>
-            </div>
+            <select id="move-class-select" class="form-input"></select>
+            <button class="btn-primary full" onclick="confirmMoveStudent()">Confirmar Transferência</button>
         </div>
 
     </div>
