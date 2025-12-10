@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc, addDoc, deleteDoc, serverTimestamp, onSnapshot, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc, addDoc, deleteDoc, serverTimestamp, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
+// --- CONFIGURAÇÃO FIREBASE (COLE SUAS CHAVES AQUI) ---
 const firebaseConfig = {
     apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
     authDomain: "domine-portugues.firebaseapp.com",
@@ -16,264 +17,242 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// === EMAILS ADMIN ===
+// === LISTA DE PROFESSORES (ADMINS) ===
 const ADMIN_EMAILS = [
-    "domenico@domineportugues.com.br", // Seu email novo
     "domenico.suriale@ifpr.edu.br",
+    "domenico@domineportugues.com.br",
     "admin@teste.com"
 ];
 
-const state = { user: null, profile: null, isAdmin: false, currentClassId: null, editId: null };
+const state = { user: null, profile: null, isAdmin: false };
 const el = (id) => document.getElementById(id);
 
 function init() {
-    setupUI();
+    setupListeners();
     onAuthStateChanged(auth, async (user) => {
-        if (user) await loadSession(user);
-        else logoutUI();
+        if (user) await handleLogin(user);
+        else showLogin();
     });
 }
 
-// --- AUTH ---
-async function loadSession(user) {
+// --- AUTENTICAÇÃO ---
+async function handleLogin(user) {
     state.user = user;
     const email = user.email.toLowerCase().trim();
+    
+    // 1. Verifica se é Admin pela lista fixa
     state.isAdmin = ADMIN_EMAILS.includes(email);
 
-    const ref = doc(db, "users", user.uid);
-    let snap = await getDoc(ref);
+    // 2. Busca ou Cria Perfil
+    const userRef = doc(db, "users", user.uid);
+    let snap = await getDoc(userRef);
     
     if (!snap.exists()) {
-        const base = { name: user.displayName || "Usuário", email, role: state.isAdmin ? 'admin' : 'student', classCode: null };
-        await setDoc(ref, base);
-        state.profile = base;
+        const baseProfile = {
+            name: user.displayName || "Usuário",
+            email: email,
+            role: state.isAdmin ? 'admin' : 'student',
+            classCode: null
+        };
+        await setDoc(userRef, baseProfile);
+        state.profile = baseProfile;
     } else {
         state.profile = snap.data();
-        if (state.isAdmin && state.profile.role !== 'admin') await updateDoc(ref, { role: 'admin' });
+        // Corrige permissão se for admin na lista mas não no banco
+        if (state.isAdmin && state.profile.role !== 'admin') {
+            await updateDoc(userRef, { role: 'admin' });
+            state.profile.role = 'admin';
+        }
     }
-    if (state.isAdmin) state.profile.role = 'admin';
 
-    renderSidebar();
-    el('auth-view').classList.remove('active');
-    el('app-view').classList.add('active');
+    // Atualiza Interface
+    updateSidebar();
+    document.getElementById('auth-view').classList.remove('active');
+    document.getElementById('app-view').classList.add('active');
     
     if (state.isAdmin) navigateTo('home');
-    else if (state.profile.classId) openClassroom(state.profile.classId);
-    else navigateTo('profile');
+    else if (state.profile.classId) navigateTo('classroom');
+    else navigateTo('profile'); // Aluno sem turma vai para perfil
 }
 
-function logoutUI() {
-    state.user = null; state.profile = null;
-    el('app-view').classList.remove('active');
-    el('auth-view').classList.add('active');
+function showLogin() {
+    state.user = null;
+    document.getElementById('app-view').classList.remove('active');
+    document.getElementById('auth-view').classList.add('active');
 }
 
-function renderSidebar() {
+// --- UI HELPERS ---
+function updateSidebar() {
     const p = state.profile;
     el('u-name').innerText = p.name.split(' ')[0];
-    el('u-role').innerText = state.isAdmin ? "Gestor" : "Aluno";
-    el('u-avatar').innerText = p.name[0];
+    el('u-role').innerText = state.isAdmin ? "Professor" : "Aluno";
     
-    el('admin-menu').classList.toggle('hidden', !state.isAdmin);
-    el('student-menu').classList.toggle('hidden', state.isAdmin);
+    if (state.isAdmin) {
+        el('admin-menu').classList.remove('hidden');
+        el('student-menu').classList.add('hidden');
+    } else {
+        el('admin-menu').classList.add('hidden');
+        el('student-menu').classList.remove('hidden');
+    }
 }
 
-// --- NAV ---
-window.navigateTo = (page) => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-target="${page}"]`)?.classList.add('active');
-    document.querySelector('.sidebar').classList.remove('open');
-    
-    const cont = el('content-area');
-    const tit = el('page-title');
-    
-    if (page === 'home') renderHome(cont, tit);
-    else if (page === 'admin-classes') renderClasses(cont, tit);
-    else if (page === 'admin-students') renderStudents(cont, tit);
-    else if (page === 'profile') renderProfile(cont, tit);
-    else if (page === 'classroom') {
-        if(state.profile.classId) openClassroom(state.profile.classId);
-        else cont.innerHTML = `<div class="card"><h3>Sem Turma</h3><p>Vá em 'Meu Perfil' para configurar.</p></div>`;
+window.switchTab = (tab) => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (tab === 'login') {
+        el('login-form').classList.remove('hidden');
+        el('register-form').classList.add('hidden');
+    } else {
+        el('login-form').classList.add('hidden');
+        el('register-form').classList.remove('hidden');
     }
 };
 
-// --- RENDERERS ---
+// --- NAVEGAÇÃO ---
+window.navigateTo = (page) => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+    document.querySelector('.sidebar').classList.remove('open');
+    
+    const content = el('content-area');
+    const title = el('page-title');
+    
+    if (page === 'home') renderHome(content, title);
+    else if (page === 'classes') renderClasses(content, title);
+    else if (page === 'students') renderStudents(content, title);
+    else if (page === 'classroom') renderClassroom(content, title);
+    else if (page === 'profile') renderProfile(content, title);
+};
+
+// --- RENDERIZADORES ---
 
 // 1. HOME
-async function renderHome(div, title) {
+function renderHome(div, title) {
     title.innerText = "Visão Geral";
-    let s = { seg:"", ter:"", qua:"", qui:"", sex:"" };
-    try { const d = await getDoc(doc(db, "config", "schedule")); if(d.exists()) s = d.data(); } catch(e){}
-    const ro = state.isAdmin ? "" : "readonly";
-
     div.innerHTML = `
         <div class="card">
-            <div class="card-head"><h3>Horário de Atendimento</h3>${state.isAdmin?`<button class="btn-primary" style="width:auto" onclick="saveSched()">Salvar</button>`:''}</div>
-            <div class="table-responsive"><table>
-                <tr><td width="20%">Segunda</td><td><input id="h-seg" style="width:100%; border:none" value="${s.seg||''}" ${ro}></td></tr>
-                <tr><td>Terça</td><td><input id="h-ter" style="width:100%; border:none" value="${s.ter||''}" ${ro}></td></tr>
-                <tr><td>Quarta</td><td><input id="h-qua" style="width:100%; border:none" value="${s.qua||''}" ${ro}></td></tr>
-                <tr><td>Quinta</td><td><input id="h-qui" style="width:100%; border:none" value="${s.qui||''}" ${ro}></td></tr>
-                <tr><td>Sexta</td><td><input id="h-sex" style="width:100%; border:none" value="${s.sex||''}" ${ro}></td></tr>
-            </table></div>
+            <h3>Bem-vindo, ${state.profile.name}</h3>
+            <p style="color:var(--text-sec)">Selecione uma opção no menu para começar.</p>
         </div>
-        ${!state.isAdmin ? `<div class="card"><h3>Atalhos</h3><button class="btn-primary" onclick="navigateTo('classroom')">Minha Sala</button></div>`:''}
+        ${!state.isAdmin ? `<div class="card"><h3>Minha Turma</h3><p>Status: <strong>${state.profile.classCode || "Não matriculado"}</strong></p></div>` : ''}
     `;
 }
 
 // 2. TURMAS (ADMIN)
 function renderClasses(div, title) {
     title.innerText = "Gestão de Turmas";
-    div.innerHTML = `<div style="text-align:right; margin-bottom:15px"><button class="btn-primary" style="width:auto" onclick="openClassModal()">+ Nova Turma</button></div><div id="c-list"></div>`;
+    div.innerHTML = `
+        <div style="text-align:right; margin-bottom:20px">
+            <button class="btn-primary" style="width:auto" onclick="openModal('New Class', formClass())">+ Nova Turma</button>
+        </div>
+        <div id="class-list">Carregando...</div>
+    `;
     
     onSnapshot(collection(db, "classes"), snap => {
-        el('c-list').innerHTML = snap.docs.map(d => {
+        const list = el('class-list');
+        if (snap.empty) { list.innerHTML = "<p>Nenhuma turma.</p>"; return; }
+        list.innerHTML = snap.docs.map(d => {
             const c = d.data();
             return `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center">
                 <div><strong>${c.name}</strong><br><small>${c.code}</small></div>
-                <div>
-                    <button class="btn-icon" title="Entrar" onclick="openClassroom('${d.id}')"><i class="ph ph-arrow-right"></i></button>
-                    <button class="btn-icon" title="Editar" onclick="openClassModal('${d.id}','${c.name}','${c.code}')"><i class="ph ph-pencil"></i></button>
-                    <button class="btn-icon del" title="Excluir" onclick="deleteDoc(doc(db,'classes','${d.id}'))"><i class="ph ph-trash"></i></button>
-                </div>
+                <button class="btn-primary" style="padding:8px 12px" onclick="alert('Entrar na turma: Em breve')">Gerenciar</button>
             </div>`;
-        }).join('') || '<p>Nenhuma turma.</p>';
+        }).join('');
     });
 }
 
-// 3. ALUNOS (ADMIN)
-async function renderStudents(div, title) {
-    title.innerText = "Controle de Alunos";
-    
-    const cs = await getDocs(collection(db, "classes"));
-    let opts = '<option value="">Sem Turma</option>';
-    cs.forEach(c => opts += `<option value="${c.id}">${c.data().name}</option>`);
-    el('std-class-select').innerHTML = opts;
-
-    div.innerHTML = `<div class="card"><div class="table-responsive"><table id="s-table"></table></div></div>`;
+// 3. ESTUDANTES (ADMIN)
+function renderStudents(div, title) {
+    title.innerText = "Alunos Cadastrados";
+    div.innerHTML = `<div class="card"><div class="table-responsive"><table id="std-table"></table></div></div>`;
     
     onSnapshot(query(collection(db, "users"), where("role", "!=", "admin")), snap => {
         const rows = snap.docs.map(d => {
             const u = d.data();
-            return `<tr>
-                <td>${u.name}</td>
-                <td>${u.email}</td>
-                <td>${u.classCode || '-'}</td>
-                <td>
-                    <button class="btn-icon" onclick="openStudentModal('${d.id}','${u.name}','${u.classId}')"><i class="ph ph-pencil"></i></button>
-                    <button class="btn-icon del" onclick="if(confirm('Banir?')) deleteDoc(doc(db,'users','${d.id}'))"><i class="ph ph-trash"></i></button>
-                </td>
-            </tr>`;
+            return `<tr><td>${u.name}</td><td>${u.email}</td><td><span class="tag">${u.classCode || '-'}</span></td></tr>`;
         }).join('');
-        el('s-table').innerHTML = `<thead><tr><th>Nome</th><th>Email</th><th>Turma</th><th>Ações</th></tr></thead><tbody>${rows}</tbody>`;
+        el('std-table').innerHTML = `<thead><tr><th>Nome</th><th>Email</th><th>Turma</th></tr></thead><tbody>${rows}</tbody>`;
     });
 }
 
-// 4. SALA DE AULA
-async function openClassroom(cid) {
-    state.currentClassId = cid;
-    const cont = el('content-area');
-    
-    const cSnap = await getDoc(doc(db, "classes", cid));
-    el('page-title').innerText = cSnap.exists() ? cSnap.data().name : "Sala de Aula";
-
-    cont.innerHTML = `
-        ${state.isAdmin ? `<div style="text-align:right; margin-bottom:20px"><button class="btn-primary" style="width:auto" onclick="openPostModal()">Criar Post</button></div>` : ''}
-        <div id="feed"></div>
-    `;
-
-    onSnapshot(query(collection(db, `classes/${cid}/posts`), orderBy("createdAt", "desc")), snap => {
-        el('feed').innerHTML = snap.docs.map(d => {
-            const p = d.data();
-            return `
-            <div class="post-card">
-                <div class="post-meta"><span>${p.type.toUpperCase()}</span></div>
-                <div class="post-title">${p.title}</div>
-                <div class="post-body">${p.content}</div>
-                ${p.link ? `<a href="${p.link}" target="_blank" class="post-link">Abrir Anexo</a>` : ''}
-                ${state.isAdmin ? `<div style="margin-top:10px; border-top:1px solid #eee; padding-top:5px"><button class="btn-icon del" onclick="deleteDoc(doc(db,'classes/${cid}/posts','${d.id}'))">Excluir</button></div>` : ''}
-            </div>`;
-        }).join('') || '<p>Mural vazio.</p>';
-    });
-}
-
-// 5. PERFIL
+// 4. PERFIL
 function renderProfile(div, title) {
     title.innerText = "Meu Perfil";
+    const p = state.profile;
     div.innerHTML = `
         <div class="card" style="max-width:500px">
-            <div class="form-group"><label>Nome</label><input id="pf-name" value="${state.profile.name}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>
-            <div class="form-group"><label>Código Turma</label><input id="pf-code" value="${state.profile.classCode||''}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>
-            <button class="btn-primary" onclick="saveProfile()">Salvar</button>
+            <div class="input-group" style="margin-bottom:15px"><label>Nome</label><input id="pf-name" value="${p.name}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>
+            <div class="input-group" style="margin-bottom:15px"><label>E-mail</label><input value="${p.email}" disabled style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#eee"></div>
+            ${!state.isAdmin ? `<div class="input-group" style="margin-bottom:15px"><label>Código da Turma</label><input id="pf-code" value="${p.classCode||''}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>` : ''}
+            <button class="btn-primary" onclick="saveProfile()">Salvar Alterações</button>
         </div>
     `;
 }
 
-// --- ACTIONS ---
-window.saveSched = async () => {
-    const s = { seg: el('h-seg').value, ter: el('h-ter').value, qua: el('h-qua').value, qui: el('h-qui').value, sex: el('h-sex').value };
-    await setDoc(doc(db, "config", "schedule"), s);
-    alert("Salvo!");
-};
+// 5. SALA DE AULA (ALUNO)
+async function renderClassroom(div, title) {
+    title.innerText = "Minha Sala";
+    if (!state.profile.classId) {
+        div.innerHTML = `<div class="card"><h3>Você não tem turma</h3><p>Vá em 'Meu Perfil' e digite o código da turma.</p></div>`;
+        return;
+    }
+    // Lógica de carregar posts viria aqui
+    div.innerHTML = `<div class="card"><h3>Mural da Turma</h3><p>Conteúdo será carregado aqui.</p></div>`;
+}
 
+// --- ACTIONS & MODALS ---
 window.saveProfile = async () => {
-    const code = el('pf-code').value;
-    const q = query(collection(db, "classes"), where("code", "==", code));
-    const snap = await getDocs(q);
-    if(snap.empty && code) return alert("Código inválido!");
+    const name = el('pf-name').value;
+    let updates = { name };
     
-    const cid = snap.empty ? null : snap.docs[0].id;
-    await updateDoc(doc(db, "users", state.user.uid), { name: el('pf-name').value, classCode: code, classId: cid });
-    alert("Atualizado!");
+    if (!state.isAdmin) {
+        const code = el('pf-code').value;
+        const q = query(collection(db, "classes"), where("code", "==", code));
+        const snap = await getDocs(q);
+        if (snap.empty && code) return alert("Código inválido!");
+        updates.classCode = code;
+        if (!snap.empty) updates.classId = snap.docs[0].id;
+    }
+    await updateDoc(doc(db, "users", state.user.uid), updates);
+    alert("Perfil salvo!");
 };
 
-window.saveClassAction = async () => {
+window.createClass = async () => {
     const name = el('cls-name').value;
     const code = el('cls-code').value;
-    if(state.editId) await updateDoc(doc(db, "classes", state.editId), { name, code });
-    else await addDoc(collection(db, "classes"), { name, code });
-    closeModals();
+    if (!name || !code) return;
+    await addDoc(collection(db, "classes"), { name, code });
+    closeModal();
 };
 
-window.saveStudentAction = async () => {
-    const cid = el('std-class-select').value;
-    const cSnap = await getDoc(doc(db, "classes", cid));
-    await updateDoc(doc(db, "users", state.editId), { classId: cid, classCode: cSnap.exists() ? cSnap.data().code : null, name: el('std-name').value });
-    closeModals();
-};
+window.formClass = () => `
+    <div class="input-group"><label>Nome</label><input id="cls-name" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>
+    <div class="input-group" style="margin-top:10px"><label>Código</label><input id="cls-code" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px"></div>
+    <button class="btn-primary" style="margin-top:20px" onclick="createClass()">Criar</button>
+`;
 
-window.createPostAction = async () => {
-    await addDoc(collection(db, `classes/${state.currentClassId}/posts`), {
-        title: el('post-title').value, type: el('post-type').value, content: el('post-content').value, link: el('post-link').value, createdAt: serverTimestamp()
-    });
-    closeModals();
+window.openModal = (title, html) => {
+    el('modal-title').innerText = title;
+    el('modal-body').innerHTML = html;
+    el('modal-overlay').classList.remove('hidden');
 };
+window.closeModal = () => el('modal-overlay').classList.add('hidden');
 
-// UTILS
-window.openClassModal = (id, n, c) => { state.editId = id; el('cls-name').value=n||''; el('cls-code').value=c||''; el('modal-overlay').classList.remove('hidden'); el('modal-class').classList.remove('hidden'); };
-window.openStudentModal = (id, n, c) => { state.editId = id; el('std-name').value=n; el('std-class-select').value=c||''; el('modal-overlay').classList.remove('hidden'); el('modal-student').classList.remove('hidden'); };
-window.openPostModal = () => { el('modal-overlay').classList.remove('hidden'); el('modal-post').classList.remove('hidden'); };
-window.closeModals = () => { el('modal-overlay').classList.add('hidden'); document.querySelectorAll('.modal-card').forEach(m => m.classList.add('hidden')); };
-window.switchAuthTab = (t) => {
-    if(t=='login') { el('login-form').classList.remove('hidden'); el('register-form').classList.add('hidden'); }
-    else { el('login-form').classList.add('hidden'); el('register-form').classList.remove('hidden'); }
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active'));
-};
-
-function setupUI() {
-    el('login-form').onsubmit = e => { e.preventDefault(); signInWithEmailAndPassword(auth, el('login-email').value, el('login-pass').value).catch(err=>alert(err.message)); };
+// --- SETUP ---
+function setupListeners() {
+    el('login-form').onsubmit = e => { e.preventDefault(); signInWithEmailAndPassword(auth, el('login-email').value, el('login-pass').value).catch(err => alert(err.message)); };
     el('register-form').onsubmit = async e => {
         e.preventDefault();
         try {
             const u = await createUserWithEmailAndPassword(auth, el('reg-email').value, el('reg-pass').value);
-            await setDoc(doc(db, "users", u.user.uid), { name: el('reg-name').value, email: el('reg-email').value, role: 'student', classCode: el('reg-code').value });
+            await setDoc(doc(db, "users", u.user.uid), { name: el('reg-name').value, email: el('reg-email').value, role: 'student' });
         } catch(err){alert(err.message)}
     };
     el('btn-logout').onclick = () => signOut(auth);
-    document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => navigateTo(b.dataset.target));
-    el('mobile-btn').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
     el('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+    document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => navigateTo(b.dataset.page));
+    el('mobile-toggle').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
 }
 
 init();
