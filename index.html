@@ -3,151 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Plataforma de Ensino</title>
+    <title>Domine Português | Login</title>
     
-    <!-- Ícone da Aba -->
     <link rel="shortcut icon" href="favicon.jpg" type="image/jpeg">
-    
-    <!-- Fontes Modernas (Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Biblioteca de Ícones -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Estilo -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Notificações -->
+    <!-- Container de Notificações -->
     <div id="toast-container"></div>
 
-    <!-- === TELA DE LOGIN / CADASTRO === -->
-    <div id="auth-view" class="view-wrapper active">
-        <div class="auth-card fade-in">
-            <!-- LOGO EM DESTAQUE -->
-            <div class="logo-area">
-                <img src="logo.jpg" alt="Logo da Plataforma" class="main-logo">
+    <!-- === TELA DE LOGIN === -->
+    <div id="auth-view" class="view-container active">
+        <div class="auth-box">
+            <div class="auth-header">
+                <!-- Se a imagem falhar, mostra um ícone -->
+                <img src="logo.jpg" alt="Logo" class="auth-logo" onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='block'">
+                <i id="fallback-icon" class="ph ph-books" style="font-size: 48px; color: var(--primary); display: none; margin: 0 auto 10px auto;"></i>
+                <h1>Domine Português</h1>
+                <p>Plataforma de Ensino</p>
             </div>
 
-            <!-- Abas de Navegação -->
+            <!-- Abas -->
             <div class="auth-tabs">
-                <button class="tab-btn active" onclick="switchTab('login')">Entrar</button>
-                <button class="tab-btn" onclick="switchTab('register')">Cadastrar</button>
+                <button class="tab-btn active" id="btn-tab-login" onclick="switchAuthTab('login')">Entrar</button>
+                <button class="tab-btn" id="btn-tab-register" onclick="switchAuthTab('register')">Cadastrar</button>
             </div>
 
-            <!-- Formulário de Login -->
-            <form id="login-form" class="auth-form">
+            <!-- Login -->
+            <form id="login-form">
                 <div class="input-group">
                     <i class="ph ph-envelope-simple"></i>
-                    <input type="email" id="login-email" placeholder="E-mail" required>
+                    <input type="email" id="login-email" placeholder="E-mail" required autocomplete="username">
                 </div>
                 <div class="input-group">
                     <i class="ph ph-lock-key"></i>
-                    <input type="password" id="login-pass" placeholder="Senha" required>
+                    <input type="password" id="login-pass" placeholder="Senha" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-primary">Acessar</button>
+                <button type="submit" class="btn-primary full" id="btn-submit-login">Acessar Painel</button>
             </form>
 
-            <!-- Formulário de Cadastro -->
-            <form id="register-form" class="auth-form hidden">
-                <div class="input-group">
-                    <i class="ph ph-user"></i>
-                    <input type="text" id="reg-name" placeholder="Nome Completo" required>
-                </div>
-                <div class="input-group">
-                    <i class="ph ph-envelope-simple"></i>
-                    <input type="email" id="reg-email" placeholder="E-mail" required>
-                </div>
-                <!-- Código da turma removido do cadastro inicial para simplificar. 
-                     O aluno insere depois no painel. -->
-                <div class="input-group">
-                    <i class="ph ph-lock-key"></i>
-                    <input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6">
-                </div>
-                <button type="submit" class="btn-primary">Criar Conta</button>
+            <!-- Cadastro -->
+            <form id="register-form" class="hidden">
+                <div class="input-group"><i class="ph ph-user"></i><input type="text" id="reg-name" placeholder="Nome Completo" required></div>
+                <div class="input-group"><i class="ph ph-envelope-simple"></i><input type="email" id="reg-email" placeholder="E-mail" required autocomplete="email"></div>
+                <div class="input-group"><i class="ph ph-student"></i><input type="text" id="reg-code" placeholder="Código da Turma (Peça ao Prof.)" required></div>
+                <div class="input-group"><i class="ph ph-lock-key"></i><input type="password" id="reg-pass" placeholder="Criar Senha" required minlength="6" autocomplete="new-password"></div>
+                <button type="submit" class="btn-primary full" id="btn-submit-register">Criar Conta</button>
             </form>
 
-            <div class="divider">ou continue com</div>
+            <div class="divider">ou</div>
 
-            <!-- Botão Google -->
-            <button id="btn-google" class="btn-social">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                <span>Google</span>
-            </button>
+            <div class="social-login">
+                <button id="btn-google" type="button" class="btn-outline">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> 
+                    Entrar com Google
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- === PAINEL DO SISTEMA (DASHBOARD) === -->
-    <div id="app-view" class="view-wrapper">
-        
-        <!-- Sidebar (Menu Lateral) -->
+    <!-- === APP DASHBOARD === -->
+    <div id="app-view" class="view-container">
+        <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="logo.jpg" alt="Logo" class="sidebar-logo">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-books"></i></div>
+                <div class="brand-info">
+                    <strong>Domine</strong>
+                    <span>Português</span>
+                </div>
             </div>
             
-            <nav class="nav-menu">
-                <button class="nav-item active" data-page="home">
-                    <i class="ph ph-squares-four"></i> Início
-                </button>
+            <nav class="nav-list">
+                <button class="nav-item active" data-target="home"><i class="ph ph-squares-four"></i> Visão Geral</button>
+                <button class="nav-item" data-target="profile"><i class="ph ph-user-circle"></i> Meu Perfil</button>
                 
-                <!-- Menu Exclusivo do Professor -->
+                <!-- Menu Admin -->
                 <div id="admin-menu" class="hidden">
-                    <span class="menu-label">GESTÃO</span>
-                    <button class="nav-item" data-page="classes"><i class="ph ph-chalkboard-teacher"></i> Turmas</button>
-                    <button class="nav-item" data-page="students"><i class="ph ph-users"></i> Alunos</button>
+                    <div class="nav-label">ADMINISTRAÇÃO</div>
+                    <button class="nav-item" data-target="admin-classes"><i class="ph ph-chalkboard-teacher"></i> Turmas</button>
+                    <button class="nav-item" data-target="admin-students"><i class="ph ph-users"></i> Alunos</button>
                 </div>
-
-                <!-- Menu Exclusivo do Aluno -->
+                
+                <!-- Menu Aluno -->
                 <div id="student-menu" class="hidden">
-                    <span class="menu-label">ESTUDOS</span>
-                    <button class="nav-item" data-page="classroom"><i class="ph ph-graduation-cap"></i> Minha Sala</button>
+                    <div class="nav-label">AULAS</div>
+                    <button class="nav-item" data-target="classroom"><i class="ph ph-graduation-cap"></i> Sala de Aula</button>
                 </div>
-
-                <div class="spacer"></div>
-                <button class="nav-item" data-page="profile">
-                    <i class="ph ph-user-gear"></i> Perfil
-                </button>
             </nav>
 
-            <div class="user-footer">
-                <div class="user-info">
-                    <strong id="u-name">Usuário</strong>
-                    <span id="u-role">Carregando...</span>
+            <div class="user-footer" id="btn-logout" title="Sair">
+                <div class="avatar" id="u-avatar">U</div>
+                <div class="u-text">
+                    <strong id="u-name">...</strong>
+                    <span id="u-role">...</span>
                 </div>
-                <button id="btn-logout" title="Sair"><i class="ph ph-sign-out"></i></button>
+                <i class="ph ph-sign-out"></i>
             </div>
         </aside>
 
-        <!-- Área de Conteúdo -->
+        <!-- Conteúdo -->
         <main class="main-content">
-            <header class="top-bar">
-                <button id="mobile-toggle"><i class="ph ph-list"></i></button>
-                <h2 id="page-title">Visão Geral</h2>
+            <header class="top-header">
+                <button class="mobile-toggle" id="mobile-btn"><i class="ph ph-list"></i></button>
+                <h2 id="page-title">Dashboard</h2>
             </header>
             
             <div id="content-area" class="content-body fade-in">
-                <!-- O conteúdo entra aqui via JavaScript -->
+                <!-- Conteúdo Dinâmico -->
             </div>
         </main>
     </div>
 
-    <!-- === MODAL (Popups) === -->
+    <!-- === MODAIS === -->
     <div id="modal-overlay" class="modal-overlay hidden">
-        <div id="generic-modal" class="modal-card">
-            <div class="modal-header">
-                <h3 id="modal-title">Título</h3>
-                <button onclick="closeModal()"><i class="ph ph-x"></i></button>
+        
+        <!-- Modal Turma -->
+        <div id="modal-class" class="modal-card hidden">
+            <div class="modal-header"><h3>Dados da Turma</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <input type="hidden" id="class-id-edit">
+            <div class="form-group">
+                <label>Nome da Turma</label>
+                <input type="text" id="cls-name" placeholder="Ex: 3º Ano A">
             </div>
-            <div id="modal-body">
-                <!-- Conteúdo do modal injetado via JS -->
+            <div class="form-group">
+                <label>Código de Acesso</label>
+                <input type="text" id="cls-code" placeholder="Ex: PORT-3A">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-text" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="saveClassAction()">Salvar</button>
             </div>
         </div>
+
+        <!-- Modal Editar Aluno -->
+        <div id="modal-student" class="modal-card hidden">
+            <div class="modal-header"><h3>Gerenciar Aluno</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <input type="hidden" id="student-id-edit">
+            <div class="form-group">
+                <label>Nome do Aluno</label>
+                <input type="text" id="std-name">
+            </div>
+            <div class="form-group">
+                <label>Mover para Turma</label>
+                <select id="std-class-select"></select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-text" onclick="closeModals()">Cancelar</button>
+                <button class="btn-primary" onclick="saveStudentAction()">Atualizar</button>
+            </div>
+        </div>
+
+        <!-- Modal Post -->
+        <div id="modal-post" class="modal-card hidden">
+            <div class="modal-header"><h3>Novo Post</h3><button onclick="closeModals()"><i class="ph ph-x"></i></button></div>
+            <input type="text" id="post-title" placeholder="Título" class="input-block">
+            <select id="post-type" class="input-block">
+                <option value="aviso">Aviso</option>
+                <option value="material">Material</option>
+                <option value="atividade">Atividade</option>
+            </select>
+            <textarea id="post-content" rows="4" placeholder="Conteúdo..." class="input-block"></textarea>
+            <input type="text" id="post-link" placeholder="Link (Opcional)" class="input-block">
+            <button class="btn-primary full" onclick="createPostAction()">Publicar</button>
+        </div>
+
     </div>
 
+    <!-- JavaScript -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
