@@ -1,7 +1,15 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, setDoc, doc, getDoc, addDoc, deleteDoc, serverTimestamp, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+// --- IMPORTAÇÕES FIREBASE (V9 MODULAR) ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { 
+    getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
+    signOut, onAuthStateChanged, createUserWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import { 
+    getFirestore, doc, getDoc, setDoc, updateDoc, collection, 
+    addDoc, query, where, getDocs, deleteDoc, orderBy 
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+// --- CONFIGURAÇÃO ---
 const firebaseConfig = {
     apiKey: "AIzaSyCCiWKDMJ9LkBa_9OLauUNFJ9_TPC60h4o",
     authDomain: "domine-portugues.firebaseapp.com",
@@ -15,341 +23,402 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-// === EMAIL DO PROFESSOR ===
+// --- CONSTANTES DE NEGÓCIO ---
 const ADMIN_EMAILS = [
-    "domenico@domineportugues.com.br", // SEU NOVO EMAIL
     "domenico.suriale@ifpr.edu.br",
+    "domenico@domineportugues.com.br",
     "admin@teste.com"
 ];
 
-const state = { user: null, profile: null, isAdmin: false, currentClassId: null, editId: null };
-const el = (id) => document.getElementById(id);
+// --- ESTADO GLOBAL ---
+let currentUserData = null;
 
-function init() {
-    setupUI();
-    // Listener de Auth
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            await handleLogin(user);
+// --- ELEMENTOS DOM ---
+const views = {
+    login: document.getElementById('auth-container'),
+    app: document.getElementById('app-container'),
+    dashboard: document.getElementById('dashboard'),
+    adminClasses: document.getElementById('admin-classes'),
+    adminStudents: document.getElementById('admin-students'),
+    classroom: document.getElementById('classroom'),
+    profile: document.getElementById('profile')
+};
+
+// --- INICIALIZAÇÃO E AUTH ---
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await handleUserLogin(user);
+    } else {
+        showLoginScreen();
+    }
+});
+
+async function handleUserLogin(user) {
+    try {
+        const userRef = doc(db, "users", user.uid);
+        let userSnap = await getDoc(userRef);
+
+        // REGRA CRÍTICA: Se admin hardcoded, força role
+        const isAdminEmail = ADMIN_EMAILS.includes(user.email);
+        let role = 'student';
+
+        if (!userSnap.exists()) {
+            // Cria usuário se não existir (Google First Login)
+            role = isAdminEmail ? 'admin' : 'student';
+            await setDoc(userRef, {
+                uid: user.uid,
+                name: user.displayName || user.email.split('@')[0],
+                email: user.email,
+                role: role,
+                classId: null,
+                classCode: null
+            });
         } else {
-            logoutUI();
+            // Se já existe, verifica se precisa promover para Admin
+            if (isAdminEmail && userSnap.data().role !== 'admin') {
+                await updateDoc(userRef, { role: 'admin' });
+                role = 'admin';
+            } else {
+                role = userSnap.data().role;
+            }
         }
-    });
+
+        // Recarrega dados atualizados
+        userSnap = await getDoc(userRef);
+        currentUserData = userSnap.data();
+
+        setupUIForUser();
+    } catch (error) {
+        console.error("Erro no login:", error);
+        alert("Erro ao carregar perfil: " + error.message);
+        signOut(auth);
+    }
 }
 
-// --- LOGIN COM TRATAMENTO DE GOOGLE ---
-async function handleLogin(user) {
-    state.user = user;
-    const email = user.email.toLowerCase().trim();
-    
-    // 1. Verifica Admin
-    state.isAdmin = ADMIN_EMAILS.includes(email);
+// --- LÓGICA DE UI ---
+function showLoginScreen() {
+    views.login.classList.remove('hidden');
+    views.app.classList.add('hidden');
+}
 
-    // 2. Busca ou Cria Perfil
-    const userRef = doc(db, "users", user.uid);
-    let snap;
+function setupUIForUser() {
+    views.login.classList.add('hidden');
+    views.app.classList.remove('hidden');
+
+    // Config Sidebar
+    document.getElementById('profile-name').value = currentUserData.name;
+    document.getElementById('profile-email').value = currentUserData.email;
+    document.getElementById('profile-class-code').value = currentUserData.classCode || '';
+
+    // Permissões
+    const adminMenu = document.getElementById('admin-menu');
+    const saveScheduleBtn = document.getElementById('btn-save-schedule');
+    const newPostBtn = document.getElementById('btn-new-post');
+
+    if (currentUserData.role === 'admin') {
+        adminMenu.classList.remove('hidden');
+        saveScheduleBtn.classList.remove('hidden');
+        newPostBtn.classList.remove('hidden'); // Admin pode postar em qualquer lugar
+        // Carrega dados Admin
+        loadStudents();
+        loadClasses();
+    } else {
+        adminMenu.classList.add('hidden');
+        saveScheduleBtn.classList.add('hidden');
+        newPostBtn.classList.add('hidden');
+    }
+
+    loadSchedule();
+    showSection('dashboard');
+}
+
+// Navegação
+document.querySelectorAll('.nav-link[data-target]').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-target');
+        showSection(targetId);
+        
+        // Atualiza classe active
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+    });
+});
+
+function showSection(id) {
+    // Esconde todas as seções
+    document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+    
+    // Mostra alvo
+    if(views[id]) views[id].classList.remove('hidden');
+
+    // Carregamento sob demanda
+    if (id === 'classroom') loadClassroom();
+}
+
+// --- LOGIN EVENTS ---
+document.getElementById('btn-google').addEventListener('click', async () => {
+    try {
+        await signInWithPopup(auth, googleProvider);
+        // onAuthStateChanged cuidará do resto
+    } catch (error) {
+        alert("Erro Google: " + error.message);
+    }
+});
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+        alert("Erro Login: " + error.message);
+    }
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+
+// --- ADMIN FEATURES: SCHEDULE ---
+const weekDays = ['seg', 'ter', 'qua', 'qui', 'sex'];
+
+async function loadSchedule() {
+    const tbody = document.getElementById('schedule-body');
+    tbody.innerHTML = '<tr><td colspan="5">Carregando...</td></tr>';
     
     try {
-        snap = await getDoc(userRef);
-    } catch (error) {
-        console.error("Erro ao ler perfil:", error);
-        alert("Erro de conexão com o banco de dados.");
-        return;
-    }
-    
-    if (!snap.exists()) {
-        // PERFIL NÃO EXISTE (Primeiro login Google) -> CRIA AGORA
-        const baseProfile = {
-            name: user.displayName || "Usuário",
-            email: email,
-            role: state.isAdmin ? 'admin' : 'student',
-            classCode: null,
-            createdAt: serverTimestamp()
-        };
-        await setDoc(userRef, baseProfile);
-        state.profile = baseProfile;
-    } else {
-        state.profile = snap.data();
-        // Corrige permissão se for admin na lista mas não no banco
-        if (state.isAdmin && state.profile.role !== 'admin') {
-            await updateDoc(userRef, { role: 'admin' });
-            state.profile.role = 'admin';
-        }
-    }
-
-    renderSidebar();
-    document.getElementById('auth-view').classList.remove('active');
-    document.getElementById('app-view').classList.add('active');
-    
-    // Roteamento
-    if (state.isAdmin) navigateTo('home');
-    else if (state.profile.classId) openClassroom(state.profile.classId);
-    else navigateTo('profile'); // Aluno sem turma vai para perfil
-}
-
-function logoutUI() {
-    state.user = null; state.profile = null;
-    document.getElementById('app-view').classList.remove('active');
-    document.getElementById('auth-view').classList.add('active');
-}
-
-function renderSidebar() {
-    const p = state.profile;
-    el('u-name').innerText = p.name ? p.name.split(' ')[0] : "Usuário";
-    el('u-role').innerText = state.isAdmin ? "Professor" : "Aluno";
-    el('u-avatar').innerText = p.name ? p.name[0] : "U";
-    
-    if (state.isAdmin) {
-        el('admin-menu').classList.remove('hidden');
-        el('student-menu').classList.add('hidden');
-    } else {
-        el('admin-menu').classList.add('hidden');
-        el('student-menu').classList.remove('hidden');
-    }
-}
-
-// --- NAVEGAÇÃO ---
-window.navigateTo = (page) => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-target="${page}"]`)?.classList.add('active');
-    document.querySelector('.sidebar').classList.remove('open');
-    
-    const content = el('content-area');
-    const title = el('page-title');
-    
-    if (page === 'home') renderHome(content, title);
-    else if (page === 'admin-classes') renderAdminClasses(content, title);
-    else if (page === 'admin-students') renderAdminStudents(content, title);
-    else if (page === 'profile') renderProfile(content, title);
-    else if (page === 'classroom') {
-        if(state.profile.classId) openClassroom(state.profile.classId);
-        else content.innerHTML = `<div class="card"><h3>Sem Turma</h3><p>Vá em 'Meu Perfil' e digite o código da turma.</p></div>`;
-    }
-};
-
-// --- RENDERERS ---
-
-// 1. HOME
-async function renderHome(div, title) {
-    title.innerText = "Visão Geral";
-    let s = { seg:"", ter:"", qua:"", qui:"", sex:"" };
-    try { const d = await getDoc(doc(db, "config", "schedule")); if(d.exists()) s = d.data(); } catch(e){}
-    
-    const ro = state.isAdmin ? "" : "readonly";
-    
-    div.innerHTML = `
-        <div class="card">
-            <div class="card-head"><h3><i class="ph ph-clock"></i> Horário de Atendimento</h3>${state.isAdmin?`<button class="btn-primary" style="width:auto; padding:8px 16px" onclick="saveSched()">Salvar</button>`:''}</div>
-            <div class="table-responsive"><table>
-                <tr><td width="20%">Segunda</td><td><input id="h-seg" style="width:100%; border:none" value="${s.seg||''}" ${ro} placeholder="-"></td></tr>
-                <tr><td>Terça</td><td><input id="h-ter" style="width:100%; border:none" value="${s.ter||''}" ${ro} placeholder="-"></td></tr>
-                <tr><td>Quarta</td><td><input id="h-qua" style="width:100%; border:none" value="${s.qua||''}" ${ro} placeholder="-"></td></tr>
-                <tr><td>Quinta</td><td><input id="h-qui" style="width:100%; border:none" value="${s.qui||''}" ${ro} placeholder="-"></td></tr>
-                <tr><td>Sexta</td><td><input id="h-sex" style="width:100%; border:none" value="${s.sex||''}" ${ro} placeholder="-"></td></tr>
-            </table></div>
-        </div>
-        ${!state.isAdmin ? `<div class="card"><h3>Minha Turma</h3><p>Código: <strong>${state.profile.classCode || "Nenhum"}</strong></p><button class="btn-primary" onclick="navigateTo('classroom')" style="margin-top:15px">Entrar na Sala</button></div>` : ''}
-    `;
-}
-
-// 2. TURMAS
-function renderAdminClasses(div, title) {
-    if(!state.isAdmin) return;
-    title.innerText = "Gestão de Turmas";
-    div.innerHTML = `<div style="text-align:right; margin-bottom:20px"><button class="btn-primary" style="width:auto" onclick="openClassModal()">+ Nova Turma</button></div><div id="c-list"></div>`;
-    
-    onSnapshot(collection(db, "classes"), snap => {
-        el('c-list').innerHTML = snap.docs.map(d => {
-            const c = d.data();
-            return `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
-                <div><strong>${c.name}</strong><br><small style="color:#666">${c.code}</small></div>
-                <div style="display:flex; gap:5px">
-                    <button class="btn-icon" title="Entrar" onclick="openClassroom('${d.id}')"><i class="ph ph-arrow-right"></i></button>
-                    <button class="btn-icon" title="Editar" onclick="openClassModal('${d.id}','${c.name}','${c.code}')"><i class="ph ph-pencil"></i></button>
-                    <button class="btn-icon del" title="Excluir" onclick="deleteDoc(doc(db,'classes','${d.id}'))"><i class="ph ph-trash"></i></button>
-                </div>
-            </div>`;
-        }).join('') || '<p>Nenhuma turma.</p>';
-    });
-}
-
-// 3. ALUNOS
-async function renderAdminStudents(div, title) {
-    if(!state.isAdmin) return;
-    title.innerText = "Alunos Cadastrados";
-    
-    // Lista de turmas para o modal
-    const cs = await getDocs(collection(db, "classes"));
-    let opts = '<option value="">Sem Turma</option>';
-    cs.forEach(c => opts += `<option value="${c.id}">${c.data().name}</option>`);
-    el('std-class-select').innerHTML = opts;
-
-    div.innerHTML = `<div class="card"><div class="table-responsive"><table id="std-table"></table></div></div>`;
-    
-    onSnapshot(query(collection(db, "users"), where("role", "!=", "admin")), snap => {
-        const rows = snap.docs.map(d => {
-            const u = d.data();
-            return `<tr>
-                <td>${u.name}</td>
-                <td>${u.email}</td>
-                <td>${u.classCode || '-'}</td>
-                <td>
-                    <button class="btn-icon" title="Editar" onclick="openStudentModal('${d.id}','${u.name}','${u.classId}')"><i class="ph ph-pencil"></i></button>
-                    <button class="btn-icon del" onclick="if(confirm('Banir aluno?')) deleteDoc(doc(db,'users','${d.id}'))"><i class="ph ph-trash"></i></button>
-                </td>
-            </tr>`;
-        }).join('');
-        el('std-table').innerHTML = `<thead><tr><th>Nome</th><th>Email</th><th>Turma</th><th>Ações</th></tr></thead><tbody>${rows}</tbody>`;
-    });
-}
-
-// 4. SALA DE AULA
-async function openClassroom(cid) {
-    if(!cid) return;
-    state.currentClassId = cid;
-    const content = el('content-area');
-    
-    const cSnap = await getDoc(doc(db, "classes", cid));
-    if(!cSnap.exists()) {
-        content.innerHTML = "<div class='card'><h3>Turma não encontrada</h3></div>";
-        return;
-    }
-    el('page-title').innerText = cSnap.data().name;
-
-    content.innerHTML = `
-        ${state.isAdmin ? `<div style="text-align:right; margin-bottom:20px"><button class="btn-primary" style="width:auto" onclick="openPostModal()">Criar Post</button></div>` : ''}
-        <div id="feed"></div>
-    `;
-
-    onSnapshot(query(collection(db, `classes/${cid}/posts`), orderBy("createdAt", "desc")), snap => {
-        el('feed').innerHTML = snap.docs.map(d => {
-            const p = d.data();
-            const date = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString() : '';
-            return `
-            <div class="post-card">
-                <div class="post-meta"><span>${p.type.toUpperCase()}</span> <span>${date}</span></div>
-                <div class="post-title">${p.title}</div>
-                <div class="post-body">${p.content}</div>
-                ${p.link ? `<a href="${p.link}" target="_blank" class="post-link">Abrir Anexo &rarr;</a>` : ''}
-                ${state.isAdmin ? `<div style="margin-top:10px; border-top:1px solid #eee; padding-top:8px"><button class="btn-icon del" style="border:none" onclick="deleteDoc(doc(db,'classes/${cid}/posts','${d.id}'))">Excluir</button></div>` : ''}
-            </div>`;
-        }).join('') || '<p>Mural vazio.</p>';
-    });
-}
-
-// 5. PERFIL
-function renderProfile(div, title) {
-    title.innerText = "Meu Perfil";
-    const p = state.profile;
-    div.innerHTML = `
-        <div class="card" style="max-width:500px">
-            <div class="form-group"><label>Nome</label><input id="pf-name" value="${p.name}"></div>
-            <div class="form-group"><label>E-mail</label><input value="${p.email}" disabled style="background:#eee"></div>
-            ${!state.isAdmin ? `<div class="form-group"><label>Código da Turma</label><input id="pf-code" value="${p.classCode||''}"></div>` : ''}
-            <button class="btn-primary" onclick="saveProfile()">Salvar Alterações</button>
-        </div>
-    `;
-}
-
-// --- ACTIONS ---
-window.saveSched = async () => {
-    const s = { seg: el('h-seg').value, ter: el('h-ter').value, qua: el('h-qua').value, qui: el('h-qui').value, sex: el('h-sex').value };
-    await setDoc(doc(db, "config", "schedule"), s);
-    alert("Salvo!");
-};
-
-window.saveProfile = async () => {
-    const name = el('pf-name').value;
-    const code = el('pf-code') ? el('pf-code').value : null;
-    let updates = { name };
-    
-    if (code && code !== state.profile.classCode) {
-        const q = query(collection(db, "classes"), where("code", "==", code));
-        const s = await getDocs(q);
-        if(s.empty) return alert("Código inválido!");
-        updates.classCode = code;
-        updates.classId = s.docs[0].id;
-    }
-    
-    await updateDoc(doc(db, "users", state.user.uid), updates);
-    alert("Perfil salvo! Recarregando...");
-    window.location.reload();
-};
-
-window.saveClassAction = async () => {
-    const name = el('cls-name').value;
-    const code = el('cls-code').value;
-    if(state.editId) await updateDoc(doc(db, "classes", state.editId), { name, code });
-    else await addDoc(collection(db, "classes"), { name, code });
-    window.closeModals();
-};
-
-window.saveStudentAction = async () => {
-    const cid = el('std-class-select').value;
-    let updates = { name: el('std-name').value };
-    
-    if(cid) {
-        const cSnap = await getDoc(doc(db, "classes", cid));
-        if(cSnap.exists()) {
-            updates.classId = cid;
-            updates.classCode = cSnap.data().code;
-        }
-    } else {
-        updates.classId = null;
-        updates.classCode = null;
-    }
-    
-    await updateDoc(doc(db, "users", state.editId), updates);
-    window.closeModals();
-};
-
-window.createPostAction = async () => {
-    await addDoc(collection(db, `classes/${state.currentClassId}/posts`), {
-        title: el('post-title').value, type: el('post-type').value, content: el('post-content').value, link: el('post-link').value, createdAt: serverTimestamp()
-    });
-    window.closeModals();
-};
-
-// --- UTILS ---
-window.openClassModal = (id, n, c) => { state.editId = id||null; el('cls-name').value=n||''; el('cls-code').value=c||''; el('modal-overlay').classList.remove('hidden'); el('modal-class').classList.remove('hidden'); };
-window.openStudentModal = (id, n, cid) => { state.editId = id; el('std-name').value=n; el('std-class-select').value=cid||""; el('modal-overlay').classList.remove('hidden'); el('modal-student').classList.remove('hidden'); };
-window.openPostModal = () => { el('modal-overlay').classList.remove('hidden'); el('modal-post').classList.remove('hidden'); };
-window.closeModals = () => { el('modal-overlay').classList.add('hidden'); document.querySelectorAll('.modal-card').forEach(m => m.classList.add('hidden')); };
-window.switchAuthTab = (t) => {
-    if(t === 'login') { el('login-form').classList.remove('hidden'); el('register-form').classList.add('hidden'); }
-    else { el('login-form').classList.add('hidden'); el('register-form').classList.remove('hidden'); }
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active'));
-};
-
-function setupUI() {
-    el('login-form').onsubmit = e => { e.preventDefault(); signInWithEmailAndPassword(auth, el('login-email').value, el('login-pass').value).catch(err=>alert("Erro login: " + err.message)); };
-    el('register-form').onsubmit = async e => {
-        e.preventDefault();
-        const code = el('reg-code').value;
-        const q = query(collection(db, "classes"), where("code", "==", code));
-        const s = await getDocs(q);
-        const cid = !s.empty ? s.docs[0].id : null;
+        const docRef = doc(db, "config", "schedule");
+        const docSnap = await getDoc(docRef);
+        const data = docSnap.exists() ? docSnap.data() : { seg: '', ter: '', qua: '', qui: '', sex: '' };
         
-        try {
-            const u = await createUserWithEmailAndPassword(auth, el('reg-email').value, el('reg-pass').value);
-            await setDoc(doc(db, "users", u.user.uid), { name: el('reg-name').value, email: el('reg-email').value, role: 'student', classCode: code, classId: cid });
-        } catch(err){alert(err.message)}
-    };
-    el('btn-logout').onclick = () => signOut(auth);
-    el('mobile-toggle').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
-    document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => navigateTo(b.dataset.target));
-    
-    // GOOGLE LOGIN HANDLER
-    el('btn-google').onclick = async () => {
-        try {
-            await signInWithPopup(auth, new GoogleAuthProvider());
-        } catch (error) {
-            console.error("Google Error:", error);
-            alert("Erro no Google: " + error.message);
-        }
-    };
+        const isAdm = currentUserData?.role === 'admin';
+        
+        tbody.innerHTML = `
+            <tr>
+                ${weekDays.map(day => `
+                    <td>
+                        <textarea class="schedule-input" data-day="${day}" 
+                        ${!isAdm ? 'disabled style="border:none; bg:transparent; resize:none;"' : ''}
+                        >${data[day] || ''}</textarea>
+                    </td>
+                `).join('')}
+            </tr>
+        `;
+    } catch (e) { console.error(e); }
 }
 
-init();
+document.getElementById('btn-save-schedule').addEventListener('click', async () => {
+    const inputs = document.querySelectorAll('.schedule-input');
+    const newData = {};
+    inputs.forEach(input => newData[input.dataset.day] = input.value);
+    
+    await setDoc(doc(db, "config", "schedule"), newData);
+    alert("Horário atualizado!");
+});
+
+// --- ADMIN FEATURES: CLASS & STUDENTS ---
+async function loadClasses() {
+    const container = document.getElementById('classes-grid');
+    container.innerHTML = '';
+    const q = query(collection(db, "classes"));
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+            <h3>${data.name}</h3>
+            <p style="color:var(--text-sec)">Código: <strong>${data.code}</strong></p>
+            <button onclick="window.deleteClass('${docSnap.id}')" class="btn btn-danger btn-sm" style="margin-top:10px">Excluir</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+document.getElementById('btn-new-class').addEventListener('click', async () => {
+    const name = prompt("Nome da Turma (Ex: 3º Ano A):");
+    const code = prompt("Código Único (Ex: PORT3A):");
+    if(name && code) {
+        await addDoc(collection(db, "classes"), { name, code });
+        loadClasses();
+    }
+});
+
+window.deleteClass = async (id) => {
+    if(confirm("Tem certeza?")) {
+        await deleteDoc(doc(db, "classes", id));
+        loadClasses();
+    }
+};
+
+async function loadStudents() {
+    const tbody = document.getElementById('students-list');
+    tbody.innerHTML = '';
+    
+    // Pega todas as turmas para montar o dropdown
+    const classesSnap = await getDocs(collection(db, "classes"));
+    const classesOptions = [];
+    classesSnap.forEach(c => classesOptions.push({id: c.id, ...c.data()}));
+
+    const q = query(collection(db, "users"), where("role", "!=", "admin"));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(userSnap => {
+        const u = userSnap.data();
+        const tr = document.createElement('tr');
+        
+        // Dropdown de turmas
+        let selectHtml = `<select onchange="window.moveStudent('${u.uid}', this.value)" style="padding:5px;">`;
+        selectHtml += `<option value="">Sem Turma</option>`;
+        classesOptions.forEach(c => {
+            const selected = u.classId === c.id ? 'selected' : '';
+            selectHtml += `<option value="${c.id}||${c.code}" ${selected}>${c.name}</option>`;
+        });
+        selectHtml += `</select>`;
+
+        tr.innerHTML = `
+            <td>${u.name}</td>
+            <td>${u.email}</td>
+            <td>${selectHtml}</td>
+            <td><button onclick="window.banStudent('${u.uid}')" class="btn btn-danger btn-sm">Banir</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.moveStudent = async (uid, value) => {
+    if(!value) return;
+    const [classId, classCode] = value.split('||');
+    await updateDoc(doc(db, "users", uid), { classId, classCode });
+    alert("Aluno movido!");
+};
+
+window.banStudent = async (uid) => { // Apenas admin lógico, Firebase Auth requires Admin SDK para ban real
+    if(confirm("Remover acesso deste aluno?")) {
+        await updateDoc(doc(db, "users", uid), { role: 'banned' });
+        loadStudents();
+    }
+};
+
+// --- STUDENT FEATURES: PROFILE & CLASSROOM ---
+document.getElementById('btn-join-class').addEventListener('click', async () => {
+    const code = document.getElementById('profile-class-code').value.trim();
+    if(!code) return;
+
+    const q = query(collection(db, "classes"), where("code", "==", code));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        alert("Código de turma inválido!");
+    } else {
+        const classDoc = querySnapshot.docs[0];
+        await updateDoc(doc(db, "users", currentUserData.uid), {
+            classId: classDoc.id,
+            classCode: classDoc.data().code
+        });
+        alert("Matriculado com sucesso!");
+        // Atualiza local
+        currentUserData.classId = classDoc.id;
+        currentUserData.classCode = classDoc.data().code;
+    }
+});
+
+document.getElementById('btn-update-profile').addEventListener('click', async () => {
+    const newName = document.getElementById('profile-name').value;
+    await updateDoc(doc(db, "users", currentUserData.uid), { name: newName });
+    alert("Perfil salvo.");
+});
+
+async function loadClassroom() {
+    const container = document.getElementById('posts-container');
+    const title = document.getElementById('classroom-title');
+    
+    // Se não tiver turma
+    if (!currentUserData.classId && currentUserData.role !== 'admin') {
+        container.innerHTML = '<div class="post-card"><h3>Você não está em nenhuma turma.</h3><p>Vá em Perfil e digite o código.</p></div>';
+        return;
+    }
+
+    // Se admin, vê tudo (ou poderia implementar seletor, aqui simplificado para ver posts gerais)
+    // Lógica para aluno: ver posts da sua classId
+    
+    let targetClassId = currentUserData.classId;
+    
+    // Se admin, vamos permitir criar post para qual turma? 
+    // Simplificação: Admin posta na turma "Global" ou cria posts visiveis para todos se não tiver classId.
+    // Para robustez do MVP pedido: Aluno só vê posts onde post.classId == user.classId
+    
+    container.innerHTML = 'Carregando...';
+    
+    // Busca posts
+    let q;
+    if(targetClassId) {
+        q = query(collection(db, "classes", targetClassId, "posts"), orderBy("createdAt", "desc"));
+    } else {
+         // Fallback se admin sem turma tentar ver
+         container.innerHTML = "Selecione uma turma para ver o mural (Admin Mode - Future Feature)";
+         return;
+    }
+
+    try {
+        const querySnapshot = await getDocs(q);
+        container.innerHTML = '';
+        
+        if(querySnapshot.empty) {
+            container.innerHTML = '<div class="empty-state">Nenhum aviso por enquanto.</div>';
+            return;
+        }
+
+        querySnapshot.forEach(doc => {
+            const p = doc.data();
+            const date = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString() : '';
+            const html = `
+                <div class="post-card">
+                    <div class="post-meta"><span>${date}</span> <span>Oficial</span></div>
+                    <div class="post-title">${p.title}</div>
+                    <div class="post-content">${p.content}</div>
+                    ${p.link ? `<a href="${p.link}" target="_blank" class="post-link">📎 Acessar Material</a>` : ''}
+                    ${currentUserData.role === 'admin' ? `<button onclick="window.delPost('${targetClassId}', '${doc.id}')" class="btn btn-danger btn-sm" style="float:right">Del</button>` : ''}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    } catch (err) {
+        console.log(err);
+        container.innerHTML = "Erro ao carregar posts ou você não tem acesso.";
+    }
+}
+
+// Criação de Post (Apenas Admin)
+document.getElementById('btn-new-post').addEventListener('click', async () => {
+    // Admin precisa estar "logado" em uma turma no perfil para postar nela, ou selecionar.
+    // Para simplificar lógica hardcoded: Posta na turma que o Admin tiver setado no próprio perfil (para testes)
+    // OU, idealmente, Admin seleciona turma. 
+    // SOLUÇÃO ROBUSTA: Prompt pede ID da turma ou usa a do Admin.
+    
+    if(!currentUserData.classId) {
+        alert("Admin: Defina uma turma no seu Perfil (campo código) para onde este post irá.");
+        return;
+    }
+
+    const title = prompt("Título do Aviso:");
+    const content = prompt("Mensagem:");
+    const link = prompt("Link (opcional):");
+
+    if (title && content) {
+        await addDoc(collection(db, "classes", currentUserData.classId, "posts"), {
+            title, content, link, createdAt: new Date()
+        });
+        loadClassroom();
+    }
+});
+
+window.delPost = async (classId, postId) => {
+    if(confirm("Apagar post?")) {
+        await deleteDoc(doc(db, "classes", classId, "posts", postId));
+        loadClassroom();
+    }
+};
