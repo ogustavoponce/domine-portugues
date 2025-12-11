@@ -1,215 +1,173 @@
-/* --- VARIÁVEIS & DESIGN TOKENS (iOS 26 Vibe) --- */
+/* --- FUNDAÇÕES: NOTION-LIKE / LINEAR STYLE --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-    /* Cores Semânticas - Paleta "Deep Space & Glass" */
-    --primary: #007AFF; /* Apple Blue */
-    --primary-gradient: linear-gradient(135deg, #007AFF 0%, #0055B3 100%);
-    --bg-body: #F2F2F7; /* iOS System Gray 6 */
-    --bg-glass: rgba(255, 255, 255, 0.75); /* Frosted Glass */
-    --bg-glass-heavy: rgba(255, 255, 255, 0.90);
-    --text-main: #1C1C1E;
-    --text-secondary: #8E8E93;
-    --danger: #FF3B30;
-    --success: #34C759;
+    /* Paleta Neutra Sofisticada */
+    --bg-app: #FFFFFF;
+    --bg-sidebar: #F7F7F5; /* Aquele cinza "papel" do Notion */
+    --bg-panel: #FFFFFF;
+    --border-color: #E0E0E0;
+    --text-primary: #37352F;
+    --text-secondary: #787774;
     
-    /* Geometria & Gestalt */
-    --sidebar-width: 280px;
-    --radius-l: 24px; /* Super arredondado */
-    --radius-m: 16px;
-    --radius-s: 10px;
-    
-    /* Profundidade (Shadows difusas, sem bordas duras) */
-    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.04);
-    --shadow-hover: 0 12px 48px rgba(0, 122, 255, 0.15);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
-    
-    /* Animação */
-    --ease-ios: cubic-bezier(0.25, 1, 0.5, 1); /* Curva de animação da Apple */
+    /* Acentos (Discretos) */
+    --primary: #2383E2; /* Azul Notion */
+    --primary-hover: #1B65B3;
+    --danger: #DF5452;
+    --success: #0F7B6C;
+
+    /* Estrutura */
+    --sidebar-width: 240px;
+    --radius: 6px; /* Cantos levemente arredondados, não redondos */
+    --font-main: 'Inter', -apple-system, sans-serif;
 }
 
-/* --- RESET & BASE --- */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body { 
-    background-color: var(--bg-body); 
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(0, 122, 255, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(52, 199, 89, 0.05) 0%, transparent 40%);
-    color: var(--text-main); 
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    height: 100vh; 
-    overflow: hidden; 
+    background-color: var(--bg-app); 
+    color: var(--text-primary); 
+    font-family: var(--font-main);
+    -webkit-font-smoothing: antialiased;
+    height: 100vh;
+    overflow: hidden;
+    line-height: 1.5;
 }
 
-/* --- TELA DE LOGIN (Centro das atenções) --- */
+/* --- TELA DE LOGIN (Minimalista Absoluta) --- */
 .auth-container { 
     display: flex; 
     align-items: center; 
     justify-content: center; 
     height: 100vh; 
     width: 100vw; 
+    background: #FFFFFF;
     position: absolute; 
     top: 0; 
     z-index: 1000;
-    backdrop-filter: blur(10px);
 }
 
 .auth-card { 
-    background: var(--bg-glass-heavy);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    padding: 3rem; 
     width: 100%; 
-    max-width: 420px; 
-    border-radius: var(--radius-l); 
-    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-    border: var(--glass-border);
+    max-width: 380px; 
+    padding: 2rem;
     text-align: center;
-    transform: translateY(0);
-    transition: transform 0.4s var(--ease-ios);
+    /* Sem sombras pesadas, foco no conteúdo */
 }
 
-.auth-card:hover { transform: translateY(-5px); }
-
 .brand-logo { 
-    font-size: 2rem; 
-    font-weight: 800; 
-    letter-spacing: -1px;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.2rem; 
+    font-size: 1.8rem; 
+    font-weight: 700; 
+    color: var(--text-primary); 
+    letter-spacing: -0.5px;
+    margin-bottom: 0.5rem;
 }
 
 .subtitle { 
-    font-weight: 500; 
+    font-size: 0.9rem; 
     color: var(--text-secondary); 
     margin-bottom: 2.5rem; 
-    font-size: 0.95rem;
 }
 
-/* --- COMPONENTES DE UI (Inputs & Buttons) --- */
-.input-group { margin-bottom: 1.2rem; }
+/* --- INPUTS & BOTÕES (Estilo Técnico) --- */
+.input-group { margin-bottom: 1rem; }
 
-input, select, textarea { 
+input, select { 
     width: 100%; 
-    padding: 16px 20px; 
-    border: 1px solid transparent; 
-    border-radius: var(--radius-m); 
-    font-size: 1rem; 
-    background: #FFFFFF;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-    transition: all 0.3s var(--ease-ios);
-    color: var(--text-main);
+    padding: 10px 12px; 
+    border: 1px solid rgba(55, 53, 47, 0.16); 
+    border-radius: 4px; 
+    font-size: 0.95rem; 
+    color: var(--text-primary);
+    background: transparent;
+    transition: all 0.2s ease;
+    font-family: var(--font-main);
 }
 
-input:focus { 
+input:focus, select:focus { 
     outline: none; 
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
-    transform: scale(1.01);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.2);
 }
 
 .btn { 
-    padding: 16px; 
-    border: none; 
-    border-radius: var(--radius-m); 
+    padding: 10px 15px; 
+    border: 1px solid transparent; 
+    border-radius: 4px; 
+    font-size: 0.9rem; 
+    font-weight: 500; 
     cursor: pointer; 
-    font-weight: 600; 
-    font-size: 1rem; 
-    letter-spacing: -0.3px;
-    transition: all 0.3s var(--ease-ios); 
-    width: 100%; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 10px; 
+    gap: 8px; 
+    transition: background 0.1s;
 }
 
 .btn-primary { 
-    background: var(--primary-gradient); 
+    background: var(--primary); 
     color: white; 
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
 }
-
-.btn-primary:hover { 
-    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.45); 
-    transform: translateY(-2px);
-}
+.btn-primary:hover { background: var(--primary-hover); }
 
 .btn-google { 
     background: white; 
-    color: var(--text-main); 
-    margin-bottom: 1.5rem; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(55, 53, 47, 0.16); 
+    color: var(--text-primary); 
+    margin-bottom: 1.5rem;
 }
-
-.btn-google:hover { background: #f9f9f9; transform: translateY(-2px); }
+.btn-google:hover { background: #F7F7F5; }
 
 .btn-danger { background: var(--danger); color: white; }
 
-/* --- APP LAYOUT (Glass Sidebar) --- */
+/* --- SIDEBAR (Estilo Notion) --- */
 .app-container { display: flex; height: 100vh; }
 
 .sidebar { 
     width: var(--sidebar-width); 
-    background: rgba(255, 255, 255, 0.85); /* Translúcido */
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-right: 1px solid rgba(0,0,0,0.05); 
+    background: var(--bg-sidebar); 
+    border-right: 1px solid var(--border-color); 
     display: flex; 
     flex-direction: column; 
-    position: fixed; 
     height: 100%; 
-    z-index: 100; 
-    padding: 1.5rem;
+    flex-shrink: 0;
 }
 
 .sidebar-header { 
-    padding: 1rem 0 2rem 0; 
-    text-align: left;
+    padding: 1.5rem 1rem; 
+    margin-bottom: 1rem;
 }
+.sidebar-header h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
 
-.sidebar-header h3 {
-    font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: -1px;
-    color: var(--text-main);
-}
-
-.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.sidebar-nav { padding: 0 0.5rem; flex: 1; display: flex; flex-direction: column; gap: 2px; }
 
 .nav-item { 
-    background: transparent; 
+    display: flex; 
+    align-items: center; 
+    padding: 6px 10px; 
     color: var(--text-secondary); 
-    justify-content: flex-start; 
-    text-align: left; 
-    border-radius: var(--radius-m); 
-    padding: 14px 16px; 
-    font-weight: 500;
+    border-radius: 4px; 
+    font-size: 0.9rem; 
+    text-decoration: none; 
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
 }
 
-.nav-item:hover { 
-    background: rgba(0,0,0,0.03); 
-    color: var(--text-main); 
-    transform: translateX(5px);
-}
+.nav-item:hover { background: rgba(55, 53, 47, 0.08); color: var(--text-primary); }
+.nav-item.active { background: rgba(55, 53, 47, 0.08); color: var(--text-primary); font-weight: 600; }
+.nav-item span { font-size: 18px; margin-right: 10px; opacity: 0.8; }
 
-.nav-item.active { 
-    background: white; 
-    color: var(--primary); 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    font-weight: 600;
-}
+.sidebar-footer { padding: 1rem; border-top: 1px solid rgba(55, 53, 47, 0.08); }
 
-.nav-item span { margin-right: 12px; }
-
-/* --- MAIN CONTENT --- */
+/* --- CONTEÚDO PRINCIPAL --- */
 .main-content { 
-    margin-left: var(--sidebar-width); 
     flex: 1; 
-    padding: 3rem; 
+    background: #FFFFFF; 
     overflow-y: auto; 
-    height: 100vh; 
+    padding: 3rem 4rem; /* Bastante respiro */
 }
 
 .top-bar { 
@@ -217,138 +175,125 @@ input:focus {
     justify-content: space-between; 
     align-items: center; 
     margin-bottom: 3rem; 
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
 }
 
-#page-title { font-size: 2.2rem; font-weight: 700; letter-spacing: -1px; }
-
-.badge { 
-    background: #E5E5EA; 
-    padding: 6px 12px; 
-    border-radius: 20px; 
-    font-size: 0.75rem; 
+#page-title { 
+    font-size: 2rem; 
     font-weight: 700; 
-    letter-spacing: 0.5px;
+    color: var(--text-primary); 
+    letter-spacing: -0.02em;
 }
-.badge.admin { background: var(--primary); color: white; box-shadow: 0 2px 10px rgba(0,122,255,0.3); }
 
-/* --- CARDS & DASHBOARD --- */
+.user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+.badge { 
+    font-size: 0.75rem; 
+    padding: 2px 6px; 
+    border-radius: 3px; 
+    text-transform: uppercase; 
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+.badge.admin { border-color: var(--primary); color: var(--primary); background: rgba(35, 131, 226, 0.1); }
+
+/* --- CARDS & PAINEIS --- */
 .card { 
-    background: white; 
-    padding: 2rem; 
-    border-radius: var(--radius-l); 
-    box-shadow: var(--shadow-soft); 
     margin-bottom: 2rem; 
-    border: 1px solid rgba(255,255,255,0.8);
-    transition: transform 0.3s var(--ease-ios);
+    /* No estilo Notion, cards são implícitos ou apenas espaçamento */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1.5rem;
 }
-
-.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
 
 .card h3 { 
-    margin-bottom: 1.5rem; 
-    font-size: 1.2rem; 
+    font-size: 1.1rem; 
     font-weight: 600; 
-    border-bottom: 1px solid rgba(0,0,0,0.05); 
-    padding-bottom: 1rem; 
+    margin-bottom: 1rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
 }
 
-/* --- SCHEDULE GRID (Grade) --- */
-.schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
+/* --- GRADE DE HORÁRIOS --- */
+.schedule-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 
 .day-card { 
-    background: #F9F9FB; 
-    padding: 1.5rem; 
-    border-radius: var(--radius-m); 
-    text-align: center;
-    border: 1px solid rgba(0,0,0,0.03);
-    transition: all 0.2s;
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
+    padding: 1rem; 
+    background: #FAFAFA;
 }
-.day-card:hover { background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+.day-title { 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    color: var(--text-secondary); 
+    margin-bottom: 0.5rem; 
+    font-weight: 600; 
+}
 
-.day-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
-
-/* --- CHAT (iMessage Style) --- */
+/* --- CHAT CLEAN --- */
 .chat-container { 
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
+    height: 500px; 
     display: flex; 
     flex-direction: column; 
-    height: 600px; 
-    background: white;
-    border-radius: var(--radius-l); 
-    box-shadow: var(--shadow-soft);
-    overflow: hidden; 
 }
 
 .chat-messages { 
     flex: 1; 
+    padding: 1.5rem; 
     overflow-y: auto; 
-    padding: 2rem; 
-    background: white; 
     display: flex; 
     flex-direction: column; 
-    gap: 12px; 
+    gap: 8px; 
+    background: #FFFFFF;
 }
 
 .message { 
-    max-width: 75%; 
-    padding: 12px 18px; 
-    border-radius: 20px; 
+    max-width: 80%; 
+    padding: 8px 12px; 
+    border-radius: 4px; 
     font-size: 0.95rem; 
-    line-height: 1.4;
-    position: relative;
-    animation: fadeIn 0.3s ease;
 }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 .msg-mine { 
     align-self: flex-end; 
-    background: var(--primary-gradient); 
-    color: white; 
-    border-bottom-right-radius: 4px; 
-    box-shadow: 0 4px 10px rgba(0,122,255,0.2);
+    background: rgba(35, 131, 226, 0.1); /* Azul bem claro */
+    color: var(--text-primary); 
 }
-
 .msg-other { 
     align-self: flex-start; 
-    background: #F2F2F7; 
-    color: var(--text-main); 
-    border-bottom-left-radius: 4px; 
+    background: #F7F7F5; 
+    color: var(--text-primary); 
 }
-
-.msg-author { font-size: 0.7rem; opacity: 0.8; margin-bottom: 4px; display: block; font-weight: 600; }
+.msg-author { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 2px; display: block; }
 
 .chat-input-area { 
-    padding: 1.5rem; 
-    background: rgba(255,255,255,0.9); 
-    border-top: 1px solid rgba(0,0,0,0.05); 
+    padding: 1rem; 
+    border-top: 1px solid var(--border-color); 
     display: flex; 
-    gap: 15px; 
-    align-items: center;
+    gap: 10px;
 }
 
 /* --- TABELAS --- */
-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-th { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; }
-td { background: #F9F9FB; padding: 15px; border-top: 1px solid transparent; border-bottom: 1px solid transparent; }
-tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-tr:hover td { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th { text-align: left; padding: 12px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); font-weight: 500; }
+td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); }
+tr:last-child td { border-bottom: none; }
 
-/* --- ALERT & UTILS --- */
-.alert.error { 
-    background: #FFE5E5; 
-    color: var(--danger); 
-    border: none; 
-    border-left: 4px solid var(--danger);
-}
+/* --- UTILIDADES --- */
 .hidden { display: none !important; }
+.alert { padding: 12px; margin-bottom: 1rem; border-radius: 4px; font-size: 0.9rem; }
+.alert.error { background: #FFEAEA; color: var(--danger); }
 
 /* --- MOBILE --- */
 @media (max-width: 768px) {
-    .auth-card { padding: 2rem; width: 90%; }
-    .sidebar { width: 70px; padding: 1rem 0.5rem; align-items: center; }
-    .sidebar-header, .nav-item span:nth-child(2), .sidebar-footer button span:nth-child(2) { display: none; }
-    .main-content { margin-left: 70px; padding: 1.5rem; }
-    .nav-item { justify-content: center; padding: 15px; border-radius: 50%; width: 50px; height: 50px; margin-bottom: 10px; }
+    .main-content { padding: 1.5rem; }
     .schedule-grid { grid-template-columns: 1fr; }
+    .sidebar { width: 60px; }
+    .sidebar-header h3, .nav-item span:nth-child(2) { display: none; }
+    .nav-item { justify-content: center; padding: 15px 0; }
+    .nav-item span { margin: 0; }
 }
