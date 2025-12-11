@@ -3,184 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Classroom Clone</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Domine Português | Gestão Escolar</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
 
     <div id="auth-screen" class="auth-container">
-        <div class="auth-box">
-            <div class="google-logo">
-                <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
-                <span style="color:#5f6368; font-weight:400; font-size: 22px; margin-left: 4px;">Classroom</span>
+        <div class="auth-card">
+            <div class="logo-area">
+                <h1 class="brand-logo">Domine Português</h1>
+                <p class="subtitle">Plataforma de Ensino</p>
             </div>
-            <p class="auth-subtitle">Gerencie suas turmas e atividades</p>
             
-            <form id="form-auth">
-                <div class="form-group">
-                    <input type="email" id="email" placeholder="Email" required>
+            <div id="login-error" class="alert error hidden"></div>
+
+            <button id="btn-google" class="btn btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Entrar com Google
+            </button>
+
+            <div class="divider">ou entre com e-mail</div>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="E-mail" required>
                 </div>
-                <div class="form-group">
+                <div class="input-group">
                     <input type="password" id="password" placeholder="Senha" required>
                 </div>
-                <div class="form-group hidden" id="group-class-code">
-                    <input type="text" id="class-code-reg" placeholder="Código da Turma (Ex: INFO1)">
-                </div>
-
-                <div class="auth-buttons">
-                    <button type="submit" id="btn-login" class="btn btn-primary">Fazer Login</button>
-                    <button type="button" id="btn-google" class="btn btn-google">Entrar com Google</button>
-                </div>
-                
-                <div class="auth-footer">
-                    <a href="#" id="toggle-register">Criar conta</a>
-                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
             </form>
+            <p class="toggle-auth">Não tem conta? <a href="#" id="show-register">Cadastre-se</a></p>
         </div>
     </div>
 
     <div id="app-screen" class="app-container hidden">
         
-        <nav class="navbar">
-            <div class="nav-left">
-                <button class="icon-btn"><span class="material-icons-outlined">menu</span></button>
-                <div class="nav-brand">
-                    <span id="nav-title">Turmas</span>
-                    <span id="nav-context" class="nav-context"></span>
-                </div>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Domine <br> Português</h3>
             </div>
-            <div class="nav-right">
-                <button class="icon-btn" id="btn-add-menu"><span class="material-icons-outlined">add</span></button>
-                <div class="avatar" id="user-avatar">US</div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <span class="material-icons-round">dashboard</span> Início
+                </button>
+                <button class="nav-item" data-view="classroom">
+                    <span class="material-icons-round">class</span> Minha Turma
+                </button>
+                <button class="nav-item admin-only hidden" data-view="admin-classes">
+                    <span class="material-icons-round">school</span> Gestão de Turmas
+                </button>
+                <button class="nav-item admin-only hidden" data-view="admin-students">
+                    <span class="material-icons-round">people</span> Gestão de Alunos
+                </button>
+                
+                <button class="nav-item" data-view="profile">
+                    <span class="material-icons-round">account_circle</span> Perfil
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="nav-item logout">
+                    <span class="material-icons-round">logout</span> Sair
+                </button>
             </div>
-        </nav>
+        </aside>
 
-        <main class="content-area">
-            
-            <section id="view-hub" class="view active">
-                <div class="grid-classes" id="classes-container">
-                    </div>
-            </section>
-
-            <section id="view-class" class="view hidden">
-                <div class="class-nav">
-                    <button class="tab-link active" onclick="app.switchTab('mural')">Mural</button>
-                    <button class="tab-link" onclick="app.switchTab('atividades')">Atividades</button>
-                    <button class="tab-link" onclick="app.switchTab('pessoas')">Pessoas</button>
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 id="page-title">Dashboard</h2>
+                <div class="user-info">
+                    <span id="user-name-display">Carregando...</span>
+                    <span id="user-role-badge" class="badge">Aluno</span>
                 </div>
+            </header>
 
-                <div class="container-limit">
-                    <div class="class-banner">
-                        <h1 id="banner-class-name">Nome da Turma</h1>
-                        <p id="banner-class-code">Código</p>
-                    </div>
-
-                    <div id="tab-mural" class="tab-content">
-                        <div class="stream-composer" id="composer-box">
-                            <div class="composer-collapsed" onclick="app.expandComposer()">
-                                <div class="avatar-sm">EU</div>
-                                <span>Escreva um aviso para sua turma...</span>
-                            </div>
-                            <div id="composer-expanded" class="hidden">
-                                <textarea id="post-content" placeholder="Escreva um aviso..."></textarea>
-                                <div class="composer-actions">
-                                    <button class="btn-text" onclick="app.collapseComposer()">Cancelar</button>
-                                    <button class="btn-primary" onclick="app.createPost()">Postar</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="stream-feed" class="feed-list"></div>
-                    </div>
-
-                    <div id="tab-atividades" class="tab-content hidden">
-                        <div id="teacher-actions" class="hidden" style="margin-bottom: 20px;">
-                            <button class="btn-create" onclick="app.openModal('modal-activity')">
-                                <span class="material-icons-outlined">add</span> Criar Atividade
-                            </button>
-                        </div>
-                        <div id="assignments-list" class="list-vertical"></div>
-                    </div>
-
-                    <div id="tab-pessoas" class="tab-content hidden">
-                        <div class="section-header">
-                            <h2>Professores</h2>
-                        </div>
-                        <div class="person-item">
-                            <div class="avatar-sm">P</div>
-                            <span style="font-weight: 500;">Professor Responsável</span>
-                        </div>
-
-                        <div class="section-header" style="margin-top: 40px; display:flex; justify-content:space-between">
-                            <h2>Alunos</h2>
-                            <span id="student-count" style="font-size:12px; color:#1967d2"></span>
-                            <button id="btn-add-student" class="icon-btn hidden" onclick="app.openModal('modal-add-student')">
-                                <span class="material-icons-outlined">person_add</span>
-                            </button>
-                        </div>
-                        <div id="students-list" class="list-vertical"></div>
-                    </div>
+            <div id="content-area">
                 </div>
-            </section>
         </main>
     </div>
 
-    <div id="modal-activity" class="modal-overlay hidden">
+    <div id="modal-overlay" class="modal-overlay hidden">
         <div class="modal-card">
-            <h3>Nova Atividade</h3>
-            <input type="text" id="assign-title" class="input-line" placeholder="Título">
-            <textarea id="assign-desc" class="input-area" placeholder="Instruções"></textarea>
-            <div class="modal-footer">
-                <button class="btn-text" onclick="app.closeModal('modal-activity')">Cancelar</button>
-                <button class="btn-primary" onclick="app.createAssignment()">Criar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-grade" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3>Avaliar Aluno</h3>
-            <p id="grade-student-name" style="color:#5f6368; margin-bottom:15px"></p>
-            
-            <label class="label-tiny">CONCEITO</label>
-            <div class="grade-options">
-                <label><input type="radio" name="grade" value="A"><span>A</span></label>
-                <label><input type="radio" name="grade" value="B"><span>B</span></label>
-                <label><input type="radio" name="grade" value="C"><span>C</span></label>
-                <label><input type="radio" name="grade" value="D"><span>D</span></label>
-            </div>
-
-            <label class="label-tiny">FEEDBACK</label>
-            <textarea id="grade-feedback" class="input-area" placeholder="Comentário particular..."></textarea>
-            
-            <div class="modal-footer">
-                <button class="btn-text" onclick="app.closeModal('modal-grade')">Cancelar</button>
-                <button class="btn-primary" onclick="app.submitGrade()">Devolver</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-class" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3>Criar Turma</h3>
-            <input type="text" id="new-class-name" class="input-line" placeholder="Nome da Turma">
-            <input type="text" id="new-class-code" class="input-line" placeholder="Código (Ex: INFO1)">
-            <div class="modal-footer">
-                <button class="btn-text" onclick="app.closeModal('modal-class')">Cancelar</button>
-                <button class="btn-primary" onclick="app.createClass()">Criar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-add-student" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3>Matricular Aluno</h3>
-            <p style="font-size:13px; color:#666">O aluno deve ter uma conta existente.</p>
-            <input type="email" id="add-stu-email" class="input-line" placeholder="E-mail do Aluno">
-            <div class="modal-footer">
-                <button class="btn-text" onclick="app.closeModal('modal-add-student')">Cancelar</button>
-                <button class="btn-primary" onclick="app.addStudentManual()">Adicionar</button>
+            <h3 id="modal-title">Título</h3>
+            <div id="modal-body"></div>
+            <div class="modal-actions">
+                <button id="modal-close" class="btn btn-secondary">Cancelar</button>
+                <button id="modal-confirm" class="btn btn-primary">Confirmar</button>
             </div>
         </div>
     </div>
