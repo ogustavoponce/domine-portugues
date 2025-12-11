@@ -1,99 +1,119 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domine Português | Gestão Escolar</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domine Português | Gestão Escolar</title>
+
+  <!-- Favicon e logo principal -->
+  <link rel="icon" type="image/jpeg" href="favicon.jpg">
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Ícones Material -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
 
-    <div id="auth-screen" class="auth-container">
-        <div class="auth-card">
-            <div class="logo-area">
-                <h1 class="brand-logo">Domine Português</h1>
-                <p class="subtitle">Plataforma de Ensino</p>
-            </div>
-            
-            <div id="login-error" class="alert error hidden"></div>
+  <!-- TELA DE AUTENTICAÇÃO -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="logo-area">
+        <img src="logo.jpg" alt="Domine Português" class="brand-logo-img">
+        <p class="subtitle">Plataforma de Ensino Exclusiva</p>
+      </div>
 
-            <button id="btn-google" class="btn btn-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                Entrar com Google
-            </button>
+      <div id="login-error" class="alert error hidden"></div>
 
-            <div class="divider">ou entre com e-mail</div>
+      <button id="btn-google" class="btn btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Entrar com Google
+      </button>
 
-            <form id="login-form">
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="E-mail" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="password" placeholder="Senha" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Entrar</button>
-            </form>
-            <p class="toggle-auth">Não tem conta? <a href="#" id="show-register">Cadastre-se</a></p>
+      <div class="divider">ou entre com e-mail</div>
+
+      <form id="login-form">
+        <div class="input-group">
+          <input type="email" id="email" placeholder="E-mail" required>
         </div>
-    </div>
-
-    <div id="app-screen" class="app-container hidden">
-        
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>Domine <br> Português</h3>
-            </div>
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-view="dashboard">
-                    <span class="material-icons-round">dashboard</span> Início
-                </button>
-                <button class="nav-item" data-view="classroom">
-                    <span class="material-icons-round">class</span> Minha Turma
-                </button>
-                <button class="nav-item admin-only hidden" data-view="admin-classes">
-                    <span class="material-icons-round">school</span> Gestão de Turmas
-                </button>
-                <button class="nav-item admin-only hidden" data-view="admin-students">
-                    <span class="material-icons-round">people</span> Gestão de Alunos
-                </button>
-                
-                <button class="nav-item" data-view="profile">
-                    <span class="material-icons-round">account_circle</span> Perfil
-                </button>
-            </nav>
-            <div class="sidebar-footer">
-                <button id="btn-logout" class="nav-item logout">
-                    <span class="material-icons-round">logout</span> Sair
-                </button>
-            </div>
-        </aside>
-
-        <main class="main-content">
-            <header class="top-bar">
-                <h2 id="page-title">Dashboard</h2>
-                <div class="user-info">
-                    <span id="user-name-display">Carregando...</span>
-                    <span id="user-role-badge" class="badge">Aluno</span>
-                </div>
-            </header>
-
-            <div id="content-area">
-                </div>
-        </main>
-    </div>
-
-    <div id="modal-overlay" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3 id="modal-title">Título</h3>
-            <div id="modal-body"></div>
-            <div class="modal-actions">
-                <button id="modal-close" class="btn btn-secondary">Cancelar</button>
-                <button id="modal-confirm" class="btn btn-primary">Confirmar</button>
-            </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Senha" required>
         </div>
-    </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
 
-    <script type="module" src="js/app.js"></script>
+      <p class="toggle-auth">Não tem conta? <a href="#" id="show-register">Cadastre-se</a></p>
+    </div>
+  </div>
+
+  <!-- APLICATIVO PRINCIPAL -->
+  <div id="app-screen" class="app-container hidden">
+
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="logo.jpg" alt="Domine Português" class="sidebar-logo">
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="material-icons-round">dashboard</span>
+          <span class="nav-label">Início</span>
+        </button>
+        <button class="nav-item" data-view="classroom">
+          <span class="material-icons-round">class</span>
+          <span class="nav-label">Minha Turma</span>
+        </button>
+        <button class="nav-item admin-only hidden" data-view="admin-classes">
+          <span class="material-icons-round">school</span>
+          <span class="nav-label">Gestão de Turmas</span>
+        </button>
+        <button class="nav-item admin-only hidden" data-view="admin-students">
+          <span class="material-icons-round">people</span>
+          <span class="nav-label">Gestão de Alunos</span>
+        </button>
+        <button class="nav-item" data-view="profile">
+          <span class="material-icons-round">account_circle</span>
+          <span class="nav-label">Perfil</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="btn-logout" class="nav-item logout">
+          <span class="material-icons-round">logout</span>
+          <span class="nav-label">Sair</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-left">
+          <h2 id="page-title">Dashboard</h2>
+        </div>
+        <div class="user-info">
+          <div class="user-meta">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-email" id="user-email-display"></span>
+          </div>
+          <span id="user-role-badge" class="badge">Aluno</span>
+        </div>
+      </header>
+
+      <div id="content-area"></div>
+    </main>
+  </div>
+
+  <!-- MODAL GENÉRICO (seu JS usa) -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h3 id="modal-title">Título</h3>
+      <div id="modal-body"></div>
+      <div class="modal-actions">
+        <button id="modal-close" class="btn btn-secondary">Cancelar</button>
+        <button id="modal-confirm" class="btn btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
