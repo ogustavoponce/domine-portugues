@@ -1,299 +1,263 @@
-/* --- FUNDAÇÕES: NOTION-LIKE / LINEAR STYLE --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+/* --- 1. VARIÁVEIS & DESIGN TOKENS --- */
 :root {
-    /* Paleta Neutra Sofisticada */
-    --bg-app: #FFFFFF;
-    --bg-sidebar: #F7F7F5; /* Aquele cinza "papel" do Notion */
-    --bg-panel: #FFFFFF;
-    --border-color: #E0E0E0;
-    --text-primary: #37352F;
-    --text-secondary: #787774;
-    
-    /* Acentos (Discretos) */
-    --primary: #2383E2; /* Azul Notion */
-    --primary-hover: #1B65B3;
-    --danger: #DF5452;
-    --success: #0F7B6C;
+    /* Paleta de Cores Premium */
+    --primary: #007AFF; /* Apple Blue */
+    --primary-hover: #0062CC;
+    --bg-body: #F5F5F7; /* Cinza claro suave */
+    --bg-card: #FFFFFF;
+    --text-main: #1D1D1F;
+    --text-secondary: #86868B;
+    --border-light: #E5E5EA;
+    --danger: #FF3B30;
+    --success: #34C759;
 
-    /* Estrutura */
-    --sidebar-width: 240px;
-    --radius: 6px; /* Cantos levemente arredondados, não redondos */
-    --font-main: 'Inter', -apple-system, sans-serif;
+    /* Dimensões e Espaçamentos */
+    --sidebar-width: 260px;
+    --radius-s: 8px;
+    --radius-m: 12px;
+    --radius-l: 20px;
+    
+    /* Sombras (Profundidade) */
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
+/* --- 2. RESET GERAL --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body { 
-    background-color: var(--bg-app); 
-    color: var(--text-primary); 
-    font-family: var(--font-main);
+    background-color: var(--bg-body); 
+    color: var(--text-main); 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    height: 100vh;
-    overflow: hidden;
-    line-height: 1.5;
+    height: 100vh; 
+    overflow: hidden; 
 }
 
-/* --- TELA DE LOGIN (Minimalista Absoluta) --- */
+/* --- 3. TELA DE LOGIN (CORRIGIDA & FINAL) --- */
 .auth-container { 
     display: flex; 
     align-items: center; 
     justify-content: center; 
     height: 100vh; 
     width: 100vw; 
-    background: #FFFFFF;
     position: absolute; 
     top: 0; 
     z-index: 1000;
+    background: var(--bg-body);
 }
 
 .auth-card { 
+    background: var(--bg-card); 
+    padding: 3rem; 
     width: 100%; 
-    max-width: 380px; 
-    padding: 2rem;
+    max-width: 400px; 
+    border-radius: var(--radius-l); 
+    box-shadow: var(--shadow-card); 
     text-align: center;
-    /* Sem sombras pesadas, foco no conteúdo */
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
-.brand-logo { 
-    font-size: 1.8rem; 
-    font-weight: 700; 
-    color: var(--text-primary); 
-    letter-spacing: -0.5px;
-    margin-bottom: 0.5rem;
+/* Estilo para a Imagem do Logotipo no Login */
+.logo-area img {
+    max-width: 180px; /* Tamanho controlado */
+    height: auto;
+    margin-bottom: 1rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .subtitle { 
-    font-size: 0.9rem; 
     color: var(--text-secondary); 
-    margin-bottom: 2.5rem; 
+    margin-bottom: 2rem; 
+    font-size: 0.95rem; 
 }
 
-/* --- INPUTS & BOTÕES (Estilo Técnico) --- */
-.input-group { margin-bottom: 1rem; }
+/* --- 4. FORMULÁRIO & INPUTS --- */
+.input-group { margin-bottom: 1.2rem; }
 
 input, select { 
     width: 100%; 
-    padding: 10px 12px; 
-    border: 1px solid rgba(55, 53, 47, 0.16); 
-    border-radius: 4px; 
-    font-size: 0.95rem; 
-    color: var(--text-primary);
-    background: transparent;
+    padding: 14px 16px; 
+    border: 1px solid #D1D1D6; 
+    border-radius: var(--radius-s); 
+    font-size: 1rem; 
+    background: #FFFFFF;
     transition: all 0.2s ease;
-    font-family: var(--font-main);
+    outline: none;
+    color: var(--text-main);
 }
 
-input:focus, select:focus { 
-    outline: none; 
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(35, 131, 226, 0.2);
+input:focus { 
+    border-color: var(--primary); 
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); 
 }
 
+/* --- 5. BOTÕES (CORREÇÃO DO GOOGLE) --- */
 .btn { 
-    padding: 10px 15px; 
-    border: 1px solid transparent; 
-    border-radius: 4px; 
-    font-size: 0.9rem; 
-    font-weight: 500; 
+    padding: 14px; 
+    border: none; 
+    border-radius: var(--radius-s); 
     cursor: pointer; 
+    font-weight: 600; 
+    font-size: 1rem; 
+    transition: all 0.2s; 
+    width: 100%; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 8px; 
-    transition: background 0.1s;
+    gap: 10px; 
 }
 
 .btn-primary { 
     background: var(--primary); 
     color: white; 
 }
-.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:hover { 
+    background: var(--primary-hover); 
+    transform: translateY(-1px);
+}
 
 .btn-google { 
     background: white; 
-    border: 1px solid rgba(55, 53, 47, 0.16); 
-    color: var(--text-primary); 
-    margin-bottom: 1.5rem;
+    color: #333; 
+    border: 1px solid #D1D1D6; 
+    margin-bottom: 1.5rem; 
+    position: relative; /* Para garantir estrutura */
 }
-.btn-google:hover { background: #F7F7F5; }
 
-.btn-danger { background: var(--danger); color: white; }
+.btn-google:hover { 
+    background: #FAFAFA; 
+    border-color: #C7C7CC;
+}
 
-/* --- SIDEBAR (Estilo Notion) --- */
+/* A MÁGICA: Trava o tamanho do ícone do Google */
+.btn-google img {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px; /* Garante que não esmague */
+    object-fit: contain;
+}
+
+.divider { 
+    margin: 1.5rem 0; 
+    color: var(--text-secondary); 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: 500;
+}
+
+.toggle-auth { margin-top: 1.5rem; font-size: 0.9rem; }
+.toggle-auth a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+/* --- 6. LAYOUT APP (Sidebar & Main) --- */
 .app-container { display: flex; height: 100vh; }
 
 .sidebar { 
     width: var(--sidebar-width); 
-    background: var(--bg-sidebar); 
-    border-right: 1px solid var(--border-color); 
+    background: var(--bg-card); 
+    border-right: 1px solid var(--border-light); 
     display: flex; 
     flex-direction: column; 
+    position: fixed; 
     height: 100%; 
-    flex-shrink: 0;
+    z-index: 100; 
 }
 
 .sidebar-header { 
-    padding: 1.5rem 1rem; 
-    margin-bottom: 1rem;
+    padding: 2rem; 
+    border-bottom: 1px solid var(--border-light); 
+    text-align: center;
 }
-.sidebar-header h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
 
-.sidebar-nav { padding: 0 0.5rem; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-header img {
+    max-width: 120px; /* Logotipo menor na sidebar */
+    height: auto;
+}
+
+.sidebar-nav { flex: 1; padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
 
 .nav-item { 
-    display: flex; 
-    align-items: center; 
-    padding: 6px 10px; 
+    background: transparent; 
     color: var(--text-secondary); 
-    border-radius: 4px; 
-    font-size: 0.9rem; 
-    text-decoration: none; 
-    background: transparent;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
+    justify-content: flex-start; 
+    text-align: left; 
+    border-radius: var(--radius-s); 
+    padding: 12px 16px; 
+    font-weight: 500;
 }
 
-.nav-item:hover { background: rgba(55, 53, 47, 0.08); color: var(--text-primary); }
-.nav-item.active { background: rgba(55, 53, 47, 0.08); color: var(--text-primary); font-weight: 600; }
-.nav-item span { font-size: 18px; margin-right: 10px; opacity: 0.8; }
+.nav-item:hover { background: #F2F2F7; color: var(--text-main); }
+.nav-item.active { background: #E4F2FF; color: var(--primary); font-weight: 600; }
+.nav-item span { margin-right: 12px; } /* Ícone */
 
-.sidebar-footer { padding: 1rem; border-top: 1px solid rgba(55, 53, 47, 0.08); }
+.sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-light); }
+.logout { color: var(--danger); }
+.logout:hover { background: #FFF0F0; color: #D70015; }
 
-/* --- CONTEÚDO PRINCIPAL --- */
-.main-content { 
-    flex: 1; 
-    background: #FFFFFF; 
-    overflow-y: auto; 
-    padding: 3rem 4rem; /* Bastante respiro */
-}
+/* --- 7. CONTEÚDO & DASHBOARD --- */
+.main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; overflow-y: auto; height: 100vh; }
 
-.top-bar { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 3rem; 
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1rem;
-}
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
 
-#page-title { 
-    font-size: 2rem; 
-    font-weight: 700; 
-    color: var(--text-primary); 
-    letter-spacing: -0.02em;
-}
+#page-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
 
-.user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
-.badge { 
-    font-size: 0.75rem; 
-    padding: 2px 6px; 
-    border-radius: 3px; 
-    text-transform: uppercase; 
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-}
-.badge.admin { border-color: var(--primary); color: var(--primary); background: rgba(35, 131, 226, 0.1); }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: #E5E5EA; color: var(--text-secondary); }
+.badge.admin { background: var(--primary); color: white; }
 
-/* --- CARDS & PAINEIS --- */
 .card { 
-    margin-bottom: 2rem; 
-    /* No estilo Notion, cards são implícitos ou apenas espaçamento */
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 1.5rem;
-}
-
-.card h3 { 
-    font-size: 1.1rem; 
-    font-weight: 600; 
-    margin-bottom: 1rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 8px;
-}
-
-/* --- GRADE DE HORÁRIOS --- */
-.schedule-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-
-.day-card { 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    padding: 1rem; 
-    background: #FAFAFA;
-}
-.day-title { 
-    font-size: 0.75rem; 
-    text-transform: uppercase; 
-    color: var(--text-secondary); 
-    margin-bottom: 0.5rem; 
-    font-weight: 600; 
-}
-
-/* --- CHAT CLEAN --- */
-.chat-container { 
-    border: 1px solid var(--border-color); 
-    border-radius: 4px; 
-    height: 500px; 
-    display: flex; 
-    flex-direction: column; 
-}
-
-.chat-messages { 
-    flex: 1; 
+    background: var(--bg-card); 
     padding: 1.5rem; 
-    overflow-y: auto; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    background: #FFFFFF;
+    border-radius: var(--radius-m); 
+    box-shadow: var(--shadow-card); 
+    margin-bottom: 1.5rem; 
+    border: 1px solid rgba(0,0,0,0.03);
 }
 
-.message { 
-    max-width: 80%; 
-    padding: 8px 12px; 
-    border-radius: 4px; 
-    font-size: 0.95rem; 
-}
+.card h3 { margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 10px;}
 
-.msg-mine { 
-    align-self: flex-end; 
-    background: rgba(35, 131, 226, 0.1); /* Azul bem claro */
-    color: var(--text-primary); 
-}
-.msg-other { 
-    align-self: flex-start; 
-    background: #F7F7F5; 
-    color: var(--text-primary); 
-}
-.msg-author { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 2px; display: block; }
+/* --- 8. ELEMENTOS INTERNOS (Chat, Grade, Tabela) --- */
 
-.chat-input-area { 
-    padding: 1rem; 
-    border-top: 1px solid var(--border-color); 
-    display: flex; 
-    gap: 10px;
-}
+/* Grade de Horários */
+.schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+.day-card { background: #FAFAFA; padding: 1rem; border-radius: var(--radius-s); border: 1px solid var(--border-light); text-align: center; }
+.day-title { font-weight: 700; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; display: block; margin-bottom: 8px; }
 
-/* --- TABELAS --- */
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th { text-align: left; padding: 12px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); font-weight: 500; }
-td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); }
+/* Chat Estilo iMessage */
+.chat-container { display: flex; flex-direction: column; height: 500px; border: 1px solid var(--border-light); border-radius: var(--radius-m); overflow: hidden; background: white; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; background: #FAFAFA; display: flex; flex-direction: column; gap: 12px; }
+
+.message { max-width: 75%; padding: 10px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; position: relative; }
+.msg-mine { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+.msg-other { align-self: flex-start; background: #E5E5EA; color: var(--text-main); border-bottom-left-radius: 4px; }
+.msg-author { font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; display: block; font-weight: 600; }
+
+.chat-input-area { padding: 1rem; background: white; border-top: 1px solid var(--border-light); display: flex; gap: 10px; }
+
+/* Tabelas Clean */
+table { width: 100%; border-collapse: separate; border-spacing: 0; }
+th { text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--border-light); color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
+td { padding: 14px 16px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
 tr:last-child td { border-bottom: none; }
 
-/* --- UTILIDADES --- */
+/* Utilitários */
 .hidden { display: none !important; }
-.alert { padding: 12px; margin-bottom: 1rem; border-radius: 4px; font-size: 0.9rem; }
-.alert.error { background: #FFEAEA; color: var(--danger); }
+.alert { padding: 12px; border-radius: var(--radius-s); margin-bottom: 1rem; font-size: 0.9rem; }
+.alert.error { background: #FFF0F0; color: #D70015; border: 1px solid #FFD1D1; }
 
-/* --- MOBILE --- */
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-card { background: white; padding: 2rem; border-radius: var(--radius-m); width: 90%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem; }
+
+/* --- 9. MOBILE --- */
 @media (max-width: 768px) {
-    .main-content { padding: 1.5rem; }
-    .schedule-grid { grid-template-columns: 1fr; }
-    .sidebar { width: 60px; }
-    .sidebar-header h3, .nav-item span:nth-child(2) { display: none; }
-    .nav-item { justify-content: center; padding: 15px 0; }
+    .sidebar { width: 70px; }
+    .sidebar-header, .nav-item span:nth-child(2), .sidebar-footer button span:nth-child(2) { display: none; }
+    .main-content { margin-left: 70px; padding: 1.5rem; }
+    .nav-item { justify-content: center; padding: 14px 0; }
     .nav-item span { margin: 0; }
 }
