@@ -3,186 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Domine Português | iOS Enterprise</title>
+    <title>Domine Português | Workspace</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
-    <div id="auth-container" class="auth-container">
+    <div id="auth-container" class="auth-wrapper">
         <div class="auth-card fade-in">
             <img src="logo.jpg" alt="Logo" class="auth-logo">
+            <h1 class="auth-title">Bem-vindo</h1>
+            <p class="auth-subtitle">Faça login para continuar</p>
             
-            <div id="form-login">
-                <h2>Bem-vindo de volta</h2>
-                <p class="auth-sub">Entre para continuar.</p>
-                <form id="login-form">
-                    <input type="email" id="login-email" class="input-ios" placeholder="E-mail institucional" required>
-                    <input type="password" id="login-password" class="input-ios" placeholder="Senha" required>
-                    <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-                </form>
-                <div class="divider">ou</div>
-                <button id="btn-google" class="btn btn-google btn-full">
-                    <i class="ph-bold ph-google-logo" style="color:#EA4335"></i> Continuar com Google
-                </button>
-                <p class="auth-footer">Não tem conta? <a href="#" id="link-to-register">Criar ID</a></p>
-            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+            </form>
 
-            <div id="form-register" class="hidden">
-                <h2>Criar ID</h2>
-                <p class="auth-sub">Cadastre-se na plataforma.</p>
-                <form id="register-form">
-                    <input type="text" id="reg-name" class="input-ios" placeholder="Nome Completo" required>
-                    <input type="email" id="reg-email" class="input-ios" placeholder="E-mail" required>
-                    <input type="password" id="reg-pass" class="input-ios" placeholder="Senha (mín 6 caracteres)" required>
-                    <button type="submit" class="btn btn-primary btn-full">Criar Conta</button>
-                </form>
-                <p class="auth-footer">Já tem conta? <a href="#" id="link-to-login">Fazer Login</a></p>
-            </div>
+            <div class="divider">ou</div>
+            
+            <button id="btn-google" class="btn btn-google btn-full">
+                <i class="ph-bold ph-google-logo" style="color:#EA4335"></i> Continuar com Google
+            </button>
+
+            <p class="auth-footer">
+                Não tem conta? <a href="#" id="toggle-register">Criar conta</a>
+            </p>
+
+            <form id="register-form" class="hidden" style="margin-top:20px;">
+                <div class="input-group">
+                    <input type="text" id="reg-name" placeholder="Nome Completo" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="reg-email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="reg-pass" placeholder="Senha (min 6)" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="reg-code" placeholder="Código da Turma (Opcional)">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Registrar</button>
+                <p class="auth-footer"><a href="#" id="toggle-login">Voltar ao Login</a></p>
+            </form>
         </div>
     </div>
 
     <div id="app-container" class="app-shell hidden">
         
-        <nav class="sidebar">
-            <div class="sidebar-top">
-                <img src="logo.jpg" class="app-logo">
-            </div>
-
-            <div class="nav-group">
-                <a href="#" class="nav-item active" data-target="dashboard">
-                    <i class="ph ph-calendar-blank"></i> <span>Agenda</span>
-                </a>
-                <a href="#" class="nav-item" data-target="chat">
-                    <i class="ph ph-chat-circle-dots"></i> <span>Mensagens</span>
-                </a>
-                <a href="#" class="nav-item" data-target="classroom">
-                    <i class="ph ph-chalkboard"></i> <span>Mural</span>
-                </a>
-            </div>
-
-            <div id="admin-menu" class="hidden">
-                <div class="nav-label">DIREÇÃO</div>
-                <a href="#" class="nav-item" data-target="admin-classes">
-                    <i class="ph ph-student"></i> <span>Turmas</span>
-                </a>
-                <a href="#" class="nav-item" data-target="admin-students">
-                    <i class="ph ph-users-three"></i> <span>Alunos</span>
-                </a>
-            </div>
-
-            <div class="spacer"></div>
-
-            <a href="#" class="nav-item" data-target="profile">
-                <i class="ph ph-user-circle"></i> <span>Perfil</span>
-            </a>
-            <a href="#" id="btn-logout" class="nav-item logout">
-                <i class="ph ph-sign-out"></i> <span>Sair</span>
-            </a>
-        </nav>
-
-        <main class="main-view fade-in">
-            
-            <section id="dashboard" class="view-section">
-                <header class="header-ios">
-                    <h1>Agenda</h1>
-                    <button id="btn-save-schedule" class="btn-text hidden">Salvar</button>
-                </header>
-                <div id="schedule-grid" class="schedule-grid"></div>
-            </section>
-
-            <section id="chat" class="view-section hidden">
-                <div class="chat-layout">
-                    <header class="chat-header">
-                        <div class="segmented-control">
-                            <button class="segment active" data-channel="general">Geral</button>
-                            <button class="segment" data-channel="class">Minha Turma</button>
-                        </div>
-                    </header>
-                    <div id="chat-messages" class="chat-area">
-                        </div>
-                    <form id="chat-form" class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="iMessage..." autocomplete="off">
-                        <button type="submit" class="btn-send"><i class="ph-fill ph-paper-plane-right"></i></button>
-                    </form>
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="icon-btn" id="btn-menu"><i class="ph ph-list"></i></button>
+                <div class="brand">
+                    <span class="brand-name">Domine Português</span>
+                    <span class="context-title" id="topbar-context">Início</span>
                 </div>
-            </section>
+            </div>
+            <div class="topbar-right">
+                <div class="user-avatar" id="user-avatar">US</div>
+            </div>
+        </header>
 
-            <section id="classroom" class="view-section hidden">
-                <header class="header-ios">
-                    <h1>Mural</h1>
-                    <button id="btn-new-post" class="btn-icon hidden"><i class="ph ph-plus"></i></button>
-                </header>
-                <div id="posts-container" class="feed-container"></div>
-            </section>
+        <div class="main-body">
+            <aside class="sidebar" id="sidebar">
+                <nav class="nav-list">
+                    <a href="#" class="nav-item active" onclick="app.navTo('hub')">
+                        <i class="ph ph-house"></i> Turmas
+                    </a>
+                    <div class="nav-divider"></div>
+                    <div id="nav-enrolled"></div> <div class="nav-divider"></div>
+                    <a href="#" class="nav-item" onclick="app.logout()">
+                        <i class="ph ph-sign-out"></i> Sair
+                    </a>
+                </nav>
+            </aside>
 
-            <section id="profile" class="view-section hidden">
-                <div class="profile-layout">
-                    <div class="profile-header-center">
-                        <div class="avatar-circle">
-                            <span id="avatar-initials">US</span>
-                        </div>
-                        <h2 id="display-name">Carregando...</h2>
-                        <p id="display-email">email@ifpr.edu.br</p>
+            <main class="content">
+                
+                <div id="view-hub" class="view-section">
+                    <div class="hub-header">
+                        <h2>Suas Turmas</h2>
+                        <button id="btn-add-class" class="btn btn-primary hidden">+ Criar Turma</button>
+                    </div>
+                    <div id="classes-grid" class="cards-grid"></div>
+                </div>
+
+                <div id="view-class" class="view-section hidden">
+                    
+                    <div class="class-tabs">
+                        <button class="tab-btn active" data-tab="stream">Mural</button>
+                        <button class="tab-btn" data-tab="classwork">Atividades</button>
+                        <button class="tab-btn" data-tab="people">Pessoas</button>
                     </div>
 
-                    <div class="ios-list-group">
-                        <div class="list-header">DADOS PESSOAIS</div>
-                        <div class="list-item">
-                            <label>Nome</label>
-                            <input type="text" id="profile-name-input" placeholder="Seu nome">
+                    <div id="tab-stream" class="tab-content">
+                        <div class="class-banner">
+                            <h1 id="class-name-display">Nome da Turma</h1>
+                            <p id="class-code-display">Código: ---</p>
                         </div>
-                    </div>
-
-                    <div class="ios-list-group">
-                        <div class="list-header">ACADÊMICO</div>
-                        <div class="list-item">
-                            <label>Matrícula (Turma)</label>
-                            <div class="row-actions">
-                                <input type="text" id="profile-class-code" placeholder="Código da Turma">
-                                <button id="btn-join-class" class="btn-small">Entrar</button>
+                        
+                        <div class="post-composer hidden" id="post-composer">
+                            <div class="composer-collapsed" onclick="this.classList.add('hidden'); document.getElementById('composer-expanded').classList.remove('hidden');">
+                                <div class="user-avatar-sm">EU</div>
+                                <span>Escreva um aviso para sua turma...</span>
+                            </div>
+                            <div id="composer-expanded" class="composer-expanded hidden">
+                                <textarea id="post-input" placeholder="Escreva um aviso..."></textarea>
+                                <div class="composer-actions">
+                                    <button class="btn btn-text" onclick="document.getElementById('composer-expanded').classList.add('hidden'); document.querySelector('.composer-collapsed').classList.remove('hidden');">Cancelar</button>
+                                    <button class="btn btn-primary" id="btn-post-submit">Postar</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="list-info">
-                            Turma Atual: <strong id="current-class-name">Nenhuma</strong>
+
+                        <div id="stream-feed" class="feed-list"></div>
+                    </div>
+
+                    <div id="tab-classwork" class="tab-content hidden">
+                        <div class="actions-bar hidden" id="teacher-actions-cw">
+                            <button class="btn btn-primary" id="btn-create-assignment">+ Criar Atividade</button>
+                        </div>
+                        <div id="assignments-list" class="list-container"></div>
+                    </div>
+
+                    <div id="tab-people" class="tab-content hidden">
+                        <div class="section-block">
+                            <div class="section-header">
+                                <h3>Professores</h3>
+                            </div>
+                            <div id="teachers-list" class="people-list"></div>
+                        </div>
+                        <div class="section-block">
+                            <div class="section-header">
+                                <h3>Alunos</h3>
+                                <button class="icon-btn hidden" id="btn-add-student" title="Adicionar Aluno"><i class="ph-bold ph-user-plus"></i></button>
+                            </div>
+                            <div id="students-list" class="people-list"></div>
                         </div>
                     </div>
 
-                    <button id="btn-update-profile" class="btn btn-primary btn-full" style="margin-top:20px;">Salvar Alterações</button>
-                </div>
-            </section>
-
-            <section id="admin-classes" class="view-section hidden">
-                <header class="header-ios">
-                    <h1>Gestão de Turmas</h1>
-                    <button id="btn-create-default-classes" class="btn-text">Restaurar Padrão</button>
-                </header>
-                
-                <div class="create-class-box glass-panel">
-                    <h3>Nova Turma</h3>
-                    <div class="row-inputs">
-                        <input id="new-class-name" placeholder="Nome (Ex: Informática 1)" class="input-ios">
-                        <input id="new-class-code" placeholder="Código (Ex: INFO1)" class="input-ios">
-                        <button id="btn-add-class" class="btn btn-primary">Criar</button>
-                    </div>
                 </div>
 
-                <div id="classes-list" class="grid-cards"></div>
-            </section>
+            </main>
+        </div>
+    </div>
 
-             <section id="admin-students" class="view-section hidden">
-                <header class="header-ios">
-                    <h1>Alunos</h1>
-                </header>
-                <div class="ios-table-container">
-                    <table class="ios-table">
-                        <thead><tr><th>Nome</th><th>Email</th><th>Turma</th><th>Ações</th></tr></thead>
-                        <tbody id="students-table-body"></tbody>
-                    </table>
-                </div>
-            </section>
+    <div id="modal-assignment" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Nova Atividade</h3>
+            <input type="text" id="assign-title" class="input-line" placeholder="Título da atividade" required>
+            <textarea id="assign-desc" class="input-area" placeholder="Instruções..."></textarea>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="app.closeModals()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-save-assignment">Criar</button>
+            </div>
+        </div>
+    </div>
 
-        </main>
+    <div id="modal-grading" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Avaliar Aluno</h3>
+            <p id="grading-student-name" style="color:#666; margin-bottom:15px;">Aluno</p>
+            
+            <label class="label-sm">Conceito</label>
+            <div class="grade-selector">
+                <input type="radio" name="grade" id="grade-A" value="A"><label for="grade-A" class="badge-A">A</label>
+                <input type="radio" name="grade" id="grade-B" value="B"><label for="grade-B" class="badge-B">B</label>
+                <input type="radio" name="grade" id="grade-C" value="C"><label for="grade-C" class="badge-C">C</label>
+                <input type="radio" name="grade" id="grade-D" value="D"><label for="grade-D" class="badge-D">D</label>
+            </div>
+
+            <label class="label-sm">Feedback Individual</label>
+            <textarea id="grade-feedback" class="input-area" placeholder="Comentário particular..."></textarea>
+            
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="app.closeModals()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-grade">Salvar e Devolver</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-add-student" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Matricular Aluno</h3>
+            <p style="font-size:12px; color:#666; margin-bottom:10px;">O aluno será criado e adicionado a esta turma.</p>
+            <input type="text" id="new-stu-name" class="input-line" placeholder="Nome">
+            <input type="email" id="new-stu-email" class="input-line" placeholder="Email">
+            <input type="password" id="new-stu-pass" class="input-line" placeholder="Senha Provisória">
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="app.closeModals()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-confirm-add-student">Cadastrar</button>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="js/app.js"></script>
